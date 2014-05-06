@@ -22,15 +22,6 @@
 	
 	$settings[2] = $modx->newObject('modSystemSetting');
 	$settings[2]->fromArray(array(
-		'key' 		=> PKG_NAME_LOWER.'_hash',
-		'value' 	=> sha1(PKG_NAME_LOWER.strtotime(date('d-m-Y H:i:s'))),
-		'xtype' 	=> 'textfield',
-		'namespace' => PKG_NAME_LOWER,
-		'area' 		=> PKG_NAME_LOWER
-	), '', true, true);
-	
-	$settings[3] = $modx->newObject('modSystemSetting');
-	$settings[3]->fromArray(array(
 		'key' 		=> PKG_NAME_LOWER.'_name',
 		'value' 	=> $modx->getOption('site_name', null, ''),
 		'xtype' 	=> 'textfield',

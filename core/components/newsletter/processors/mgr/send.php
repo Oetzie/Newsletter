@@ -34,7 +34,7 @@
 	
 	echo '<pre>';
 	
-	if (!array_key_exists('hash', $_GET) || $_GET['hash'] != $modx->getOption('newsletter_hash', null, false)) {
+	if (!array_key_exists('hash', $_GET) || $_GET['hash'] != $modx->getOption('hash', $scriptProperties, false)) {
 		echo 'Newsletter hash is not valid.'.PHP_EOL;
 	} else if (null === ($mail = $modx->getService('mail', 'mail.modPHPMailer'))) {
 		echo 'Newsletter service modPHPMailer could not be loaded.'.PHP_EOL;

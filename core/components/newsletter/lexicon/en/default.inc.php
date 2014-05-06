@@ -29,12 +29,12 @@
 	
 	$_lang['setting_newsletter_cronjob']					= 'Cron job reminder';
 	$_lang['setting_newsletter_cronjob_desc']				= 'Set to "Yes" if you have set up for the newsletter, by setting this to "Yes" the cronjob nofication is no longer displayed in the component newsletters.';
-	$_lang['setting_newsletter_hash']						= 'Cron job hash';
-	$_lang['setting_newsletter_hash_desc']					= 'This hash get send along with the cron job so that the newsletter cant be send by random people. Without this hash automatically send newsletters is not working.';
 	$_lang['setting_newsletter_email']						= 'Newsletter sender';
 	$_lang['setting_newsletter_email_desc']					= 'The e-mail address where the newsletter is sent of.';
 	$_lang['setting_newsletter_name']						= 'Newsletter sender name';
 	$_lang['setting_newsletter_name_desc']					= 'The name where the newsletter is sent of.';
+	
+	$_lang['newslettercronjob_snippet_hash_desc']			= 'This hash get send along with the cron job so that the newsletter cant be send by random people. Without this hash automatically send newsletters is not working.';
 	
 	$_lang['newsletter.newsletter']							= 'Newsletter';
 	$_lang['newsletter.newsletters']						= 'Newsletters';

@@ -29,12 +29,12 @@
 	
 	$_lang['setting_newsletter_cronjob']					= 'Cronjob herinnering';
 	$_lang['setting_newsletter_cronjob_desc']				= 'Zet deze instelling op "Ja" als je een cronjob hebt ingesteld voor de nieuwsbrief, door deze instelling op "Ja" te zetten word de cronjob waarschuwing niet meer getoond in de nieuwsbrieven component.';
-	$_lang['setting_newsletter_hash']						= 'Cronjob hash';
-	$_lang['setting_newsletter_hash_desc']					= 'Deze hash word met de cronjob mee gestuurd zodat de nieuwsbrief niet zomaar verstuurd kan worden door willekeurige personen. Zonder deze hash werkt het automatisch versturen van de nieuwsbrieven niet.';
 	$_lang['setting_newsletter_email']						= 'Nieuwsbrief afzender';
 	$_lang['setting_newsletter_email_desc']					= 'Het e-mail adres waarmee de nieuwsbrief verstuurd wordt.';
 	$_lang['setting_newsletter_name']						= 'Nieuwsbrief afzender naam';
 	$_lang['setting_newsletter_name_desc']					= 'De naam waarmee de nieuwsbrief verstuurd wordt.';
+	
+	$_lang['newslettercronjob_snippet_hash_desc']			= 'Deze hash word met de cronjob mee gestuurd zodat de nieuwsbrief niet zomaar verstuurd kan worden door willekeurige personen. Zonder deze hash werkt het automatisch versturen van de nieuwsbrieven niet.';
 	
 	$_lang['newsletter.newsletter']							= 'Nieuwsbrief';
 	$_lang['newsletter.newsletters']						= 'Nieuwsbrieven';
