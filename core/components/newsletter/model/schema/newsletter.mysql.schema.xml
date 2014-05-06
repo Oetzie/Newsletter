@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model package="newsletter" baseClass="xPDOObject" platform="mysql" defaultEngine="MyISAM" version="1.0">
+	<object class="Newsletters" table="newsletter_newsletters" extends="xPDOSimpleObject">
+    	<field key="id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" generated="native"/>
+    	<field key="context" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
+    	<field key="resource_id" dbtype="int" precision="11" phptype="integer" null="false" default=""/>
+        <field key="groups" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
+        <field key="send" dbtype="int" precision="1" phptype="integer" null="false" default="0"/>
+        <field key="active" dbtype="int" precision="1" phptype="integer" null="false" default="1"/>
+        <field key="editedon" dbtype="timestamp" phptype="timestamp" attributes="ON UPDATE CURRENT_TIMESTAMP" null="false" default=""/>
+        
+        <index alias="PRIMARY" name="PRIMARY" primary="true" unique="true">
+                <column key="id" collation="A" null="false" />
+        </index>
+    </object>
+    
+	<object class="Subscriptions" table="newsletter_subscriptions" extends="xPDOSimpleObject">
+    	<field key="id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" generated="native"/>
+    	<field key="name" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
+    	<field key="email" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
+    	<field key="context" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
+		<field key="groups" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
+        <field key="active" dbtype="int" precision="1" phptype="integer" null="false" default="0"/>
+        <field key="editedon" dbtype="timestamp" phptype="timestamp" attributes="ON UPDATE CURRENT_TIMESTAMP" null="false" default=""/>
+        
+        <index alias="PRIMARY" name="PRIMARY" primary="true" unique="true">
+                <column key="id" collation="A" null="false" />
+        </index>
+    </object>
+    
+    <object class="Groups" table="newsletter_groups" extends="xPDOSimpleObject">
+    	<field key="id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" generated="native"/>
+    	<field key="name" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
+    	<field key="description" dbtype="text" precision="2048" phptype="string" null="false" default=""/>
+    	<field key="active" dbtype="int" precision="1" phptype="integer" null="false" default="1"/>
+        <field key="editedon" dbtype="timestamp" phptype="timestamp" attributes="ON UPDATE CURRENT_TIMESTAMP" null="false" default=""/>
+        
+        <index alias="PRIMARY" name="PRIMARY" primary="true" unique="true">
+                <column key="id" collation="A" null="false" />
+        </index>
+    </object>
+</model>
