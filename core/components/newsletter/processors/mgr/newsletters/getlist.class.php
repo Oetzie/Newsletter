@@ -101,14 +101,9 @@
 			if (null === ($resource = $this->modx->getObject('modResource', $array['resource_id']))) {
 				return false;
 			} else {
-				$array['resource'] = array_merge(array(
-					'resource_url' 		=> $this->modx->makeUrl($resource->id, '', '', 'full'),
-					'resource_name'		=> empty($resource->longtitle) ? $resource->pagetitle : $resource->longtitle
-				), $resource->toArray());
-				
-				$array['resource_name'] = $array['resource']['resource_name'];
-								
-				$array['resource_encode'] = $this->modx->toJSON($array['resource']);
+				$array['resource_url'] = $this->modx->makeUrl($resource->id, '', '', 'full');
+				$array['resource_name'] = empty($resource->longtitle) ? $resource->pagetitle : $resource->longtitle;
+				$array['resource_context'] = $resource->context_key;
 			}
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', null))) {

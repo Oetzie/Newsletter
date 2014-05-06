@@ -100,7 +100,7 @@ Newsletter.grid.Newsletters = function(config) {
         },
         autosave	: true,
         save_action	: 'mgr/newsletters/updateFromGrid',
-        fields		: ['id', 'resource', 'resource_name', 'resource_encode', 'context', 'resource_id', 'groups', 'send', 'active', 'editedon'],
+        fields		: ['id', 'resource', 'resource_id', 'resource_name', 'resource_url', 'resource_context', 'context', 'groups', 'send', 'active', 'editedon'],
         paging		: true,
         pageSize	: MODx.config.default_per_page > 30 ? MODx.config.default_per_page : 30,
         sortBy		: 'id',
@@ -200,12 +200,14 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
 	        xtype		: 'newsletter-window-newsletter-preview',
 	        record		: this.menu.record,
 	        closeAction	:'close',
-	        listeners	: {
-		        'success'	: {
-		        	fn			:this.refresh,
-		        	scope		:this
-		        }
-	         }
+	        modal		: true,
+			buttons		: [{
+	    		text    	: _('ok'),
+	    		handler		: function() {
+	        		this.previewNewsletterWindow.close();
+	    		},
+	    		scope		: this
+			}]
         });
         
         this.previewNewsletterWindow.setValues(this.menu.record);
@@ -397,18 +399,12 @@ Newsletter.window.PreviewNewsletter = function(config) {
         fields		: [{
 			autoEl 		: {
                 tag 		: 'iframe',
-                src			: config.record.resource.resource_url,
+                src			: config.record.resource_url,
                 width		: '100%',
 				height		: '100%',
 				frameBorder	: 0
 			}
-        }],
-        buttons		: [{
-    		text    	: _('ok'),
-    		hanler		: function() {
-        		
-    		}
-		}]
+        }]
     });
     
     Newsletter.window.PreviewNewsletter.superclass.constructor.call(this, config);
@@ -436,7 +432,13 @@ Newsletter.window.SendNewsletter = function(config) {
             name		: 'id'
         }, {
             xtype		: 'hidden',
-            name		: 'resource_encode'
+            name		: 'resource_name'
+        }, {
+            xtype		: 'hidden',
+            name		: 'resource_url'
+        }, {
+            xtype		: 'hidden',
+            name		: 'resource_context'
         }, {
 	        layout		: 'form',
 	        defaults	: {
