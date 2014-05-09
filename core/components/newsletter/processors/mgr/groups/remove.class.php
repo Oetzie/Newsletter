@@ -27,7 +27,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'Groups';
+		public $classKey = 'NewsletterGroups';
 		
 		/**
 		 * @acces public.

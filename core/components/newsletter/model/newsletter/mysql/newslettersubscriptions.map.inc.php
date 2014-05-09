@@ -22,17 +22,17 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	$xpdo_meta_map['Newsletters']= array(
+	$xpdo_meta_map['NewsletterSubscriptions']= array(
 		'package' 	=> 'newsletter',
 		'version' 	=> '1.0',
-		'table' 	=> 'newsletter_newsletters',
+		'table' 	=> 'newsletter_subscriptions',
 		'extends' 	=> 'xPDOSimpleObject',
 		'fields' 	=> array(
 			'id'			=> null,
+			'name'			=> null,
+			'email'			=> null,
 			'context'		=> null,
-			'resource_id'	=> null,
 			'groups'		=> null,
-			'send'			=> null,
 			'active'		=> null,
 			'editedon' 		=> null
 		),
@@ -45,16 +45,22 @@
 				'index' 	=> 'pk',
 				'generated'	=> 'native'
 			),
-			'context' => array(
+			'name' 		=> array(
 				'dbtype' 	=> 'varchar',
 				'precision' => '75',
 				'phptype' 	=> 'string',
 				'null' 		=> false
 			),
-			'resource_id' => array(
-				'dbtype' 	=> 'int',
-				'precision' => '11',
-				'phptype' 	=> 'integer',
+			'email'		=> array(
+				'dbtype' 	=> 'varchar',
+				'precision' => '75',
+				'phptype' 	=> 'string',
+				'null' 		=> false
+			),
+			'context'	=> array(
+				'dbtype' 	=> 'varchar',
+				'precision' => '75',
+				'phptype' 	=> 'string',
 				'null' 		=> false
 			),
 			'groups' 	=> array(
@@ -63,19 +69,12 @@
 				'phptype' 	=> 'string',
 				'null' 		=> false
 			),
-			'send'	=> array(
-				'dbtype' 	=> 'int',
-				'precision' => '1',
-				'phptype' 	=> 'integer',
-				'null' 		=> false,
-				'default'	=> 0
-			),
 			'active'	=> array(
 				'dbtype' 	=> 'int',
 				'precision' => '1',
 				'phptype' 	=> 'integer',
 				'null' 		=> false,
-				'default'	=> 1
+				'default'	=> 0
 			),
 			'editedon' 	=> array(
 				'dbtype' 	=> 'timestamp',

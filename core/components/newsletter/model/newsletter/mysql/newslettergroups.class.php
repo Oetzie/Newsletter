@@ -22,8 +22,8 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	require_once (dirname(dirname(__FILE__)) . '/groups.class.php');
+	require_once (dirname(dirname(__FILE__)) . '/newslettergroups.class.php');
 	
-	class Groups_mysql extends Groups {}
+	class NewsletterGroups_mysql extends NewsletterGroups {}
 	
 ?>

@@ -39,7 +39,7 @@
 	} else if (null === ($mail = $modx->getService('mail', 'mail.modPHPMailer'))) {
 		echo 'Newsletter service modPHPMailer could not be loaded.'.PHP_EOL;
 	} else {
-		foreach ($modx->getCollection('Newsletters', array('active' => 1, 'send' => 2)) as $newsletterKey => $newsletterValue) {
+		foreach ($modx->getCollection('NewsletterNewsletters', array('active' => 1, 'send' => 2)) as $newsletterKey => $newsletterValue) {
 			$newsletterValue->fromArray(array('send' => 1));
 			$newsletterValue->save();
 			
@@ -48,13 +48,19 @@
 				
 				$emails = $modx->newsletter->getEmailFromGroup($newsletterValue['groups'], $newsletterValue['resource']['context_key']);
 				
+				$ch = curl_init();
+    			curl_setopt($ch, CURLOPT_URL, $newsletterValue['resource']['resource_url']);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+				$newsletter = curl_exec($ch);
+				curl_close($ch); 
+					
 				foreach ($emails as $emailKey => $emailValue) {
 					$mail->setHTML(true);
 		
 		    		$mail->set(modMail::MAIL_FROM, 		$modx->getOption('newsletter_email', null, $modx->getOption('emailsender')));
 					$mail->set(modMail::MAIL_FROM_NAME, $modx->getOption('newsletter_name', null, $modx->getOption('site_name')));
 					$mail->set(modMail::MAIL_SUBJECT, 	str_replace(array('%subscribe_name%', '%subscribe_email%'), array($emailValue['name'], $emailValue['email']), $newsletterValue['resource']['resource_name']));
-					$mail->set(modMail::MAIL_BODY, 		str_replace(array('%subscribe_name%', '%subscribe_email%'), array($emailValue['name'], $emailValue['email']), file_get_contents($newsletterValue['resource']['resource_url'])));
+					$mail->set(modMail::MAIL_BODY, 		str_replace(array('%subscribe_name%', '%subscribe_email%'), array($emailValue['name'], $emailValue['email']), $newsletter));
 				
 					$mail->address('to', $emailValue['email']);
 					

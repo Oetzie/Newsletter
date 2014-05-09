@@ -24,8 +24,9 @@
 
 	$xpdo_meta_map = array(
 		'xPDOSimpleObject' => array(
-	    	1 => 'Subscriptions',
-	    	2 => 'Groups'
+			0 => 'NewsletterNewsletters',
+	    	1 => 'NewsletterSubscriptions',
+	    	2 => 'NewsletterGroups'
 	    )
 	);
 	

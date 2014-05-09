@@ -30,7 +30,7 @@
 		public function process(array $scriptProperties = array()) {
 			$this->addHtml('<script type="text/javascript">
 				Ext.onReady(function() {
-					Newsletter.config.groups = '.$this->modx->toJSON($this->getGroups()).';
+					Newsletter.config.groups = '.$this->modx->toJSON($this->newsletter->getGroups()).';
 				});
 			</script>');
 		}
@@ -61,20 +61,6 @@
 		*/
 		public function getTemplateFile() {
 			return $this->newsletter->config['templatesPath'].'home.tpl';
-		}
-		
-		/**
-		 * @acces public.
-		 * @return Array.
-		 */
-		public function getGroups() {
-			$groups = array();
-			
-			foreach ($this->modx->getCollection('Groups') as $key => $value) {
-				$groups[] = $value->toArray();
-			}
-			
-			return $groups;
 		}
 	}
 

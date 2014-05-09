@@ -27,7 +27,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'Newsletters';
+		public $classKey = 'NewsletterNewsletters';
 		
 		/**
 		 * @acces public.
@@ -67,7 +67,7 @@
 		    		$emails = array();
 		    		$groups = explode(',', $this->getProperty('groups'));
 	
-		    		foreach ($this->modx->getCollection('Subscriptions', array('active' => 1, 'context' => $this->getProperty('resource_context'))) as $key => $value) {
+		    		foreach ($this->modx->getCollection('NewsletterSubscriptions', array('active' => 1, 'context' => $this->getProperty('resource_context'))) as $key => $value) {
 		    			$value = $value->toArray();
 		    			
 			    		foreach (explode(',', $value['groups']) as $id) {
@@ -77,13 +77,19 @@
 			    		}
 		    		}
 		    		
+					$ch = curl_init();
+        			curl_setopt($ch, CURLOPT_URL, $this->getProperty('resource_url'));
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+					$newsletter = curl_exec($ch);
+					curl_close($ch); 
+		    		
 		    		foreach ($emails as $key => $value) {
 			    		$mail->setHTML(true);
 			    		
 			    		$mail->set(modMail::MAIL_FROM, 		$this->modx->getOption('newsletter_email', null, $this->modx->getOption('emailsender')));
 						$mail->set(modMail::MAIL_FROM_NAME, $this->modx->getOption('newsletter_name', null, $this->modx->getOption('site_name')));
 						$mail->set(modMail::MAIL_SUBJECT, 	str_replace(array('%subscribe_name%', '%subscribe_email%'), array($value['name'], $value['email']), $this->getProperty('resource_name')));
-						$mail->set(modMail::MAIL_BODY, 		str_replace(array('%subscribe_name%', '%subscribe_email%'), array($value['name'], $value['email']), file_get_contents($this->getProperty('resource_url'))));
+						$mail->set(modMail::MAIL_BODY, 		str_replace(array('%subscribe_name%', '%subscribe_email%'), array($value['name'], $value['email']), $newsletter));
 					
 						$mail->address('to', $value['email']);
 						

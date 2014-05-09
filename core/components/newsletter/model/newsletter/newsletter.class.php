@@ -142,8 +142,8 @@
 					'context'	=> $this->modx->context->key
 				);
 				
-				if (!$subscription = $this->modx->getObject('Subscriptions', $where)) {
-					$subscription = $this->modx->newObject('Subscriptions');
+				if (!$subscription = $this->modx->getObject('NewsletterSubscriptions', $where)) {
+					$subscription = $this->modx->newObject('NewsletterSubscriptions');
 				}
 				
 				$subscription->fromArray(array_merge($values, array(
@@ -177,7 +177,7 @@
 					'context'	=> $this->modx->context->key
 				);
 				
-				if ($subscription = $this->modx->getObject('Subscriptions', $where)) {
+				if ($subscription = $this->modx->getObject('NewsletterSubscriptions', $where)) {
 					if ($subscription->remove()) {
 						if (false !== $redirect) {
 							$this->modx->sendRedirect($this->modx->makeUrl($redirect, '', '', 'full'));
@@ -220,7 +220,7 @@
 				$groups = explode(',', $groups);
 			}
 			
-			foreach ($this->modx->getCollection('Subscriptions', array('active' => 1, 'context' => $context)) as $key => $value) {
+			foreach ($this->modx->getCollection('NewsletterSubscriptions', array('active' => 1, 'context' => $context)) as $key => $value) {
 				$value = $value->toArray();
 
 				foreach (explode(',', $value['groups']) as $id) {
@@ -231,6 +231,20 @@
 			}
 			
 			return $emails;
+		}
+		
+		/**
+		 * @acces public.
+		 * @return Array.
+		 */
+		public function getGroups() {
+			$groups = array();
+			
+			foreach ($this->modx->getCollection('NewsletterGroups') as $key => $value) {
+				$groups[] = $value->toArray();
+			}
+			
+			return $groups;
 		}
 	}
 	

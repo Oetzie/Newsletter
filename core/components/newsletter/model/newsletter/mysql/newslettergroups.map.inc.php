@@ -22,17 +22,15 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	$xpdo_meta_map['Subscriptions']= array(
+	$xpdo_meta_map['NewsletterGroups']= array(
 		'package' 	=> 'newsletter',
 		'version' 	=> '1.0',
-		'table' 	=> 'newsletter_subscriptions',
+		'table' 	=> 'newsletter_groups',
 		'extends' 	=> 'xPDOSimpleObject',
 		'fields' 	=> array(
 			'id'			=> null,
 			'name'			=> null,
-			'email'			=> null,
-			'context'		=> null,
-			'groups'		=> null,
+			'description'	=> null,
 			'active'		=> null,
 			'editedon' 		=> null
 		),
@@ -45,27 +43,15 @@
 				'index' 	=> 'pk',
 				'generated'	=> 'native'
 			),
-			'name' 		=> array(
+			'name' 	=> array(
 				'dbtype' 	=> 'varchar',
 				'precision' => '75',
 				'phptype' 	=> 'string',
 				'null' 		=> false
 			),
-			'email'		=> array(
-				'dbtype' 	=> 'varchar',
-				'precision' => '75',
-				'phptype' 	=> 'string',
-				'null' 		=> false
-			),
-			'context'	=> array(
-				'dbtype' 	=> 'varchar',
-				'precision' => '75',
-				'phptype' 	=> 'string',
-				'null' 		=> false
-			),
-			'groups' 	=> array(
-				'dbtype' 	=> 'varchar',
-				'precision' => '75',
+			'description' => array(
+				'dbtype' 	=> 'text',
+				'precision' => '2048',
 				'phptype' 	=> 'string',
 				'null' 		=> false
 			),
@@ -74,7 +60,7 @@
 				'precision' => '1',
 				'phptype' 	=> 'integer',
 				'null' 		=> false,
-				'default'	=> 0
+				'default'	=> 1
 			),
 			'editedon' 	=> array(
 				'dbtype' 	=> 'timestamp',

@@ -27,7 +27,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'Newsletters';
+		public $classKey = 'NewsletterNewsletters';
 		
 		/**
 		 * @acces public.
