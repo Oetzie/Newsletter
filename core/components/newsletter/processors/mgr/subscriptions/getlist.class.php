@@ -101,7 +101,7 @@
 			
 			$groups = explode(',', $array['groups']);
 			
-			foreach ($this->modx->getCollection('Groups') as $key => $value) {
+			foreach ($this->modx->getCollection('NewsletterGroups') as $key => $value) {
 				$value = $value->toArray();
 				
 				if (in_array($value['id'], $groups)) {
