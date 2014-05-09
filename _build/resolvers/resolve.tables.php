@@ -8,9 +8,9 @@
 	
 	            $manager = $modx->getManager();
 	
-				$manager->createObjectContainer('Newsletters');
-	            $manager->createObjectContainer('Subscriptions');
-	            $manager->createObjectContainer('Groups');
+				$manager->createObjectContainer('NewsletterNewsletters');
+	            $manager->createObjectContainer('NewsletterSubscriptions');
+	            $manager->createObjectContainer('NewsletterGroups');
 	
 	            break;
 	        case xPDOTransport::ACTION_UPGRADE:
