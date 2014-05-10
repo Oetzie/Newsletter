@@ -46,6 +46,10 @@
 		 * @return Mixed.
 		 */
 		public function initialize() {
+			if (null === $this->getProperty('active')) {
+				$this->setProperty('active', 0);
+			}
+			
 			if (null === ($groups = $this->getProperty('groups'))) {
 				$this->setProperty('groups', '');
 			} else {

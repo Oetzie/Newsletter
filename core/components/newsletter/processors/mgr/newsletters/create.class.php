@@ -58,6 +58,10 @@
 		 * @return Mixed.
 		 */
 		public function initialize() {
+			if (null === $this->getProperty('active')) {
+				$this->setProperty('active', 0);
+			}
+			
 			if (null !== ($resource = $this->modx->getObject('modResource', $this->getProperty('resource_id')))) {
 				$this->setProperty('context', $resource->context_key); 
 			}
