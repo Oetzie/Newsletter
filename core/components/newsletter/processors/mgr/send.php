@@ -52,25 +52,33 @@
     			curl_setopt($ch, CURLOPT_URL, $newsletterValue['resource']['resource_url']);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 				$newsletter = curl_exec($ch);
-				curl_close($ch); 
+				curl_close($ch);
+				
+				$emailsCopy = array(); 
 					
 				foreach ($emails as $emailKey => $emailValue) {
-					$mail->setHTML(true);
-		
-		    		$mail->set(modMail::MAIL_FROM, 		$modx->getOption('newsletter_email', null, $modx->getOption('emailsender')));
-					$mail->set(modMail::MAIL_FROM_NAME, $modx->getOption('newsletter_name', null, $modx->getOption('site_name')));
-					$mail->set(modMail::MAIL_SUBJECT, 	str_replace(array('%subscribe_name%', '%subscribe_email%'), array($emailValue['name'], $emailValue['email']), $newsletterValue['resource']['resource_name']));
-					$mail->set(modMail::MAIL_BODY, 		str_replace(array('%subscribe_name%', '%subscribe_email%'), array($emailValue['name'], $emailValue['email']), $newsletter));
-				
-					$mail->address('to', $emailValue['email']);
-					
-					if (!$mail->send()) {
-						echo 'An error occurred while trying to send the email: '.$mail->mailer->ErrorInfo.PHP_EOL;
-						
-						$modx->log(modX::LOG_LEVEL_ERROR, 'An error occurred while trying to send the email: '.$mail->mailer->ErrorInfo);
-					}
+					if (in_array($emailValue['email'], $emailsCopy)) {
+						continue;
+					} else {
+						$mail->setHTML(true);
 			
-					$mail->reset();
+			    		$mail->set(modMail::MAIL_FROM, 		$modx->getOption('newsletter_email', null, $modx->getOption('emailsender')));
+						$mail->set(modMail::MAIL_FROM_NAME, $modx->getOption('newsletter_name', null, $modx->getOption('site_name')));
+						$mail->set(modMail::MAIL_SUBJECT, 	str_replace(array('%subscribe_name%', '%subscribe_email%'), array($emailValue['name'], $emailValue['email']), $newsletterValue['resource']['resource_name']));
+						$mail->set(modMail::MAIL_BODY, 		str_replace(array('%subscribe_name%', '%subscribe_email%'), array($emailValue['name'], $emailValue['email']), $newsletter));
+					
+						$mail->address('to', $emailValue['email']);
+						
+						if (!$mail->send()) {
+							echo 'An error occurred while trying to send the email: '.$mail->mailer->ErrorInfo.PHP_EOL;
+							
+							$modx->log(modX::LOG_LEVEL_ERROR, 'An error occurred while trying to send the email: '.$mail->mailer->ErrorInfo);
+						}
+				
+						$mail->reset();
+						
+						$emailsCopy[] = $emailValue['email'];
+					}
 				}
 				
 				echo 'Newsletter "'.$newsletterValue['resource']['resource_name'].'" send to '.count($emails).' email addresses.'.PHP_EOL;
