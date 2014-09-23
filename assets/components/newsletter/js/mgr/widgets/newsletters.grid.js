@@ -217,7 +217,6 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
 			}]
         });
         
-        this.previewNewsletterWindow.setValues(this.menu.record);
         this.previewNewsletterWindow.show(e.target);
     },
     sendNewsletter: function(btn, e) {
@@ -299,6 +298,7 @@ Newsletter.window.CreateNewsletter = function(config) {
     config = config || {};
     
     Ext.applyIf(config, {
+    	autoHeight	: true,
         title 		: _('newsletter.newsletter_create'),
         url			: Newsletter.config.connectorUrl,
         baseParams	: {
@@ -345,6 +345,7 @@ Newsletter.window.UpdateNewsletter = function(config) {
     config = config || {};
     
     Ext.applyIf(config, {
+    	autoHeight	: true,
         title 		: _('newsletter.newsletter_update'),
         url			: Newsletter.config.connectorUrl,
         baseParams	: {
@@ -401,21 +402,32 @@ Newsletter.window.PreviewNewsletter = function(config) {
         height		: 550,
 		autoHeight	: false,
         formFrame	: false,
+        bodyStyle	: 'padding: 0;',
         fields		: [{
-			autoEl 		: {
-                tag 		: 'iframe',
-                src			: config.record.resource_url,
-                width		: '100%',
-				height		: '100%',
-				frameBorder	: 0
-			}
+        	xtype		: 'container',
+			layout		: {
+            	type		: 'vbox',
+				align		: 'stretch'
+			},
+			width		: '100%',
+			height		: '100%',
+			items		:[{
+				autoEl 		: {
+	                tag 		: 'iframe',
+	                src			: config.record.resource_url,
+	                width		: '100%',
+					height		: '100%',
+					frameBorder	: 0
+				}
+			}]
         }]
     });
     
     Newsletter.window.PreviewNewsletter.superclass.constructor.call(this, config);
 };
 
-Ext.extend(Newsletter.window.PreviewNewsletter, MODx.Window);
+Ext.extend(Newsletter.window.PreviewNewsletter, MODx.Window, {
+});
 
 Ext.reg('newsletter-window-newsletter-preview', Newsletter.window.PreviewNewsletter);
 
@@ -423,6 +435,7 @@ Newsletter.window.SendNewsletter = function(config) {
     config = config || {};
     
     Ext.applyIf(config, {
+    	autoHeight	: true,
         title 		: _('newsletter.newsletter_send'),
         url			: Newsletter.config.connectorUrl,
         baseParams	: {
@@ -454,16 +467,12 @@ Newsletter.window.SendNewsletter = function(config) {
         }, {
 	        xtype		: 'container',
 	        id			: 'newsletter-groups',
-	        listeners	: {
+		    listeners	: {
 		        'render'	: {
 		        	fn 			: this.groups,
 					scope 		: this
 				}
 	        }
-        }, {
-        	xtype		: 'label',
-            html		: '&nbsp;',
-            cls			: 'desc-under'
         }, {
         	xtype		: 'textfield',
         	fieldLabel	: _('newsletter.label_send_to_emails'),
@@ -498,22 +507,31 @@ Ext.extend(Newsletter.window.SendNewsletter, MODx.Window, {
 		Ext.Ajax.request({
 			url		: Newsletter.config.connectorUrl,
 			params	: {
-            	action		: 'mgr/groups/getlist',
-            	context		: this.record.resource_context_key
+            	action		: 'mgr/groups/getlist'
 			},
 			success : function(response, opts) {
-				var response = Ext.decode(response.responseText);
-				
-				Ext.each(response.results, function(record) {
-					Ext.getCmp('newsletter-groups').add({
+				var items = [];
+
+				Ext.each(Ext.decode(response.responseText).results, function(record) {
+					items.push({
 				        xtype		: 'checkbox',
-			            boxLabel	: record.name,
+			            boxLabel	: record.name + (0 == parseInt(Newsletter.config.context) ? '' : ' (' + record.context + ')'),
 			            description	: MODx.expandHelp ? '' : record.description,
 			            name		: 'groups[]',
 			            inputValue	: record.id,
 			            checked		: -1 != value.split(',').indexOf(record.id.toString()) ? true : false
 			        });
 				});
+
+				var cmp = Ext.getCmp('newsletter-groups');
+				
+				cmp.add({
+		        	xtype		: 'checkboxgroup',
+		        	columns		: 2,
+		        	items		: items
+		        });
+		        
+		        cmp.doLayout();
 			}
 		});
 	}

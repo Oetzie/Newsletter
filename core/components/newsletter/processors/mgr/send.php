@@ -22,10 +22,6 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 	 
-	require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))).'/config.core.php';
-	require_once MODX_CORE_PATH.'config/'.MODX_CONFIG_KEY.'.inc.php';
-	require_once MODX_CONNECTORS_PATH.'index.php';
-
 	require_once $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'model/newsletter/newsletter.class.php';
 	
 	$modx->newsletter = new Newsletter($modx);

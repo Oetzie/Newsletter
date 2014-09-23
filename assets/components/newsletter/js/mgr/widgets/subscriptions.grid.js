@@ -189,8 +189,9 @@ Ext.reg('newsletter-grid-subscriptions', Newsletter.grid.Subscriptions);
 
 Newsletter.window.CreateSubscription = function(config) {
     config = config || {};
-    
+
     Ext.applyIf(config, {
+    	autoHeight	: true,
         title 		: _('newsletter.subscription_create'),
         url			: Newsletter.config.connectorUrl,
         baseParams	: {
@@ -257,16 +258,12 @@ Newsletter.window.CreateSubscription = function(config) {
         }, {
 	        xtype		: 'container',
 	        id			: 'newsletter-groups',
-	        listeners	: {
+		    listeners	: {
 		        'render'	: {
 		        	fn 			: this.groups,
 					scope 		: this
 				}
 	        }
-        }, {
-        	xtype		: 'label',
-            html		: '&nbsp;',
-            cls			: 'desc-under'
         }]
     });
     
@@ -281,10 +278,10 @@ Ext.extend(Newsletter.window.CreateSubscription, MODx.Window, {
             	action		: 'mgr/groups/getlist'
 			},
 			success : function(response, opts) {
-				var response = Ext.decode(response.responseText);
-				
-				Ext.each(response.results, function(record) {
-					Ext.getCmp('newsletter-groups').add({
+				var items = [];
+
+				Ext.each(Ext.decode(response.responseText).results, function(record) {
+					items.push({
 				        xtype		: 'checkbox',
 			            boxLabel	: record.name + (0 == parseInt(Newsletter.config.context) ? '' : ' (' + record.context + ')'),
 			            description	: MODx.expandHelp ? '' : record.description,
@@ -292,6 +289,16 @@ Ext.extend(Newsletter.window.CreateSubscription, MODx.Window, {
 			            inputValue	: record.id
 			        });
 				});
+
+				var cmp = Ext.getCmp('newsletter-groups');
+				
+				cmp.add({
+		        	xtype		: 'checkboxgroup',
+		        	columns		: 2,
+		        	items		: items
+		        });
+		        
+		        cmp.doLayout();
 			}
 		});
 	}
@@ -303,6 +310,7 @@ Newsletter.window.UpdateSubscription = function(config) {
     config = config || {};
     
     Ext.applyIf(config, {
+    	autoHeight	: true,
         title 		: _('newsletter.subscription_update'),
         url			: Newsletter.config.connectorUrl,
         baseParams	: {
@@ -371,16 +379,12 @@ Newsletter.window.UpdateSubscription = function(config) {
         }, {
 	        xtype		: 'container',
 	        id			: 'newsletter-groups',
-	        listeners	: {
+		    listeners	: {
 		        'render'	: {
 		        	fn 			: this.groups,
 					scope 		: this
 				}
 	        }
-        }, {
-        	xtype		: 'label',
-            html		: '&nbsp;',
-            cls			: 'desc-under'
         }]
     });
     
@@ -397,10 +401,10 @@ Ext.extend(Newsletter.window.UpdateSubscription, MODx.Window, {
             	action		: 'mgr/groups/getlist'
 			},
 			success : function(response, opts) {
-				var response = Ext.decode(response.responseText);
-				
-				Ext.each(response.results, function(record) {
-					Ext.getCmp('newsletter-groups').add({
+				var items = [];
+
+				Ext.each(Ext.decode(response.responseText).results, function(record) {
+					items.push({
 				        xtype		: 'checkbox',
 			            boxLabel	: record.name + (0 == parseInt(Newsletter.config.context) ? '' : ' (' + record.context + ')'),
 			            description	: MODx.expandHelp ? '' : record.description,
@@ -409,6 +413,16 @@ Ext.extend(Newsletter.window.UpdateSubscription, MODx.Window, {
 			            checked		: -1 != value.split(',').indexOf(record.id.toString()) ? true : false
 			        });
 				});
+
+				var cmp = Ext.getCmp('newsletter-groups');
+				
+				cmp.add({
+		        	xtype		: 'checkboxgroup',
+		        	columns		: 2,
+		        	items		: items
+		        });
+		        
+		        cmp.doLayout();
 			}
 		});
 	}

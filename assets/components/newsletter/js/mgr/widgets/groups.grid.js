@@ -212,6 +212,7 @@ Newsletter.window.CreateGroup = function(config) {
     config = config || {};
     
     Ext.applyIf(config, {
+    	autoHeight	: true,
         title 		: _('newsletter.group_create'),
         url			: Newsletter.config.connectorUrl,
         baseParams	: {
@@ -301,6 +302,7 @@ Newsletter.window.UpdateGroup = function(config) {
     config = config || {};
     
     Ext.applyIf(config, {
+    	autoHeight	: true,
         title 		: _('newsletter.group_update'),
         url			: Newsletter.config.connectorUrl,
         baseParams	: {
