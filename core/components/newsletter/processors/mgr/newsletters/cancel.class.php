@@ -22,8 +22,37 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	require_once $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'/processors/mgr/send.php';
+	class NewslettersCancelProcessor extends modObjectUpdateProcessor {
+		/**
+		 * @acces public.
+		 * @var String.
+		 */
+		public $classKey = 'NewsletterNewsletters';
+		
+		/**
+		 * @acces public.
+		 * @var Array.
+		 */
+		public $languageTopics = array('newsletter:default');
+		
+		/**
+		 * @acces public.
+		 * @var String.
+		 */
+		public $objectType = 'newsletter.newsletters';
+		
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+		public function initialize() {
+			$this->setProperty('send', 0);
+			$this->setProperty('groups', '');
 
-	return;
+			return parent::initialize();
+		}
+	}
+	
+	return 'NewslettersCancelProcessor';
 	
 ?>

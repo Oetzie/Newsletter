@@ -22,8 +22,38 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	require_once $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'/processors/mgr/send.php';
+	class SubscriptionsExportProcessor extends modObjectExportProcessor {
+		/**
+		 * @acces public.
+		 * @var String.
+		 */
+		public $classKey = 'NewsletterSubscriptions';
+		
+		/**
+		 * @acces public.
+		 * @var Array.
+		 */
+		public $languageTopics = array('newsletter:default');
+		
+		/**
+		 * @acces public.
+		 * @var String.
+		 */
+		public $defaultSortField = 'email';
+		
+		/**
+		 * @acces public.
+		 * @var String.
+		 */
+		public $defaultSortDirection = 'ASC';
+		
+		/**
+		 * @acces public.
+		 * @var String.
+		 */
+		public $objectType = 'newsletter.subscriptions';
+	}
 
-	return;
+	return 'SubscriptionsExportProcessor';
 	
 ?>

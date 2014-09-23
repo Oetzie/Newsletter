@@ -61,7 +61,8 @@
 				'cssUrl' 				=> $assetsUrl.'css/',
 				'assetsUrl' 			=> $assetsUrl,
 				'connectorUrl'			=> $assetsUrl.'connector.php',
-				'helpurl'				=> 'newsletter'
+				'helpurl'				=> 'newsletter',
+				'context'				=> 2 == $this->modx->getCount('modContext') ? 0 : 1
 			), $config);	
 		
 			$this->modx->addPackage('newsletter', $this->config['modelPath']);
@@ -137,28 +138,26 @@
 		 */
 		public function subscribe($values, $redirect = false, $groups = null) {
 			if (array_key_exists('email', $values) && !empty($values['email'])) {
-				$where = array(
-					'email' 	=> $values['email'],
-					'context'	=> $this->modx->context->key
+				$critera = array(
+					'email' => $values['email']
 				);
 				
-				if (!$subscription = $this->modx->getObject('NewsletterSubscriptions', $where)) {
+				if (!$subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea)) {
 					$subscription = $this->modx->newObject('NewsletterSubscriptions');
 				}
 				
 				$subscription->fromArray(array_merge($values, array(
 					'active'	=> 1,
-					'groups' 	=> array_key_exists('groups', $values) ? implode(',', $values['groups']) : $groups,
-					'context'	=> $this->modx->resource->context_key
+					'groups' 	=> array_key_exists('groups', $values) ? implode(',', $values['groups']) : $groups
 				)));
 				
-				if ($subscription->save()) {
-					if (false !== $redirect) {
-						$this->modx->sendRedirect($this->modx->makeUrl($redirect, '', '', 'full'));
-					}
-					
-					return true;
+				$subscription->save();
+				
+				if (false !== $redirect) {
+					$this->modx->sendRedirect($this->modx->makeUrl($redirect, '', '', 'full'));
 				}
+					
+				return true;
 			}
 			
 			return false;
@@ -172,19 +171,18 @@
 		 */
 		public function unsubscribe($values, $redirect = false) {
 			if (array_key_exists('email', $values) && !empty($values['email'])) {
-				$where = array(
-					'email' 	=> $values['email'],
-					'context'	=> $this->modx->context->key
+				$critera = array(
+					'email' => $values['email']
 				);
 				
-				if ($subscription = $this->modx->getObject('NewsletterSubscriptions', $where)) {
-					if ($subscription->remove()) {
-						if (false !== $redirect) {
-							$this->modx->sendRedirect($this->modx->makeUrl($redirect, '', '', 'full'));
-						}
+				if ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea)) {
+					$subscription->remove();
 					
-						return true;
+					if (false !== $redirect) {
+						$this->modx->sendRedirect($this->modx->makeUrl($redirect, '', '', 'full'));
 					}
+					
+					return true;
 				}
 			}
 			
@@ -193,58 +191,43 @@
 		
 		/**
 		 * @acces public.
-		 * @param Integer $id.
-		 * @return Array|Boolean.
+		 * @param String $groups.
+		 * @return Integer.
 		 */
-		public function getResource($id) {
-			if (null !== ($resource = $this->modx->getObject('modResource', $id))) {
-				return array_merge(array(
-					'resource_url' 		=> $this->modx->makeUrl($resource->id, '', '', 'full'),
-					'resource_name'		=> empty($resource->longtitle) ? $resource->pagetitle : $resource->longtitle
-				), $resource->toArray());
-			}
+		public function getCount($groups) {
+			$count = 0;
 			
-			return false;
-		}
-		
-		/**
-		 * @acces public.
-		 * @param String|Array $groups.
-		 * @param Strubg $context.
-		 * @return Array.
-		 */
-		public function getEmailFromGroup($groups, $context) {
-			$emails = array();
-			
-			if (is_string($groups)) {
+			if (false !== $groups) {
 				$groups = explode(',', $groups);
-			}
-			
-			foreach ($this->modx->getCollection('NewsletterSubscriptions', array('active' => 1, 'context' => $context)) as $key => $value) {
-				$value = $value->toArray();
-
-				foreach (explode(',', $value['groups']) as $id) {
-					if (in_array($id, $groups) && !array_key_exists($value['email'], $emails)) {
-						$emails[$value['email']] = $value;
+				
+				$critera = array(
+					'context' => $this->modx->resource->context_key
+				);
+				
+				foreach ($this->modx->getCollection('NewsletterGroups', $critera) as $key => $value) {
+					if (!in_array($value->id, $groups)) {
+						unset($groups[array_search($value->id)]);
 					}
 				}
+			} else {
+				$groups = array();
 			}
 			
-			return $emails;
-		}
-		
-		/**
-		 * @acces public.
-		 * @return Array.
-		 */
-		public function getGroups() {
-			$groups = array();
-			
-			foreach ($this->modx->getCollection('NewsletterGroups') as $key => $value) {
-				$groups[] = $value->toArray();
+			foreach ($this->modx->getCollection('NewsletterSubscriptions') as $key => $value) {
+				$sCount = 0 == count($groups) ? true : false;
+
+				foreach (explode(',', $value->groups) as $groupKey => $groupValue) {
+					if (in_array($groupValue, $groups)) {
+						$sCount = true;
+					}
+				}
+				
+				if ($sCount) {
+					$count++;
+				}
 			}
-			
-			return $groups;
+				
+			return $count;
 		}
 	}
 	

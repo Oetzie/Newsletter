@@ -29,11 +29,10 @@
 		'extends' 	=> 'xPDOSimpleObject',
 		'fields' 	=> array(
 			'id'			=> null,
-			'context'		=> null,
 			'resource_id'	=> null,
 			'groups'		=> null,
+			'emails'		=> null,
 			'send'			=> null,
-			'active'		=> null,
 			'editedon' 		=> null
 		),
 		'fieldMeta'	=> array(
@@ -44,12 +43,6 @@
 				'null' 		=> false,
 				'index' 	=> 'pk',
 				'generated'	=> 'native'
-			),
-			'context' => array(
-				'dbtype' 	=> 'varchar',
-				'precision' => '75',
-				'phptype' 	=> 'string',
-				'null' 		=> false
 			),
 			'resource_id' => array(
 				'dbtype' 	=> 'int',
@@ -63,19 +56,18 @@
 				'phptype' 	=> 'string',
 				'null' 		=> false
 			),
+			'emails' => array(
+				'dbtype' 	=> 'text',
+				'precision' => '2048',
+				'phptype' 	=> 'string',
+				'null' 		=> false
+			),
 			'send'	=> array(
 				'dbtype' 	=> 'int',
 				'precision' => '1',
 				'phptype' 	=> 'integer',
 				'null' 		=> false,
 				'default'	=> 0
-			),
-			'active'	=> array(
-				'dbtype' 	=> 'int',
-				'precision' => '1',
-				'phptype' 	=> 'integer',
-				'null' 		=> false,
-				'default'	=> 1
 			),
 			'editedon' 	=> array(
 				'dbtype' 	=> 'timestamp',
@@ -95,6 +87,15 @@
 						'null' 		=> false,
 					)
 				)
+			)
+		),
+		'aggregates' => array(
+			'modResource'	=> array(
+				'local'			=> 'resource_id',
+				'class' 		=> 'modResource',
+				'foreign' 		=> 'id',
+				'owner' 		=> 'foreign',
+				'cardinality' 	=> 'one'
 			)
 		)
 	);

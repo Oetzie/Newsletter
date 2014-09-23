@@ -34,7 +34,7 @@
 	$_lang['setting_newsletter_name']						= 'Newsletter sender name';
 	$_lang['setting_newsletter_name_desc']					= 'The name where the newsletter is sent of.';
 	
-	$_lang['newslettercrobjob_snippet_hash_desc']			= 'This hash get send along with the cron job so that the newsletter cant be send by random people. Without this hash automatically send newsletters is not working.';
+	$_lang['newslettercronjob_snippet_hash_desc']			= 'This hash get send along with the cron job so that the newsletter cant be send by random people. Without this hash automatically send newsletters is not working.';
 	
 	$_lang['newsletter.newsletter']							= 'Newsletter';
 	$_lang['newsletter.newsletters']						= 'Newsletters';
@@ -46,7 +46,8 @@
 	$_lang['newsletter.newsletter_remove_confirm']			= 'Are you sure you want to delete this newsletter?';
 	$_lang['newsletter.newsletter_preview']					= 'View newsletter';
 	$_lang['newsletter.newsletter_send']					= 'Send newsletter';
-	$_lang['newsletter.newsletter_send_confirm']			= 'Are you sure you want to delete this newsletter? Check the newsletter well before you sent him, after sending you can only change the web version and will all members receive it with possible errors.';
+	$_lang['newsletter.newsletter_cancel']					= 'Cancel newsletter';
+	$_lang['newsletter.newsletter_cancel_confirm']			= 'Are you sure you want to cancel this newsletter?';
 	
 	$_lang['newsletter.subscription']						= 'Subscription';
 	$_lang['newsletter.subscriptions']						= 'Subscriptions';
@@ -64,8 +65,8 @@
 	$_lang['newsletter.group_remove']						= 'Delete group';
 	$_lang['newsletter.group_remove_confirm']				= 'Are you sure you want to delete this group? This will also delete all subscriptions of this group.';
 	
-	$_lang['newsletter.label_resource']						= 'Document ID';
-	$_lang['newsletter.label_resource_desc']				= 'Select the ID of the document that serves as a newsletter, these can be found on the left.';
+	$_lang['newsletter.label_resource']						= 'Resource';
+	$_lang['newsletter.label_resource_desc']				= 'Select the resource that serves as a newsletter.';
 	$_lang['newsletter.label_email']						= 'E-mail address';
 	$_lang['newsletter.label_email_desc']					= 'The e-mail address of the subscription.';
 	$_lang['newsletter.label_name']							= 'Name';
@@ -79,15 +80,23 @@
 	$_lang['newsletter.label_active_desc']					= '';
 	$_lang['newsletter.label_groups']						= 'Group(s)';
 	$_lang['newsletter.label_groups_desc']					= 'The group(s) of the subscription.';
+	$_lang['newsletter.label_published']					= 'Published';
+	$_lang['newsletter.label_published_desc']				= '';
 	$_lang['newsletter.label_send']							= 'Send';
 	$_lang['newsletter.label_send_desc']					= '';
-	$_lang['newsletter.label_send_to']						= 'Send to';
-	$_lang['newsletter.label_send_to_desc']					= 'The group(s) where the newsletter should be send to.';
-	$_lang['newsletter.label_timing']						= 'Timing';
-	$_lang['newsletter.label_timing_desc']					= 'Sending newsletters is a tough process, this may take tens of seconds or even minutes (depending on the number of subscriptions). Therefore, the newsletters are sent automatically every night at 00:00, check this option to send the newsletter immediately.';
-	
+	$_lang['newsletter.label_send_to_groups']				= 'Send to group(s)';
+	$_lang['newsletter.label_send_to_groups_desc']			= 'The group(s) where the newsletter should be send to.';
+	$_lang['newsletter.label_send_to_emails']				= 'And/or to e-mail address(es)';
+	$_lang['newsletter.label_send_to_emails_desc']			= 'The e-mail address(es) where the newsletter should be send to, separate email addresses with a comma.';
+	$_lang['newsletter.label_send_as']						= 'Send as';
+	$_lang['newsletter.label_send_as_desc']					= 'A test newsletter will be send immediately, a permanent newsletter wil be send automatic tonight at 00:00.';
+
 	$_lang['newsletter.filter_context']						= 'Filter on context...';
 	$_lang['newsletter.pending']							= 'Pending';
-	$_lang['newsletter.resource_does_not_exists']			= 'There is no document with this ID.';
+	$_lang['newsletter.test']								= 'Test newsletter';
+	$_lang['newsletter.permanent']							= 'Permanent newsletter';
+	$_lang['newsletter.resource_does_not_exists']			= 'This resource does not exists or is deleted.';
+	$_lang['newsletter.newsletter_send_succes']				= 'Success!';
+	$_lang['newsletter.newsletter_send_succes_desc']		= 'The newsletter is send successful and saved.';
 	
 ?>

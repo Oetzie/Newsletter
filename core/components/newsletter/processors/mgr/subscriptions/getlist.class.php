@@ -73,12 +73,6 @@
 		 * @return Object.
 		 */
 		public function prepareQueryBeforeCount(xPDOQuery $c) {
-			$context = $this->getProperty('context');
-			
-			if (!empty($context)) {
-				$c->where(array('context' => $context));
-			}
-			
 			$query = $this->getProperty('query');
 			
 			if (!empty($query)) {
@@ -97,19 +91,17 @@
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
-			$array = $object->toArray();
-			
-			$groups = explode(',', $array['groups']);
-			
+			$groups = explode(',', $object->groups);
+
 			foreach ($this->modx->getCollection('NewsletterGroups') as $key => $value) {
-				$value = $value->toArray();
-				
-				if (in_array($value['id'], $groups)) {
-					$groups[array_search($value['id'], $groups)] = $value['name'];
+				if (in_array($value->id, $groups)) {
+					$groups[array_search($value->id, $groups)] = $value->name.(2 == $this->modx->getCount('modContext') ? '' : ' ('.$value->context.')');
 				}
 			}
 			
-			$array['group_names'] = implode(', ', $groups);
+			$array = array_merge($object->toArray(), array(
+				'group_names' => implode(', ', $groups)
+			));
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
 				$array['editedon'] = '';

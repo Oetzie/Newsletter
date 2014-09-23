@@ -1,5 +1,5 @@
 <p class="info">Velden gemarkeerd met een sterretje zijn verplicht.</p>
-<form action="" method="post" name="contact">
+<form action="" method="post" name="newsletter">
 	<div class="form-element">
 		<label for="name">Naam *</label>
 		<div class="form-element-container">

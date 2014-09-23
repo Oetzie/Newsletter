@@ -25,18 +25,6 @@
 	class NewsletterHomeManagerController extends NewsletterManagerController {
 		/**
 		 * @acces public.
-		 * @param Array $scriptProperties.
-		 */
-		public function process(array $scriptProperties = array()) {
-			$this->addHtml('<script type="text/javascript">
-				Ext.onReady(function() {
-					Newsletter.config.groups = '.$this->modx->toJSON($this->newsletter->getGroups()).';
-				});
-			</script>');
-		}
-		
-		/**
-		 * @acces public.
 		 */
 		public function loadCustomCssJs() {
 			$this->addCss($this->newsletter->config['cssUrl'].'mgr/newsletter.css');

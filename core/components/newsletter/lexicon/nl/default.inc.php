@@ -46,7 +46,8 @@
 	$_lang['newsletter.newsletter_remove_confirm']			= 'Weet je zeker dat je deze nieuwsbrief wilt verwijderen?';
 	$_lang['newsletter.newsletter_preview']					= 'Nieuwsbrief bekijken';
 	$_lang['newsletter.newsletter_send']					= 'Nieuwsbrief versturen';
-	$_lang['newsletter.newsletter_send_confirm']			= 'Weet je zeker dat je de nieuwsbrief wilt versturen? Controleer de nieuwsbrief goed voordat je hem verstuurd, na het versturen kun je alleen nog de webversie wijzigen en verschijnt hij bij alle ingeschreven leden in de e-mail inbox met eventuele fouten.';
+	$_lang['newsletter.newsletter_cancel']					= 'Nieuwsbrief annuleren';
+	$_lang['newsletter.newsletter_cancel_confirm']			= 'Weet je zeker dat je deze nieuwsbrief wilt annuleren?';
 	
 	$_lang['newsletter.subscription']						= 'Inschrijving';
 	$_lang['newsletter.subscriptions']						= 'Inschrijvingen';
@@ -64,8 +65,8 @@
 	$_lang['newsletter.group_remove']						= 'Groep verwijderen';
 	$_lang['newsletter.group_remove_confirm']				= 'Weet je zeker dat je deze groep wilt verwijderen? Dit verwijderd ook alle inschrijvingen van deze groep.';
 	
-	$_lang['newsletter.label_resource']						= 'Document ID';
-	$_lang['newsletter.label_resource_desc']				= 'Select de ID van het document die als nieuwsbrief dient, deze vind je terug aan de linkerkant.';
+	$_lang['newsletter.label_resource']						= 'Document';
+	$_lang['newsletter.label_resource_desc']				= 'Selecteer het document die als nieuwsbrief dient.';
 	$_lang['newsletter.label_email']						= 'E-mailadres';
 	$_lang['newsletter.label_email_desc']					= 'Het e-mailadres van de inschrijving.';
 	$_lang['newsletter.label_name']							= 'Naam';
@@ -79,15 +80,23 @@
 	$_lang['newsletter.label_active_desc']					= '';
 	$_lang['newsletter.label_groups']						= 'Groep(en)';
 	$_lang['newsletter.label_groups_desc']					= 'De groep(en) van de inschrijving.';
+	$_lang['newsletter.label_published']					= 'Gepubliceerd';
+	$_lang['newsletter.label_published_desc']				= '';
 	$_lang['newsletter.label_send']							= 'Verstuurd';
 	$_lang['newsletter.label_send_desc']					= '';
-	$_lang['newsletter.label_send_to']						= 'Versturen naar';
-	$_lang['newsletter.label_send_to_desc']					= 'De groep(en) waar de nieuwsbrief naar gestuurd moet worden.';
-	$_lang['newsletter.label_timing']						= 'Tijdstip';
-	$_lang['newsletter.label_timing_desc']					= 'Het versturen van nieuwsbrieven is een zwaar proces, dit kan tientallen seconden duren of zelfs wel minuten (afhankelijk van het aantal inschrijvingen). Daarom worden de nieuwsbrieven iedere nacht om 00:00 automatisch verstuurd, vink deze optie aan om de nieuwsbrief nu meteen te versturen.';
-	
+	$_lang['newsletter.label_send_to_groups']				= 'Versturen naar de groep(en)';
+	$_lang['newsletter.label_send_to_groups_desc']			= 'De groep(en) waar de nieuwsbrief naar gestuurd moet worden.';
+	$_lang['newsletter.label_send_to_emails']				= 'En/of naar de e-mailadres(sen)';
+	$_lang['newsletter.label_send_to_emails_desc']			= 'De e-mailadressen(en) waar de nieuwsbrief naar gestuurd moet worden, e-mailadressen scheiden met een komma.';
+	$_lang['newsletter.label_send_as']						= 'Versturen als';
+	$_lang['newsletter.label_send_as_desc']					= 'Een test nieuwsbrief wordt gelijk verstuurd, een definitieve nieuwsbrief word vannacht om 00:00 automatisch verstuurd.';
+
 	$_lang['newsletter.filter_context']						= 'Filter op context...';
 	$_lang['newsletter.pending']							= 'In afwachting';
-	$_lang['newsletter.resource_does_not_exists']			= 'Er bestaat geen document met dit ID.';
+	$_lang['newsletter.test']								= 'Test nieuwsbrief';
+	$_lang['newsletter.permanent']							= 'Definitieve nieuwsbrief';
+	$_lang['newsletter.resource_does_not_exists']			= 'Dit document bestaat niet of is verwijderd.';
+	$_lang['newsletter.newsletter_send_succes']				= 'Succes!';
+	$_lang['newsletter.newsletter_send_succes_desc']		= 'De nieuwsbrief is succesvol verstuurd en opgeslagen.';
 	
 ?>

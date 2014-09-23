@@ -46,27 +46,16 @@
 		 * @return Mixed.
 		 */
 		public function beforeSave() {
-			if (null === ($resource = $this->modx->getObject('modResource', $this->getProperty('resource_id')))) {
+			$criterea = array(
+				'id' 		=> $this->getProperty('resource_id'),
+				'deleted' 	=> 0
+			);
+			
+			if (null === ($resource = $this->modx->getObject('modResource', $criterea))) {
 				$this->addFieldError('resource_id', $this->modx->lexicon('newsletter.resource_does_not_exists'));
 			}
 			
 			return parent::beforeSave();
-		}
-		
-		/**
-		 * @acces public.
-		 * @return Mixed.
-		 */
-		public function initialize() {
-			if (null === $this->getProperty('active')) {
-				$this->setProperty('active', 0);
-			}
-			
-			if (null !== ($resource = $this->modx->getObject('modResource', $this->getProperty('resource_id')))) {
-				$this->setProperty('context', $resource->context_key); 
-			}
-			
-			return parent::initialize();
 		}
 	}
 	

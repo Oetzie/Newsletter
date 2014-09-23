@@ -5,6 +5,19 @@ Newsletter.grid.Groups = function(config) {
         text	: _('newsletter.group_create'),
         handler	: this.createGroup
 	}, '->', {
+    	xtype		: 'modx-combo-context',
+    	hidden		: 0 == parseInt(Newsletter.config.context) ? true : false,
+    	name		: 'newsletter-filter-context-groups',
+        id			: 'newsletter-filter-context-groups',
+        emptyText	: _('newsletter.filter_context'),
+        listeners	: {
+        	'select'	: {
+	            	fn			: this.filterContext,
+	            	scope		: this   
+		    }
+		},
+		width: 250
+    }, '-', {
         xtype		: 'textfield',
         name 		: 'newsletter-filter-search-groups',
         id			: 'newsletter-filter-search-groups',
@@ -74,6 +87,12 @@ Newsletter.grid.Groups = function(config) {
             editable	: false,
             fixed		: true,
 			width		: 200
+        }, {
+            header		: _('newsletter.label_context'),
+            dataIndex	: 'context',
+            sortable	: true,
+            hidden		: true,
+            editable	: false
         }]
     });
     
@@ -86,22 +105,32 @@ Newsletter.grid.Groups = function(config) {
         },
         autosave	: true,
         save_action	: 'mgr/groups/updateFromGrid',
-        fields		: ['id', 'name', 'description', 'active', 'editedon'],
+        fields		: ['id', 'context', 'name', 'description', 'active', 'editedon'],
         paging		: true,
         pageSize	: MODx.config.default_per_page > 30 ? MODx.config.default_per_page : 30,
-        sortBy		: 'id'
+        sortBy		: 'id',
+        grouping	: 0 == parseInt(Newsletter.config.context) ? false : true,
+        groupBy		: 'context',
+        singleText	: _('newsletter.group'),
+        pluralText	: _('newsletter.groups')
     });
     
     Newsletter.grid.Groups.superclass.constructor.call(this, config);
 };
 
 Ext.extend(Newsletter.grid.Groups, MODx.grid.Grid, {
-	filterSearch: function(tf, nv, ov) {
+	filterContext: function(tf, nv, ov) {
+        this.getStore().baseParams.context = tf.getValue();
+        this.getBottomToolbar().changePage(1);
+    },
+    filterSearch: function(tf, nv, ov) {
         this.getStore().baseParams.query = tf.getValue();
         this.getBottomToolbar().changePage(1);
     },
     clearFilter: function() {
+    	this.getStore().baseParams.context = '';
 	    this.getStore().baseParams.query = '';
+	    Ext.getCmp('newsletter-filter-context-groups').reset();
 	    Ext.getCmp('newsletter-filter-search-groups').reset();
         this.getBottomToolbar().changePage(1);
     },
@@ -239,7 +268,26 @@ Newsletter.window.CreateGroup = function(config) {
         	xtype		: MODx.expandHelp ? 'label' : 'hidden',
             html		: _('newsletter.label_description_desc'),
             cls			: 'desc-under'
-        }]
+        }, {
+	    	layout		: 'form',
+	    	hidden		: 0 == parseInt(Newsletter.config.context) ? true : false,
+			defaults 	: {
+				labelSeparator : ''	
+			},
+	    	items		: [{
+	        	xtype		: 'modx-combo-context',
+	        	fieldLabel	: _('newsletter.label_context'),
+	        	description	: MODx.expandHelp ? '' : _('newsletter.label_context_desc'),
+	        	name		: 'context',
+	        	anchor		: '100%',
+	        	allowBlank	: false,
+	        	value		: MODx.config.default_context
+	        }, {
+	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+	        	html		: _('newsletter.label_context_desc'),
+	        	cls			: 'desc-under'
+	        }]
+	    }]
     });
     
     Newsletter.window.CreateGroup.superclass.constructor.call(this, config);
@@ -312,7 +360,25 @@ Newsletter.window.UpdateGroup = function(config) {
         	xtype		: MODx.expandHelp ? 'label' : 'hidden',
             html		: _('newsletter.label_description_desc'),
             cls			: 'desc-under'
-        }]
+        }, {
+	    	layout		: 'form',
+	    	hidden		: 0 == parseInt(Newsletter.config.context) ? true : false,
+			defaults 	: {
+				labelSeparator : ''	
+			},
+	    	items		: [{
+	        	xtype		: 'modx-combo-context',
+	        	fieldLabel	: _('newsletter.label_context'),
+	        	description	: MODx.expandHelp ? '' : _('newsletter.label_context_desc'),
+	        	name		: 'context',
+	        	anchor		: '100%',
+	        	allowBlank	: false
+	        }, {
+	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+	        	html		: _('newsletter.label_context_desc'),
+	        	cls			: 'desc-under'
+			}]
+	    }]
     });
     
     Newsletter.window.UpdateGroup.superclass.constructor.call(this, config);

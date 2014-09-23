@@ -31,7 +31,6 @@
 			'id'			=> null,
 			'name'			=> null,
 			'email'			=> null,
-			'context'		=> null,
 			'groups'		=> null,
 			'active'		=> null,
 			'editedon' 		=> null
@@ -52,12 +51,6 @@
 				'null' 		=> false
 			),
 			'email'		=> array(
-				'dbtype' 	=> 'varchar',
-				'precision' => '75',
-				'phptype' 	=> 'string',
-				'null' 		=> false
-			),
-			'context'	=> array(
 				'dbtype' 	=> 'varchar',
 				'precision' => '75',
 				'phptype' 	=> 'string',

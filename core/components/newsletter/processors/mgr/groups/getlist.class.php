@@ -73,6 +73,12 @@
 		 * @return Object.
 		 */
 		public function prepareQueryBeforeCount(xPDOQuery $c) {
+			$context = $this->getProperty('context');
+			
+			if (!empty($context)) {
+				$c->where(array('context' => $context));
+			}
+			
 			$query = $this->getProperty('query');
 			
 			if (!empty($query)) {

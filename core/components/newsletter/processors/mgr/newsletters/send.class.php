@@ -46,12 +46,18 @@
 		 * @return Mixed.
 		 */
 		public function initialize() {
-			$this->setProperty('send', 0 == count($this->getProperty('groups')) ? 0 : 2);
+			$groups = array_filter(array_map('trim', (array) $this->getProperty('groups')));
 			
-			if (null === ($groups = $this->getProperty('groups'))) {
-				$this->setProperty('groups', '');
+			$this->setProperty('groups', implode(',', $groups));
+			
+			$emails = array_filter(array_map('trim', explode(',', $this->getProperty('emails'))));
+			
+			$this->setProperty('emails', implode(',', $emails));
+
+			if (0 == $this->getProperty('type')) {
+				$this->setProperty('send', 0);
 			} else {
-				$this->setProperty('groups', implode(',', $groups));
+				$this->setProperty('send', 0 == count($groups) && 0 == count($emails) ? 0 : 2);
 			}
 
 			return parent::initialize();
@@ -62,22 +68,28 @@
 		 * @return Mixed.
 		 */
 	    public function afterSave() {
-	    	if (null !== ($timing = $this->getProperty('timing'))) {
-	    		if (null !== ($mail = $this->modx->getService('mail', 'mail.modPHPMailer'))) {
-		    		$emails = array();
-		    		$groups = explode(',', $this->getProperty('groups'));
-	
-		    		foreach ($this->modx->getCollection('NewsletterSubscriptions', array('active' => 1, 'context' => $this->getProperty('resource_context'))) as $key => $value) {
-		    			$value = $value->toArray();
-		    			
-			    		foreach (explode(',', $value['groups']) as $id) {
-				    		if (in_array($id, $groups) && !array_key_exists($value['email'], $emails)) {
-					    		$emails[$value['email']] = $value;
+			if (0 == $this->getProperty('type')) {
+				if (null !== ($mail = $this->modx->getService('mail', 'mail.modPHPMailer'))) {
+					$emails = array();
+					
+					foreach (array_filter(array_map('trim', explode(',', $this->getProperty('emails')))) as $value) {
+						$emails[$value] = array(
+							'name'	=> '',
+							'email'	=> $value
+						);
+					}
+					
+					$groups = array_filter(array_map('trim', (array) $this->getProperty('groups')));
+					
+					foreach ($this->modx->getCollection('NewsletterSubscriptions', array('active' => 1)) as $key => $value) {
+			    		foreach (explode(',', $value->groups) as $id) {
+				    		if (in_array($id, $groups) && !array_key_exists($value->email, $emails)) {
+					    		$emails[$value->email] = $value->toArray();
 				    		}
 			    		}
 		    		}
 		    		
-					$ch = curl_init();
+		    		$ch = curl_init();
         			curl_setopt($ch, CURLOPT_URL, $this->getProperty('resource_url'));
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 					$newsletter = curl_exec($ch);
@@ -100,10 +112,10 @@
 						$mail->reset();
 		    		}
 				}
-		    }
+			}
 			
 			return parent::afterSave();
-	    }
+		}
 	}
 	
 	return 'NewslettersSendProcessor';

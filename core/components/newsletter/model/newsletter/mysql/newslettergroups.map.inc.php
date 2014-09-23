@@ -29,6 +29,7 @@
 		'extends' 	=> 'xPDOSimpleObject',
 		'fields' 	=> array(
 			'id'			=> null,
+			'context'		=> null,
 			'name'			=> null,
 			'description'	=> null,
 			'active'		=> null,
@@ -42,6 +43,12 @@
 				'null' 		=> false,
 				'index' 	=> 'pk',
 				'generated'	=> 'native'
+			),
+			'context'	=> array(
+				'dbtype' 	=> 'varchar',
+				'precision' => '75',
+				'phptype' 	=> 'string',
+				'null' 		=> false
 			),
 			'name' 	=> array(
 				'dbtype' 	=> 'varchar',

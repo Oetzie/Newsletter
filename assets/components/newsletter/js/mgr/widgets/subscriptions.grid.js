@@ -5,18 +5,6 @@ Newsletter.grid.Subscriptions = function(config) {
         text	: _('newsletter.subscription_create'),
         handler	: this.createSubscription
    }, '->', {
-    	xtype		: 'modx-combo-context',
-    	name		: 'newsletter-filter-context-subscriptions',
-        id			: 'newsletter-filter-context-subscriptions',
-        emptyText	: _('newsletter.filter_context'),
-        listeners	: {
-        	'select'	: {
-	            	fn			: this.filterContext,
-	            	scope		: this   
-		    }
-		},
-		width: 250
-    }, '-', {
         xtype		: 'textfield',
         name 		: 'newsletter-filter-search-subscriptions',
         id			: 'newsletter-filter-search-subscriptions',
@@ -94,12 +82,6 @@ Newsletter.grid.Subscriptions = function(config) {
             editable	: false,
             fixed		: true,
 			width		: 200
-        }, {
-            header		: _('newsletter.label_context'),
-            dataIndex	: 'context',
-            sortable	: true,
-            hidden		: true,
-            editable	: false
         }]
     });
     
@@ -112,32 +94,22 @@ Newsletter.grid.Subscriptions = function(config) {
         },
         autosave	: true,
         save_action	: 'mgr/subscriptions/updateFromGrid',
-        fields		: ['id', 'name', 'email', 'context', 'groups', 'group_names', 'active', 'editedon'],
+        fields		: ['id', 'name', 'email', 'groups', 'group_names', 'active', 'editedon'],
         paging		: true,
         pageSize	: MODx.config.default_per_page > 30 ? MODx.config.default_per_page : 30,
-        sortBy		: 'email',
-        grouping	: true,
-        groupBy		: 'context',
-        singleText	: _('newsletter.subscription'),
-        pluralText	: _('newsletter.subscriptions')
+        sortBy		: 'email'
     });
     
     Newsletter.grid.Subscriptions.superclass.constructor.call(this, config);
 };
 
 Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
-	filterContext: function(tf, nv, ov) {
-        this.getStore().baseParams.context = tf.getValue();
-        this.getBottomToolbar().changePage(1);
-    },
     filterSearch: function(tf, nv, ov) {
         this.getStore().baseParams.query = tf.getValue();
         this.getBottomToolbar().changePage(1);
     },
     clearFilter: function() {
-    	this.getStore().baseParams.context = '';
 	    this.getStore().baseParams.query = '';
-	    Ext.getCmp('newsletter-filter-context-subscriptions').reset();
 	    Ext.getCmp('newsletter-filter-search-subscriptions').reset();
         this.getBottomToolbar().changePage(1);
     },
@@ -276,39 +248,25 @@ Newsletter.window.CreateSubscription = function(config) {
             html		: _('newsletter.label_email_desc'),
             cls			: 'desc-under'
         }, {
-        	layout		: 'column',
-        	border		: false,
-            defaults	: {
-                layout		: 'form',
-                labelSeparator : ''
-            },
-        	items		: [{
-		        columnWidth	: .5,
-	        	items		: [{
-			       	xtype		: 'label',
-			       	fieldLabel	: _('newsletter.label_groups')
-			    }, {
-		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-		            html		: _('newsletter.label_groups_desc'),
-		            cls			: 'desc-under'
-		        }, this.groups()]
-	        }, {
-	        	columnWidth	: .5,
-	        	style		: 'margin-right: 0;',
-	        	items		: [{
-		        	xtype		: 'modx-combo-context',
-		        	fieldLabel	: _('newsletter.label_context'),
-		        	description	: MODx.expandHelp ? '' : _('newsletter.label_context_desc'),
-		        	name		: 'context',
-		        	anchor		: '100%',
-		        	allowBlank	: false,
-		        	value		: 'web'
-		        }, {
-		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-		        	html		: _('newsletter.label_context_desc'),
-		        	cls			: 'desc-under'
-		        }]
-	        }]
+	       	xtype		: 'label',
+	       	fieldLabel	: _('newsletter.label_groups')
+	    }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_groups_desc'),
+            cls			: 'desc-under'
+        }, {
+	        xtype		: 'container',
+	        id			: 'newsletter-groups',
+	        listeners	: {
+		        'render'	: {
+		        	fn 			: this.groups,
+					scope 		: this
+				}
+	        }
+        }, {
+        	xtype		: 'label',
+            html		: '&nbsp;',
+            cls			: 'desc-under'
         }]
     });
     
@@ -316,21 +274,26 @@ Newsletter.window.CreateSubscription = function(config) {
 };
 
 Ext.extend(Newsletter.window.CreateSubscription, MODx.Window, {
-	groups: function() {
-		var groups = [];
-		var _this = this;
-		
-		Ext.each(Newsletter.config.groups, function(group) {
-			groups.push({
-		        xtype		: 'checkbox',
-	            boxLabel	: group.name,
-	            description	: MODx.expandHelp ? '' : group.description,
-	            name		: 'groups[]',
-	            inputValue	: group.id
-	        });
+	groups : function() {
+		Ext.Ajax.request({
+			url		: Newsletter.config.connectorUrl,
+			params	: {
+            	action		: 'mgr/groups/getlist'
+			},
+			success : function(response, opts) {
+				var response = Ext.decode(response.responseText);
+				
+				Ext.each(response.results, function(record) {
+					Ext.getCmp('newsletter-groups').add({
+				        xtype		: 'checkbox',
+			            boxLabel	: record.name + (0 == parseInt(Newsletter.config.context) ? '' : ' (' + record.context + ')'),
+			            description	: MODx.expandHelp ? '' : record.description,
+			            name		: 'groups[]',
+			            inputValue	: record.id
+			        });
+				});
+			}
 		});
-		
-		return groups;
 	}
 });
 
@@ -399,38 +362,25 @@ Newsletter.window.UpdateSubscription = function(config) {
             html		: _('newsletter.label_email_desc'),
             cls			: 'desc-under'
         }, {
-        	layout		: 'column',
-        	border		: false,
-            defaults	: {
-                layout		: 'form',
-                labelSeparator : ''
-            },
-        	items		: [{
-		        columnWidth	: .5,
-	        	items		: [{
-			       	xtype		: 'label',
-			       	fieldLabel	: _('newsletter.label_groups')
-			    }, {
-		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-		            html		: _('newsletter.label_groups_desc'),
-		            cls			: 'desc-under'
-		        }, this.groups(config.record.groups)]
-	        }, {
-	        	columnWidth	: .5,
-	        	style		: 'margin-right: 0;',
-	        	items		: [{
-		        	xtype		: 'modx-combo-context',
-		        	fieldLabel	: _('newsletter.label_context'),
-		        	description	: MODx.expandHelp ? '' : _('newsletter.label_context_desc'),
-		        	name		: 'context',
-		        	anchor		: '100%',
-		        	allowBlank	: false
-		        }, {
-		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-		        	html		: _('newsletter.label_context_desc'),
-		        	cls			: 'desc-under'
-		        }]
-	        }]
+	       	xtype		: 'label',
+	       	fieldLabel	: _('newsletter.label_groups')
+	    }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_groups_desc'),
+            cls			: 'desc-under'
+        }, {
+	        xtype		: 'container',
+	        id			: 'newsletter-groups',
+	        listeners	: {
+		        'render'	: {
+		        	fn 			: this.groups,
+					scope 		: this
+				}
+	        }
+        }, {
+        	xtype		: 'label',
+            html		: '&nbsp;',
+            cls			: 'desc-under'
         }]
     });
     
@@ -438,24 +388,29 @@ Newsletter.window.UpdateSubscription = function(config) {
 };
 
 Ext.extend(Newsletter.window.UpdateSubscription, MODx.Window, {
-	groups: function(value) {
-		var groups = [];
-		var _this = this;
-
-		value = value.split(',');
+	groups : function() {
+		var value = this.record.groups;
 		
-		Ext.each(Newsletter.config.groups, function(group) {
-			groups.push({
-		        xtype		: 'checkbox',
-	            boxLabel	: group.name,
-	            description	: MODx.expandHelp ? '' : group.description,
-	            name		: 'groups[]',
-	            inputValue	: group.id,
-	            checked		: -1 != value.indexOf(group.id.toString()) ? true : false
-	        });
+		Ext.Ajax.request({
+			url		: Newsletter.config.connectorUrl,
+			params	: {
+            	action		: 'mgr/groups/getlist'
+			},
+			success : function(response, opts) {
+				var response = Ext.decode(response.responseText);
+				
+				Ext.each(response.results, function(record) {
+					Ext.getCmp('newsletter-groups').add({
+				        xtype		: 'checkbox',
+			            boxLabel	: record.name + (0 == parseInt(Newsletter.config.context) ? '' : ' (' + record.context + ')'),
+			            description	: MODx.expandHelp ? '' : record.description,
+			            name		: 'groups[]',
+			            inputValue	: record.id,
+			            checked		: -1 != value.split(',').indexOf(record.id.toString()) ? true : false
+			        });
+				});
+			}
 		});
-		
-		return groups;
 	}
 });
 

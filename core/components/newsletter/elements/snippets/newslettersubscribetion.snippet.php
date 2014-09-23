@@ -18,7 +18,7 @@
 	 * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 	 *
 	 * You should have received a copy of the GNU General Public License along with
-	 * Routeplanner; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
+	 * Newsletter; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
@@ -26,8 +26,12 @@
 
 	$newsletter = new Newsletter($modx);
 
-	$newsletter->unsubscribe($_GET, $modx->getOption('redirectTo', $scriptProperties, false));
+	if ('unsubscribe' == $modx->getOption('type', $scriptProperties, 'subscribe')) {
+		$newsletter->unsubscribe($_GET, $modx->getOption('redirectTo', $scriptProperties, false));
+	} else {
+		$newsletter->subscribe($_POST, $modx->getOption('redirectTo', $scriptProperties, false), $modx->getOption('groups', $scriptProperties, false));
 
-	return;
+		return $newsletter->getChunk($modx->getOption('tpl', $scriptProperties, 'newsletterSubscribe'))
+	}
 
 ?>

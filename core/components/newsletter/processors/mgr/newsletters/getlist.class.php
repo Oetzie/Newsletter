@@ -73,17 +73,23 @@
 		 * @return Object.
 		 */
 		public function prepareQueryBeforeCount(xPDOQuery $c) {
+			$c->innerjoin('modResource', 'modResource', array('modResource.id = NewsletterNewsletters.resource_id'));
+			$c->select($this->modx->getSelectColumns('NewsletterNewsletters', 'NewsletterNewsletters'));
+			$c->select($this->modx->getSelectColumns('modResource', 'modResource', 'resource_', array('pagetitle', 'longtitle', 'context_key', 'published')));
+			
 			$context = $this->getProperty('context');
 			
 			if (!empty($context)) {
-				$c->where(array('context' => $context));
+				$c->where(array('modResource.context_key' => $context));
 			}
 			
 			$query = $this->getProperty('query');
 			
 			if (!empty($query)) {
 				$c->where(array(
-					'name:LIKE' => '%'.$query.'%'
+					'modResource.id:LIKE'			=> '%'.$query.'%',
+					'OR:modResource.pagetitle:LIKE' => '%'.$query.'%',
+					'OR:modResource.longtitle:LIKE' => '%'.$query.'%'
 				));
 			}
 			
@@ -96,15 +102,11 @@
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
-			$array = $object->toArray();
-			
-			if (null === ($resource = $this->modx->getObject('modResource', $array['resource_id']))) {
-				return false;
-			} else {
-				$array['resource_url'] = $this->modx->makeUrl($resource->id, '', '', 'full');
-				$array['resource_name'] = empty($resource->longtitle) ? $resource->pagetitle : $resource->longtitle;
-				$array['resource_context'] = $resource->context_key;
-			}
+			$array = array_merge($object->toArray(), array(
+				'resource_url'			=> $this->modx->makeUrl($object->resource_id, '', '', 'full'),
+				'resource_name' 		=> empty($object->resource_longtitle) ? $object->resource_pagetitle : $object->resource_longtitle,
+				'resource_name_alias' 	=> (empty($object->resource_longtitle) ? $object->resource_pagetitle : $object->resource_longtitle).' ('.$object->resource_id.')'
+			));
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
 				$array['editedon'] = '';
