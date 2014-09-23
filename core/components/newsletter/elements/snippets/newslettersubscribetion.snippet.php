@@ -31,7 +31,7 @@
 	} else {
 		$newsletter->subscribe($_POST, $modx->getOption('redirectTo', $scriptProperties, false), $modx->getOption('groups', $scriptProperties, false));
 
-		return $newsletter->getChunk($modx->getOption('tpl', $scriptProperties, 'newsletterSubscribe'))
+		return $newsletter->getChunk($modx->getOption('tpl', $scriptProperties, 'newsletterSubscribe'));
 	}
 
 ?>
