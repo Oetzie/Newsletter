@@ -108,6 +108,14 @@
 				'resource_name_alias' 	=> (empty($object->resource_longtitle) ? $object->resource_pagetitle : $object->resource_longtitle).' ('.$object->resource_id.')'
 			));
 
+			if (in_array($array['send_date'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
+				$array['send_date'] = date('Y-m-d 00:00:00');
+			} else {
+				$array['send_date'] = date('Y-m-d 00:00:00', strtotime($array['send_date']));
+			}
+			
+			$array['send_date_format'] = date($this->modx->getOption('manager_date_format', 'Y-m-d'), strtotime($array['send_date']));
+			
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
 				$array['editedon'] = '';
 			} else {

@@ -3,7 +3,26 @@ Newsletter.grid.Groups = function(config) {
 
 	config.tbar = [{
         text	: _('newsletter.group_create'),
-        handler	: this.createGroup
+        cls		:'primary-button',
+        handler	: this.createGroup,
+        scope	: this
+	}, {
+		text	: _('bulk_actions'),
+		menu	: [{
+			text	: _('newsletter.activate_selected'),
+			name	: 'activate',
+			handler	: this.activateSelectedGroup,
+			scope	: this
+		},{
+			text	: _('newsletter.deactivate_selected'),
+			name	: 'deactivate',
+			handler	: this.activateSelectedGroup,
+			scope	: this
+		},{
+			text	: _('newsletter.remove_selected'),
+			handler	: this.removeSelectedGroup,
+			scope	: this
+		}]
 	}, '->', {
     	xtype		: 'modx-combo-context',
     	hidden		: 0 == parseInt(Newsletter.config.context) ? true : false,
@@ -40,6 +59,7 @@ Newsletter.grid.Groups = function(config) {
         }
     }, {
     	xtype	: 'button',
+    	cls		: 'x-form-filter-clear',
     	id		: 'newsletter-filter-clear-groups',
     	text	: _('filter_clear'),
     	listeners: {
@@ -50,13 +70,16 @@ Newsletter.grid.Groups = function(config) {
         }
     }];
 
+    sm = new Ext.grid.CheckboxSelectionModel();
+
     columns = new Ext.grid.ColumnModel({
-        columns: [{
+        columns: [sm, {
             header		: _('newsletter.label_name'),
             dataIndex	: 'name',
             sortable	: true,
             editable	: true,
-            width		: 150,
+            width		: 250,
+            fixed		: true,
             editor		: {
             	xtype		: 'textfield'
             }
@@ -76,7 +99,7 @@ Newsletter.grid.Groups = function(config) {
             editable	: true,
             width		: 100,
             fixed		: true,
-			renderer	: this.renderActive,
+			renderer	: this.renderBoolean,
 			editor		: {
             	xtype		: 'modx-combo-boolean'
             }
@@ -97,6 +120,7 @@ Newsletter.grid.Groups = function(config) {
     });
     
     Ext.applyIf(config, {
+    	sm 			: sm,
     	cm			: columns,
         id			: 'newsletter-grid-groups',
         url			: Newsletter.config.connectorUrl,
@@ -137,10 +161,12 @@ Ext.extend(Newsletter.grid.Groups, MODx.grid.Grid, {
     getMenu: function() {
         return [{
 	        text	: _('newsletter.group_update'),
-	        handler	: this.updateGroup
+	        handler	: this.updateGroup,
+	        scope	: this
 	    }, '-', {
 		    text	: _('newsletter.group_remove'),
-		    handler	: this.removeGroup
+		    handler	: this.removeGroup,
+		    scope	: this
 		 }];
     },
     createGroup: function(btn, e) {
@@ -159,8 +185,60 @@ Ext.extend(Newsletter.grid.Groups, MODx.grid.Grid, {
 	         }
         });
         
-        
         this.createGroupWindow.show(e.target);
+    },
+    activateSelectedGroup: function(btn, e) {
+    	var cs = this.getSelectedAsList();
+    	
+        if (cs === false) {
+        	return false;
+        }
+        
+    	MODx.msg.confirm({
+        	title 	: _('newsletter.group_activate_selected'),
+        	text	: _('newsletter.group_activate_selected_confirm'),
+        	url		: this.config.url,
+        	params	: {
+            	action	: 'mgr/groups/activateSelected',
+            	ids		: cs,
+            	type	: btn.name
+            },
+            listeners: {
+            	'success': {
+            		fn		: function() {
+            			this.getSelectionModel().clearSelections(true);
+            			this.refresh();
+            		},
+            		scope	: this
+            	}
+            }
+    	});
+    },
+    removeSelectedGroup: function(btn, e) {
+    	var cs = this.getSelectedAsList();
+    	
+        if (cs === false) {
+        	return false;
+        }
+        
+    	MODx.msg.confirm({
+        	title 	: _('newsletter.group_remove_selected'),
+        	text	: _('newsletter.group_remove_selected_confirm'),
+        	url		: this.config.url,
+        	params	: {
+            	action	: 'mgr/groups/removeSelected',
+            	ids		: cs
+            },
+            listeners: {
+            	'success': {
+            		fn		: function() {
+            			this.getSelectionModel().clearSelections(true);
+            			this.refresh();
+            		},
+            		scope	: this
+            	}
+            }
+    	});
     },
     updateGroup: function(btn, e) {
         if (this.updateGroupWindow) {
@@ -182,7 +260,7 @@ Ext.extend(Newsletter.grid.Groups, MODx.grid.Grid, {
         this.updateGroupWindow.setValues(this.menu.record);
         this.updateGroupWindow.show(e.target);
     },
-    removeGroup: function() {
+    removeGroup: function(btn, e) {
     	MODx.msg.confirm({
         	title 	: _('newsletter.group_remove'),
         	text	: _('newsletter.group_remove_confirm'),
@@ -199,7 +277,7 @@ Ext.extend(Newsletter.grid.Groups, MODx.grid.Grid, {
             }
     	});
     },
-    renderActive: function(d, c) {
+    renderBoolean: function(d, c) {
     	c.css = 1 == parseInt(d) || d ? 'green' : 'red';
     	
     	return 1 == parseInt(d) || d ? _('yes') : _('no');

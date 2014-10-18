@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class SubscriptionsExportProcessor extends modObjectGetListProcessor {
+	class SubscriptionsActivateSelectedProcessor extends modProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
@@ -39,49 +39,28 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $defaultSortField = 'email';
-		
-		/**
-		 * @acces public.
-		 * @var String.
-		 */
-		public $defaultSortDirection = 'ASC';
-		
-		/**
-		 * @acces public.
-		 * @var String.
-		 */
 		public $objectType = 'newsletter.subscriptions';
 		
 		/**
-		 * {@inheritDoc}
-		 * @return mixed
+		 * @acces public.
+		 * @return Mixed.
 		 */
-		 public function process() {
-		 	if ($this->getProperty('download')) {
-			 	$array = array();
-			 	
-			 	$response = $this->modx->fromJSON(parent::process());
-			 	
-			 	if (count($response['results']) > 0) {
-				 	$array[] = implode(',', array_keys($response['results'][0]));
-			 	}
-			 	
-			 	foreach ($response['results'] as $key => $value) {
-				 	$array[] = implode(',', $value);
-			 	}
-			 	
-			 	
-			 	header('Content-type: text/csv');
-			 	header('Content-Disposition: attachment; filename="'.sprintf('%s.%s.export.csv', $this->objectType, date($this->modx->getOption('manager_date_format', null, 'Y-m-d'))).'"');
-			 	
-			 	echo implode(PHP_EOL, $array);
-			 } else {
-				 return parent::process();
-			 }
-		 }
+		public function process() {
+			foreach (explode(',', $this->getProperty('ids')) as $key => $value) {
+				$criteria = array('id' => $value);
+				
+				if (false !== ($object = $this->modx->getObject($this->classKey, $criteria))) {
+					$object->fromArray(array(
+						'active' => 'activate' == $this->getProperty('type') ? 1 : 0
+					));
+					$object->save();
+				}
+			}
+			
+			return $this->outputArray(array());
+		}
 	}
 
-	return 'SubscriptionsExportProcessor';
-	
+	return 'SubscriptionsActivateSelectedProcessor';
+
 ?>

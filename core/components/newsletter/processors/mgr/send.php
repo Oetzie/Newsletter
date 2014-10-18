@@ -36,58 +36,63 @@
 		echo 'Newsletter service modPHPMailer could not be loaded.'.PHP_EOL;
 	} else {
 		foreach ($modx->getCollection('NewsletterNewsletters', array('send' => 2)) as $key => $value) {
-			if (null !== ($resource = $modx->getObject('modResource', array('id' => $value->resource_id)))) {
-				$url = $this->modx->makeUrl($resource->id, '', '', 'full');
-				$title = empty($resource->longtitle) ? $resource->pagetitle : $resource->longtitle;
-				
-				$emails = array();
-				
-				foreach (array_filter(array_map('trim', explode(',', $value->emails))) as $emailValue) {
-					$emails[$emailValue] = array(
-						'name'	=> '',
-						'email'	=> $emailValue
-					);
-				}
-				
-				$groups = array_filter(array_map('trim', explode(',', $value->groups)));
-				
-				foreach ($modx->getCollection('NewsletterSubscriptions', array('active' => 1)) as $subscriptionKey => $subscriptionValue) {
-		    		foreach (explode(',', $subscriptionValue->groups) as $id) {
-			    		if (in_array($id, $groups) && !array_key_exists($subscriptionValue->email, $emails)) {
-				    		$emails[$subscriptionValue->email] = $subscriptionValue->toArray();
+			if (strtotime($value->send_date) <= strtotime(date('d-m-Y'))) {
+				if (null === ($resource = $modx->getObject('modResource', array('id' => $value->resource_id)))) {
+					echo 'Newsletter resource id '.$value->resource_id.' does not exists.'.PHP_EOL;
+				} else {
+					$url = $modx->makeUrl($resource->id, '', '', 'full');
+
+					$title = empty($resource->longtitle) ? $resource->pagetitle : $resource->longtitle;
+					
+					$emails = array();
+					
+					foreach (array_filter(array_map('trim', explode(',', $value->emails))) as $emailValue) {
+						$emails[$emailValue] = array(
+							'name'	=> '',
+							'email'	=> $emailValue
+						);
+					}
+					
+					$groups = array_filter(array_map('trim', explode(',', $value->groups)));
+					
+					foreach ($modx->getCollection('NewsletterSubscriptions', array('active' => 1)) as $subscriptionKey => $subscriptionValue) {
+			    		foreach (explode(',', $subscriptionValue->groups) as $id) {
+				    		if (in_array($id, $groups) && !array_key_exists($subscriptionValue->email, $emails)) {
+					    		$emails[$subscriptionValue->email] = $subscriptionValue->toArray();
+				    		}
 			    		}
 		    		}
-	    		}
-
-	    		$ch = curl_init();
-        		curl_setopt($ch, CURLOPT_URL, $url);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-				$newsletter = curl_exec($ch);
-				curl_close($ch); 
-				
-				foreach ($emails as $emailKey => $emailValue) {
-		    		$mail->setHTML(true);
-		    		
-		    		$mail->set(modMail::MAIL_FROM, 		$modx->getOption('newsletter_email', null, $modx->getOption('emailsender')));
-					$mail->set(modMail::MAIL_FROM_NAME, $modx->getOption('newsletter_name', null, $modx->getOption('site_name')));
-					$mail->set(modMail::MAIL_SUBJECT, 	str_replace(array('%subscribe_name%', '%subscribe_email%'), array($emailValue['name'], $emailValue['email']), $title));
-					$mail->set(modMail::MAIL_BODY, 		str_replace(array('%subscribe_name%', '%subscribe_email%'), array($emailValue['name'], $emailValue['email']), $newsletter));
-				
-					$mail->address('to', $emailValue['email']);
+	
+		    		$ch = curl_init();
+	        		curl_setopt($ch, CURLOPT_URL, $url);
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+					$newsletter = curl_exec($ch);
+					curl_close($ch); 
 					
-					if (!$mail->send()) {
-						$modx->log(modX::LOG_LEVEL_ERROR, 'An error occurred while trying to send the email: '.$mail->mailer->ErrorInfo);
-					} else {
-						echo 'Newsletter send to '.$emailValue['email'].'.'.PHP_EOL;
-					}
-			
-					$mail->reset();
-	    		}
+					foreach ($emails as $emailKey => $emailValue) {
+			    		$mail->setHTML(true);
+			    		
+			    		$mail->set(modMail::MAIL_FROM, 		$modx->getOption('newsletter_email', null, $modx->getOption('emailsender')));
+						$mail->set(modMail::MAIL_FROM_NAME, $modx->getOption('newsletter_name', null, $modx->getOption('site_name')));
+						$mail->set(modMail::MAIL_SUBJECT, 	str_replace(array('%subscribe_name%', '%subscribe_email%'), array($emailValue['name'], $emailValue['email']), $title));
+						$mail->set(modMail::MAIL_BODY, 		str_replace(array('%subscribe_name%', '%subscribe_email%'), array($emailValue['name'], $emailValue['email']), $newsletter));
+					
+						$mail->address('to', $emailValue['email']);
+						
+						if (!$mail->send()) {
+							$modx->log(modX::LOG_LEVEL_ERROR, 'An error occurred while trying to send the email: '.$mail->mailer->ErrorInfo);
+						} else {
+							echo 'Newsletter send to '.$emailValue['email'].'.'.PHP_EOL;
+						}
 				
-				echo 'Newsletter "'.$title.'" send to '.count($emails).' email addresses.'.PHP_EOL;
-				
-				$value->fromArray(array('send' => 1));
-				$value->save();
+						$mail->reset();
+		    		}
+					
+					echo 'Newsletter "'.$title.'" send to '.count($emails).' email addresses.'.PHP_EOL;
+					
+					$value->fromArray(array('send' => 1));
+					$value->save();
+				}
 			}
 		}
 	}

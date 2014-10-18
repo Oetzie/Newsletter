@@ -33,6 +33,7 @@
 			'groups'		=> null,
 			'emails'		=> null,
 			'send'			=> null,
+			'send_date'		=> null,
 			'editedon' 		=> null
 		),
 		'fieldMeta'	=> array(
@@ -56,18 +57,23 @@
 				'phptype' 	=> 'string',
 				'null' 		=> false
 			),
-			'emails' => array(
+			'emails' 	=> array(
 				'dbtype' 	=> 'text',
 				'precision' => '2048',
 				'phptype' 	=> 'string',
 				'null' 		=> false
 			),
-			'send'	=> array(
+			'send'		=> array(
 				'dbtype' 	=> 'int',
 				'precision' => '1',
 				'phptype' 	=> 'integer',
 				'null' 		=> false,
 				'default'	=> 0
+			),
+			'send_date' => array(
+				'dbtype' 	=> 'date',
+				'phptype' 	=> 'timestamp',
+				'null' 		=> false
 			),
 			'editedon' 	=> array(
 				'dbtype' 	=> 'timestamp',

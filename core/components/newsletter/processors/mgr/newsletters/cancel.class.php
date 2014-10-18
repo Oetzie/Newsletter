@@ -48,6 +48,8 @@
 		public function initialize() {
 			$this->setProperty('send', 0);
 			$this->setProperty('groups', '');
+			$this->setProperty('emails', '');
+			$this->setProperty('send_date', '0000-00-00');
 
 			return parent::initialize();
 		}

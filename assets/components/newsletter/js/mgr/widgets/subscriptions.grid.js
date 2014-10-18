@@ -3,8 +3,31 @@ Newsletter.grid.Subscriptions = function(config) {
 
 	config.tbar = [{
         text	: _('newsletter.subscription_create'),
-        handler	: this.createSubscription
-   }, '->', {
+        cls		:'primary-button',
+        handler	: this.createSubscription,
+        scope	: this
+	}, {
+		text	: _('bulk_actions'),
+		menu	: [{
+			text	: _('newsletter.activate_selected'),
+			name	: 'activate',
+			handler	: this.activateSelectedSubscription,
+			scope	: this
+		},{
+			text	: _('newsletter.deactivate_selected'),
+			name	: 'deactivate',
+			handler	: this.activateSelectedSubscription,
+			scope	: this
+		},{
+			text	: _('newsletter.remove_selected'),
+			handler	: this.removeSelectedSubscription,
+			scope	: this
+		}]
+	}, {
+        text	: _('export'),
+        handler	: this.exportSubscriptions,
+        scope	: this
+	}, '->', {
         xtype		: 'textfield',
         name 		: 'newsletter-filter-search-subscriptions',
         id			: 'newsletter-filter-search-subscriptions',
@@ -27,6 +50,7 @@ Newsletter.grid.Subscriptions = function(config) {
         }
     }, {
     	xtype	: 'button',
+    	cls		: 'x-form-filter-clear',
     	id		: 'newsletter-filter-clear-subscriptions',
     	text	: _('filter_clear'),
     	listeners: {
@@ -36,9 +60,11 @@ Newsletter.grid.Subscriptions = function(config) {
         	}
         }
     }];
+    
+    sm = new Ext.grid.CheckboxSelectionModel();
 
     columns = new Ext.grid.ColumnModel({
-        columns: [{
+        columns: [sm, {
             header		: _('newsletter.label_email'),
             dataIndex	: 'email',
             sortable	: true,
@@ -71,7 +97,7 @@ Newsletter.grid.Subscriptions = function(config) {
             editable	: true,
             width		: 100,
             fixed		: true,
-			renderer	: this.renderActive,
+			renderer	: this.renderBoolean,
 			editor		: {
             	xtype		: 'modx-combo-boolean'
             }
@@ -86,6 +112,7 @@ Newsletter.grid.Subscriptions = function(config) {
     });
     
     Ext.applyIf(config, {
+    	sm 			: sm,
     	cm			: columns,
         id			: 'newsletter-grid-subscriptions',
         url			: Newsletter.config.connectorUrl,
@@ -116,10 +143,12 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
     getMenu: function() {
         return [{
 	        text	: _('newsletter.subscription_update'),
-	        handler	: this.updateSubscription
+	        handler	: this.updateSubscription,
+	        scope	: this
 	    }, '-', {
 		    text	: _('newsletter.subscription_remove'),
-		    handler	: this.removeSubscription
+		    handler	: this.removeSubscription,
+		    scope	: this
 		 }];
     },
     createSubscription: function(btn, e) {
@@ -132,14 +161,85 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
 	        closeAction	:'close',
 	        listeners	: {
 		        'success'	: {
-		        	fn			:this.refresh,
+            		fn		: function() {
+            			this.getSelectionModel().clearSelections(true);
+            			this.refresh();
+            		},
 		        	scope		:this
 		        }
 	         }
         });
         
-        
         this.createSubscriptionWindow.show(e.target);
+    },
+    activateSelectedSubscription: function(btn, e) {
+    	var cs = this.getSelectedAsList();
+    	
+        if (cs === false) {
+        	return false;
+        }
+        
+    	MODx.msg.confirm({
+        	title 	: _('newsletter.subscription_activate_selected'),
+        	text	: _('newsletter.subscription_activate_selected_confirm'),
+        	url		: this.config.url,
+        	params	: {
+            	action	: 'mgr/subscriptions/activateSelected',
+            	ids		: cs,
+            	type	: btn.name
+            },
+            listeners: {
+            	'success': {
+            		fn		: function() {
+            			this.getSelectionModel().clearSelections(true);
+            			this.refresh();
+            		},
+            		scope	: this
+            	}
+            }
+    	});
+    },
+    removeSelectedSubscription: function(btn, e) {
+    	var cs = this.getSelectedAsList();
+    	
+        if (cs === false) {
+        	return false;
+        }
+        
+    	MODx.msg.confirm({
+        	title 	: _('newsletter.subscription_remove_selected'),
+        	text	: _('newsletter.subscription_remove_selected_confirm'),
+        	url		: this.config.url,
+        	params	: {
+            	action	: 'mgr/subscriptions/removeSelected',
+            	ids		: cs
+            },
+            listeners: {
+            	'success': {
+            		fn		: function() {
+            			this.getSelectionModel().clearSelections(true);
+            			this.refresh();
+            		},
+            		scope	: this
+            	}
+            }
+    	});
+    },
+    exportSubscriptions: function(btn, e) {
+		MODx.Ajax.request({
+			url		: this.config.url,
+			params	: {
+            	action	: 'mgr/subscriptions/export'
+            },
+			listeners: {
+				'success': {
+					fn			:	function() {
+						location.href = this.config.url + '?action=mgr/subscriptions/export&download=1&HTTP_MODAUTH=' + MODx.siteId;
+					},
+					scope	:this
+				}
+			}
+		});
     },
     updateSubscription: function(btn, e) {
         if (this.updateSubscriptionWindow) {
@@ -152,7 +252,10 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
 	        closeAction	:'close',
 	        listeners	: {
 		        'success'	: {
-		        	fn			:this.refresh,
+            		fn		: function() {
+            			this.getSelectionModel().clearSelections(true);
+            			this.refresh();
+            		},
 		        	scope		:this
 		        }
 	         }
@@ -161,7 +264,7 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         this.updateSubscriptionWindow.setValues(this.menu.record);
         this.updateSubscriptionWindow.show(e.target);
     },
-    removeSubscription: function() {
+    removeSubscription: function(btn, e) {
     	MODx.msg.confirm({
         	title 	: _('newsletter.subscription_remove'),
         	text	: _('newsletter.subscription_remove_confirm'),
@@ -172,13 +275,16 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             },
             listeners: {
             	'success': {
-            		fn		: this.refresh,
+            		fn		: function() {
+            			this.getSelectionModel().clearSelections(true);
+            			this.refresh();
+            		},
             		scope	: this
             	}
             }
     	});
     },
-    renderActive: function(d, c) {
+    renderBoolean: function(d, c, e) {
     	c.css = 1 == parseInt(d) || d ? 'green' : 'red';
     	
     	return 1 == parseInt(d) || d ? _('yes') : _('no');
