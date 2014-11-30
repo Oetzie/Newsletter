@@ -131,33 +131,56 @@
 		
 		/**
 		 * @acces public.
-		 * @param Array $values.
-		 * @param Integer $redirect.
-		 * @param String $groups.
+		 * @param Array $properties.
 		 * @return Boolean.
 		 */
-		public function subscribe($values, $redirect = false, $groups = null) {
-			if (array_key_exists('email', $values) && !empty($values['email'])) {
-				$critera = array(
-					'email' => $values['email']
-				);
-				
-				if (!$subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea)) {
-					$subscription = $this->modx->newObject('NewsletterSubscriptions');
-				}
-				
-				$subscription->fromArray(array_merge($values, array(
-					'active'	=> 1,
-					'groups' 	=> array_key_exists('groups', $values) ? implode(',', $values['groups']) : $groups
-				)));
-				
-				$subscription->save();
-				
-				if (false !== $redirect) {
-					$this->modx->sendRedirect($this->modx->makeUrl($redirect, '', '', 'full'));
-				}
+		public function subscribe($properties = array()) {
+			if (false !== ($values = $this->modx->getOption('values', $properties, false))) {
+				switch($this->modx->getOption('type', $properties, 'subscribe')) {
+					case 'confirm':
+						if (false !== ($confirm = $this->modx->getOption($properties['confirmKey'], $values, false))) {
+							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', array('confirm' => $confirm))) {
+								$subscription->fromArray(array(
+									'active'	=> 1
+								));
+							
+								if ($subscription->save()) {
+									if (false !== ($resource = $this->modx->getOption('resource', $properties, false))) {
+										$this->modx->sendRedirect($this->modx->makeUrl($resource, null, null, 'full'));
+									}
+									
+									return true;	
+								}
+							}
+						} else {
+							return null;
+						}
+						
+						break;
+					case 'subscribe':
+						if ($this->modx->getOption('email', $values, false)) {
+							if (!$subscription = $this->modx->getObject('NewsletterSubscriptions', array('email' => $values['email']))) {
+								$subscription = $this->modx->newObject('NewsletterSubscriptions');
+							}
+
+							$confirm 	= md5(time());
+							$groups 	= $this->modx->getOption('groups', $values, array());
+
+							$subscription->fromArray(array_merge($values, array(
+								'active'	=> 0,
+								'confirm'	=> $confirm,
+								'groups' 	=> is_array($groups) ? implode(',', $groups) : $groups
+							)));
+								
+							if ($subscription->save()) {
+								$this->modx->setPlaceholder('newsletter_confirm_link', $confirm);
 					
-				return true;
+								return true;	
+							}
+						}
+							
+						break;
+				}
 			}
 			
 			return false;
@@ -165,24 +188,36 @@
 		
 		/**
 		 * @acces public.
-		 * @param Array $values.
-		 * @param Integer $redirect.
+		 * @param Array $properties.
 		 * @return Boolean.
 		 */
-		public function unsubscribe($values, $redirect = false) {
-			if (array_key_exists('email', $values) && !empty($values['email'])) {
-				$critera = array(
-					'email' => $values['email']
-				);
-				
-				if ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea)) {
-					$subscription->remove();
-					
-					if (false !== $redirect) {
-						$this->modx->sendRedirect($this->modx->makeUrl($redirect, '', '', 'full'));
-					}
-					
-					return true;
+		public function unsubscribe($properties = array()) {
+			if (false !== ($values = $this->modx->getOption('values', $properties, false))) {
+				switch($this->modx->getOption('type', $properties, 'unsubscribe')) {
+					case 'confirm':
+						if (false !== ($confirm = $this->modx->getOption($properties['confirmKey'], $values, false))) {
+							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', array('email' => $confirm))) {
+								if ($subscription->remove()) {
+									if (false !== ($resource = $this->modx->getOption('resource', $properties, false))) {
+										$this->modx->sendRedirect($this->modx->makeUrl($resource, null, null, 'full'));
+									}
+									
+									return true;
+								}
+							}
+						} else {
+							return null;
+						}
+						
+						break;
+					case 'unsubscribe':
+						if ($this->modx->getOption('email', $values, false)) {
+							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', array('email' => $values['email']))) {
+								return $subscription->remove();
+							}
+						}
+						
+						break;
 				}
 			}
 			

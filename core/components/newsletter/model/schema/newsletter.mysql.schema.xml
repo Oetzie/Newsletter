@@ -6,6 +6,7 @@
         <field key="groups" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
         <field key="emails" dbtype="text" precision="2048" phptype="string" null="false" default=""/>
         <field key="send" dbtype="int" precision="1" phptype="integer" null="false" default="0"/>
+        <field key="send_date" dbtype="date" phptype="timestamp" null="false" default=""/>
         <field key="editedon" dbtype="timestamp" phptype="timestamp" attributes="ON UPDATE CURRENT_TIMESTAMP" null="false" default=""/>
         
         <index alias="PRIMARY" name="PRIMARY" primary="true" unique="true">
@@ -20,6 +21,7 @@
     	<field key="name" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
     	<field key="email" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
 		<field key="groups" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
+		<field key="confirm" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
         <field key="active" dbtype="int" precision="1" phptype="integer" null="false" default="0"/>
         <field key="editedon" dbtype="timestamp" phptype="timestamp" attributes="ON UPDATE CURRENT_TIMESTAMP" null="false" default=""/>
         

@@ -3,6 +3,16 @@ Newsletter
 ----------------------
 
 ----------------------
+Version: 1.1.1-pl
+Released: 2014-11-29
+----------------------
+- Some bugfixes
+- New database structure
+	- E-mail confirm field added
+- New en better functions
+	- new e-mail confirm
+	
+----------------------
 Version: 1.1.0-pl
 Released: 2014-09-23
 ----------------------

@@ -35,6 +35,8 @@
 	$_lang['setting_newsletter_name_desc']							= 'The name where the newsletter is sent of.';
 	
 	$_lang['newslettercronjob_snippet_hash_desc']					= 'This hash get send along with the cron job so that the newsletter cant be send by random people. Without this hash automatically send newsletters is not working.';
+	$_lang['newslettersubscribe_snippet_confirmkey_desc']			= 'The parameter key for the confirm. Default is "confirm".';
+	$_lang['newsletterunsubscribe_snippet_confirmkey_desc']			= 'The parameter key for the confirm. Default is "confirm".';
 	
 	$_lang['newsletter.newsletter']									= 'Newsletter';
 	$_lang['newsletter.newsletters']								= 'Newsletters';

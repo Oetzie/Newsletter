@@ -26,12 +26,37 @@
 
 	$newsletter = new Newsletter($modx);
 
-	if ('unsubscribe' == $modx->getOption('type', $scriptProperties, 'subscribe')) {
-		$newsletter->unsubscribe($_GET, $modx->getOption('redirectTo', $scriptProperties, false));
-	} else {
-		$newsletter->subscribe($_POST, $modx->getOption('redirectTo', $scriptProperties, false), $modx->getOption('groups', $scriptProperties, false));
+	$unsubscribe = false; 
 
-		return $newsletter->getChunk($modx->getOption('tpl', $scriptProperties, 'newsletterSubscribe'));
+	switch($prefix) {
+		case 'Before':
+			$properties = array(
+				'type'			=> 'confirm',
+				'values'		=> $modx->request->getParameters(),
+				'resource'		=> $modx->getOption('newsletterRedirect', $form->extensionScriptProperties, false),
+				'confirmKey'	=> $modx->getOption('confirmKey', $scriptProperties)
+			);
+
+			if (false === ($unsubscribe = $newsletter->unsubscribe($properties))) {
+				$form->getValidator()->setBulkError('extension_newsletter_unsubscribe_confirm');
+			}
+			break;
+		case 'After':
+			if ($form->isValid()) {
+				$properties = array(
+					'type'		=> 'unsubscribe',
+					'values'	=> $form->getValues(),
+					'confirmKey'	=> $modx->getOption('confirmKey', $scriptProperties)
+				);
+
+				if (false === ($unsubscribe = $newsletter->unsubscribe($properties))) {
+					$form->getValidator()->setBulkError('extension_newsletter_unsubscribe');
+				}
+			}
+
+			break;
 	}
 
+	return $unsubscribe;
+	
 ?>

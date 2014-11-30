@@ -32,6 +32,7 @@
 			'name'			=> null,
 			'email'			=> null,
 			'groups'		=> null,
+			'confirm'		=> null,
 			'active'		=> null,
 			'editedon' 		=> null
 		),
@@ -59,6 +60,12 @@
 			'groups' 	=> array(
 				'dbtype' 	=> 'varchar',
 				'precision' => '75',
+				'phptype' 	=> 'string',
+				'null' 		=> false
+			),
+			'confirm' 	=> array(
+				'dbtype' 	=> 'varchar',
+				'precision' => '255',
 				'phptype' 	=> 'string',
 				'null' 		=> false
 			),

@@ -35,6 +35,8 @@
 	$_lang['setting_newsletter_name_desc']							= 'De naam waarmee de nieuwsbrief verstuurd wordt.';
 	
 	$_lang['newslettercronjob_snippet_hash_desc']					= 'Deze hash word met de cronjob mee gestuurd zodat de nieuwsbrief niet zomaar verstuurd kan worden door willekeurige personen. Zonder deze hash werkt het automatisch versturen van de nieuwsbrieven niet.';
+	$_lang['newslettersubscribe_snippet_confirmkey_desc']			= 'De parameter key voor de bevestiging. Standaard is "confirm".';
+	$_lang['newsletterunsubscribe_snippet_confirmkey_desc']			= 'De parameter key voor de bevestiging. Standaard is "confirm".';
 	
 	$_lang['newsletter.newsletter']									= 'Nieuwsbrief';
 	$_lang['newsletter.newsletters']								= 'Nieuwsbrieven';
