@@ -40,6 +40,16 @@
 		 * @var String.
 		 */
 		public $objectType = 'newsletter.groups';
+		
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+		public function afterRemove() {
+			$this->modx->removeCollection('NewsletterSubscriptionsGroups', array('group_id' => $this->object->get('id')));
+
+			return parent::afterRemove();
+		}
 	}
 	
 	

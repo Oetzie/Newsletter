@@ -218,6 +218,7 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
 	        modal		: true,
 			buttons		: [{
 	    		text    	: _('ok'),
+	    		cls			: 'primary-button',
 	    		handler		: function() {
 	    			this.previewNewsletterWindow.close();
 	    		},

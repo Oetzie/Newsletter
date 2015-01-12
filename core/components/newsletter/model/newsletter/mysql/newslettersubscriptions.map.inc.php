@@ -31,7 +31,6 @@
 			'id'			=> null,
 			'name'			=> null,
 			'email'			=> null,
-			'groups'		=> null,
 			'confirm'		=> null,
 			'active'		=> null,
 			'editedon' 		=> null
@@ -52,12 +51,6 @@
 				'null' 		=> false
 			),
 			'email'		=> array(
-				'dbtype' 	=> 'varchar',
-				'precision' => '75',
-				'phptype' 	=> 'string',
-				'null' 		=> false
-			),
-			'groups' 	=> array(
 				'dbtype' 	=> 'varchar',
 				'precision' => '75',
 				'phptype' 	=> 'string',
@@ -94,6 +87,15 @@
 						'null' 		=> false,
 					)
 				)
+			)
+		),
+		'aggregates' => array(
+			'NewsletterSubscriptionsGroups'	=> array(
+				'local' 		=> 'id',
+				'class' 		=> 'NewsletterSubscriptionsGroups',
+				'foreign'		=> 'parent_id',
+				'owner' 		=> 'local',
+				'cardinality' 	=> 'many'
 			)
 		)
 	);

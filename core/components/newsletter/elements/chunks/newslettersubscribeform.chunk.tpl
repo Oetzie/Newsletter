@@ -16,7 +16,7 @@
 				<p class="info">Velden gemarkeerd met een sterretje zijn verplicht.</p>
 				<form action="[[~[[*id]]]]" method="post" name="newsletter">
 					<input type="hidden" name="nospam" id="nospam" value="[[+form.nospam]]" />
-					<div class="form-element [[+fi.error.name:notempty=`error`]]">
+					<div class="form-element [[+form.error.name:notempty=`error`]]">
 						<label for="name">Naam *</label>
 						<div class="form-element-container">
 							<input type="name" name="name" id="name" value="[[+form.name]]" />[[+form.error.name]]

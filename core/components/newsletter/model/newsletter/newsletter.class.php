@@ -78,59 +78,6 @@
 		
 		/**
 		 * @acces public.
-		 * @param String $name.
-		 * @param Array $properties.
-		 * @return String.
-		 */
-		public function getChunk($name, $properties = array()) {
-			$chunk = null;
-			
-			if (!isset($this->chunks[$name])) {
-				$chunk = $this->_getTplChunk($name);
-			
-				if (empty($chunk)) {
-					$chunk = $this->modx->getObject('modChunk', array('name' => $name));
-					
-					if ($chunk == false) {
-						return false;
-					}
-				}
-				
-				$this->chunks[$name] = $chunk->getContent();
-			} else {
-				$o = $this->chunks[$name];
-				$chunk = $this->modx->newObject('modChunk');
-				$chunk->setContent($o);
-			}
-			
-			$chunk->setCacheable(false);
-			
-			return $chunk->process($properties);
-		}
-		
-		/**
-		 * @acces public.
-		 * @param String $name.
-		 * @param String $postfix.
-		 * @return String.
-		 */
-		private function _getTplChunk($name, $postfix = '.chunk.tpl') {
-			$chunk = false;
-			
-			$f = $this->config['chunksPath'].strtolower($name).$postfix;
-			
-			if (file_exists($f)) {
-				$o = file_get_contents($f);
-				$chunk = $this->modx->newObject('modChunk');
-				$chunk->set('name', $name);
-				$chunk->setContent($o);
-			}
-			
-			return $chunk;
-		}
-		
-		/**
-		 * @acces public.
 		 * @param Array $properties.
 		 * @return Boolean.
 		 */
@@ -138,8 +85,10 @@
 			if (false !== ($values = $this->modx->getOption('values', $properties, false))) {
 				switch($this->modx->getOption('type', $properties, 'subscribe')) {
 					case 'confirm':
-						if (false !== ($confirm = $this->modx->getOption($properties['confirmKey'], $values, false))) {
-							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', array('confirm' => $confirm))) {
+						if (false !== ($email = $this->modx->getOption($properties['confirmKey'], $values, false))) {
+							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', array('confirm' => $email))) {
+								$this->modx->setPlaceholder('newsletter_last_id', $subscription->id);
+								
 								$subscription->fromArray(array(
 									'active'	=> 1
 								));
@@ -158,22 +107,49 @@
 						
 						break;
 					case 'subscribe':
-						if ($this->modx->getOption('email', $values, false)) {
-							if (!$subscription = $this->modx->getObject('NewsletterSubscriptions', array('email' => $values['email']))) {
+						if (false !== ($email = $this->modx->getOption('email', $values, false))) {
+							if (!$subscription = $this->modx->getObject('NewsletterSubscriptions', array('email' => $email))) {
 								$subscription = $this->modx->newObject('NewsletterSubscriptions');
 							}
 
-							$confirm 	= md5(time());
-							$groups 	= $this->modx->getOption('groups', $values, array());
+							$confirm = md5(time());
 
 							$subscription->fromArray(array_merge($values, array(
 								'active'	=> 0,
 								'confirm'	=> $confirm,
-								'groups' 	=> is_array($groups) ? implode(',', $groups) : $groups
 							)));
-								
+
 							if ($subscription->save()) {
-								$this->modx->setPlaceholder('newsletter_confirm_link', $confirm);
+								$groups = $this->modx->getOption('groups', $values, array());
+								$groups = is_string($groups) ? explode(',', $groups) : $groups;
+
+								if (false !== ($defaultGroups = $this->modx->getOption('groups', $properties, false))) {
+									if (is_string($defaultGroups)) {
+										$defaultGroups = explode(',', $defaultGroups);
+									}
+				
+									$groups = array_merge($groups, $defaultGroups);
+								}
+								
+								foreach ($groups as $group) {
+									if (null !== ($group = $this->modx->getObject('NewsletterGroups', array('id' => $group)))) {
+										if (!$newGroup = $this->modx->getObject('NewsletterSubscriptionsGroups', array('parent_id' => $subscription->id, 'group_id' => $group->id))) {
+											if (null !== ($newGroup = $this->modx->newObject('NewsletterSubscriptionsGroups'))) {
+												$newGroup->fromArray(array(
+													'parent_id'	=> $subscription->id,
+													'group_id'	=> $group->id
+												));
+											
+												$newGroup->save();
+											}
+										}
+									}
+								}
+		
+								$this->modx->setPlaceholders(array(
+									'newsletter_last_id'		=> $subscription->id,
+									'newsletter_confirm_link'	=> $confirm
+								));
 					
 								return true;	
 							}
@@ -195,8 +171,8 @@
 			if (false !== ($values = $this->modx->getOption('values', $properties, false))) {
 				switch($this->modx->getOption('type', $properties, 'unsubscribe')) {
 					case 'confirm':
-						if (false !== ($confirm = $this->modx->getOption($properties['confirmKey'], $values, false))) {
-							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', array('email' => $confirm))) {
+						if (false !== ($email = $this->modx->getOption($properties['confirmKey'], $values, false))) {
+							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', array('email' => $email))) {
 								if ($subscription->remove()) {
 									if (false !== ($resource = $this->modx->getOption('resource', $properties, false))) {
 										$this->modx->sendRedirect($this->modx->makeUrl($resource, null, null, 'full'));
@@ -211,9 +187,36 @@
 						
 						break;
 					case 'unsubscribe':
-						if ($this->modx->getOption('email', $values, false)) {
-							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', array('email' => $values['email']))) {
-								return $subscription->remove();
+						if (false !== ($email = $this->modx->getOption('email', $values, false))) {
+							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', array('email' => $email))) {
+								$this->modx->setPlaceholder('newsletter_last_id', $subscription->id);
+								
+								if ($this->modx->getOption('groups', $values, false) || $this->modx->getOption('groups', $properties, false)) {
+									$groups = $this->modx->getOption('groups', $values, array());
+									$groups = is_string($groups) ? explode(',', $groups) : $groups;
+
+									if (false !== ($defaultGroups = $this->modx->getOption('groups', $properties, false))) {
+										if (is_string($defaultGroups)) {
+											$defaultGroups = explode(',', $defaultGroups);
+										}
+				
+										$groups = array_merge($groups, $defaultGroups);
+									}
+	
+									foreach ($groups as $group) {
+										$this->modx->removeCollection('NewsletterSubscriptionsGroups', array('parent_id' => $subscription->id, 'group_id' => $group));
+									}
+				
+									if (0 == $this->modx->getCount('NewsletterSubscriptionsGroups', array('parent_id' => $subscription->id))) {
+										return $subscription->remove();
+									} else {
+										return true;
+									}
+								} else {
+									$this->modx->removeCollection('NewsletterSubscriptionsGroups', array('parent_id' => $subscription->id));
+									
+									return $subscription->remove();
+								}
 							}
 						}
 						
@@ -229,36 +232,17 @@
 		 * @param String $groups.
 		 * @return Integer.
 		 */
-		public function getCount($groups) {
+		public function getCount($groups = array()) {
 			$count = 0;
 			
-			if (false !== $groups) {
-				$groups = explode(',', $groups);
-				
+			foreach (is_string($groups) ? explode(',', $groups) : $groups as $key => $group) {
 				$critera = array(
-					'context' => $this->modx->resource->context_key
+					'id'		=> $group,
+					'context' 	=> $this->modx->resource->context_key
 				);
-				
-				foreach ($this->modx->getCollection('NewsletterGroups', $critera) as $key => $value) {
-					if (!in_array($value->id, $groups)) {
-						unset($groups[array_search($value->id)]);
-					}
-				}
-			} else {
-				$groups = array();
-			}
 			
-			foreach ($this->modx->getCollection('NewsletterSubscriptions') as $key => $value) {
-				$sCount = 0 == count($groups) ? true : false;
-
-				foreach (explode(',', $value->groups) as $groupKey => $groupValue) {
-					if (in_array($groupValue, $groups)) {
-						$sCount = true;
-					}
-				}
-				
-				if ($sCount) {
-					$count++;
+				foreach ($this->modx->getCollection('NewsletterGroups', $critera) as $key => $group) {
+					$count += (int) $this->modx->getCount('NewsletterSubscriptionsGroups', array('group_id' => $group->id));
 				}
 			}
 				

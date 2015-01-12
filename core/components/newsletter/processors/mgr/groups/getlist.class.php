@@ -96,7 +96,17 @@
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
-			$array = $object->toArray();
+			$subscriptions = array();
+
+			foreach ($object->getMany('NewsletterSubscriptionsGroups') as $group) {
+				if (null !== ($subscription = $group->getOne('NewsletterSubscriptions'))) {
+					$subscriptions[$subscription->id] = $subscription->name;
+				}
+			}
+
+			$array = array_merge($object->toArray(), array(
+				'subscriptions'	=> count($subscriptions)
+			));
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
 				$array['editedon'] = '';

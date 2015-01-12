@@ -10,6 +10,7 @@
 	
 				$manager->createObjectContainer('NewsletterNewsletters');
 	            $manager->createObjectContainer('NewsletterSubscriptions');
+	            $manager->createObjectContainer('NewsletterSubscriptionsGroups');
 	            $manager->createObjectContainer('NewsletterGroups');
 	
 	            break;

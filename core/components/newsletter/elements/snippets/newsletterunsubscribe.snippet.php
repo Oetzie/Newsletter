@@ -45,7 +45,8 @@
 			if ($form->isValid()) {
 				$properties = array(
 					'type'		=> 'unsubscribe',
-					'values'	=> $form->getValues(),
+					'values'		=> $form->getValues(),
+					'groups'		=> $modx->getOption('newsletterGroups', $form->extensionScriptProperties, ''),
 					'confirmKey'	=> $modx->getOption('confirmKey', $scriptProperties)
 				);
 

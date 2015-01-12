@@ -500,7 +500,7 @@ Newsletter.window.UpdateSubscription = function(config) {
 Ext.extend(Newsletter.window.UpdateSubscription, MODx.Window, {
 	groups : function() {
 		var value = this.record.groups;
-		
+
 		Ext.Ajax.request({
 			url		: Newsletter.config.connectorUrl,
 			params	: {
@@ -516,7 +516,7 @@ Ext.extend(Newsletter.window.UpdateSubscription, MODx.Window, {
 			            description	: MODx.expandHelp ? '' : record.description,
 			            name		: 'groups[]',
 			            inputValue	: record.id,
-			            checked		: -1 != value.split(',').indexOf(record.id.toString()) ? true : false
+			            checked		: -1 != value.indexOf(record.id) ? true : false
 			        });
 				});
 

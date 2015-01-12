@@ -78,7 +78,7 @@ Newsletter.grid.Groups = function(config) {
             dataIndex	: 'name',
             sortable	: true,
             editable	: true,
-            width		: 250,
+            width		: 200,
             fixed		: true,
             editor		: {
             	xtype		: 'textfield'
@@ -92,6 +92,13 @@ Newsletter.grid.Groups = function(config) {
             editor		: {
             	xtype		: 'textfield'
             }
+        }, {
+            header		: _('newsletter.label_subscriptions'),
+            dataIndex	: 'subscriptions',
+            sortable	: true,
+            editable	: false,
+            width		: 100,
+            fixed		: true
         }, {
             header		: _('newsletter.label_active'),
             dataIndex	: 'active',
@@ -129,7 +136,7 @@ Newsletter.grid.Groups = function(config) {
         },
         autosave	: true,
         save_action	: 'mgr/groups/updateFromGrid',
-        fields		: ['id', 'context', 'name', 'description', 'active', 'editedon'],
+        fields		: ['id', 'context', 'name', 'description', 'subscriptions', 'active', 'editedon'],
         paging		: true,
         pageSize	: MODx.config.default_per_page > 30 ? MODx.config.default_per_page : 30,
         sortBy		: 'id',

@@ -107,7 +107,9 @@
 	$_lang['newsletter.label_send_as_desc']							= 'Een test nieuwsbrief wordt gelijk verstuurd, een definitieve nieuwsbrief word op een ander tijdstip verstuurd.';
 	$_lang['newsletter.label_send_date']							= 'Versturen op';
 	$_lang['newsletter.label_send_date_desc']						= 'Selecteer een datum wanneer de nieuwsbrief verstuurd moet worden, als er geen datum word geselecteerd word hij vannacht om 00:00 automatisch verstuurd.';
-
+	$_lang['newsletter.label_subscriptions']						= 'Inschrijvingen';
+	$_lang['newsletter.label_subscriptions_desc']					= '';
+	
 	$_lang['newsletter.filter_context']								= 'Filter op context...';
 	$_lang['newsletter.pending']									= 'In afwachting';
 	$_lang['newsletter.test']										= 'Test nieuwsbrief';

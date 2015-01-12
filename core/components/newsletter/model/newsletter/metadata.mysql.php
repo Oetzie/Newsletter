@@ -26,7 +26,8 @@
 		'xPDOSimpleObject' => array(
 			0 => 'NewsletterNewsletters',
 	    	1 => 'NewsletterSubscriptions',
-	    	2 => 'NewsletterGroups'
+	    	2 => 'NewsletterSubscriptionsGroups',
+	    	3 => 'NewsletterGroups'
 	    )
 	);
 	

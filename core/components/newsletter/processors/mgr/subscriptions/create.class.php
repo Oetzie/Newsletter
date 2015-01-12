@@ -49,14 +49,29 @@
 			if (null === $this->getProperty('active')) {
 				$this->setProperty('active', 0);
 			}
-			
-			if (null === ($groups = $this->getProperty('groups'))) {
-				$this->setProperty('groups', '');
-			} else {
-				$this->setProperty('groups', implode(',', $groups));
-			}
 
 			return parent::initialize();
+		}
+		
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+		public function afterSave() {
+			if (null !== ($groups = $this->getProperty('groups'))) {
+				foreach ($groups as $id) {
+					if (null !== ($group = $this->modx->newObject('NewsletterSubscriptionsGroups'))) {
+						$group->fromArray(array(
+							'parent_id'	=> $this->object->get('id'),
+							'group_id'	=> $id
+						));
+						
+						$group->save();
+					}
+				}
+			}
+			
+			return parent::afterSave();
 		}
 	}
 	

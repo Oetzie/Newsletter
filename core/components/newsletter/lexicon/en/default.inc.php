@@ -107,7 +107,9 @@
 	$_lang['newsletter.label_send_as_desc']							= 'A test newsletter will be send immediately, a permanent newsletter wil be send at another timestamp.';
 	$_lang['newsletter.label_send_date']							= 'Send at';
 	$_lang['newsletter.label_send_date_desc']						= 'Selecteer a date when the  newsletter should be send, if no date selected the newsletter will be send automatic tonight at 00:00.';
-
+	$_lang['newsletter.label_subscriptions']						= 'Subscriptions';
+	$_lang['newsletter.label_subscriptions_desc']					= '';
+	
 	$_lang['newsletter.filter_context']								= 'Filter on context...';
 	$_lang['newsletter.pending']									= 'Pending';
 	$_lang['newsletter.test']										= 'Test newsletter';

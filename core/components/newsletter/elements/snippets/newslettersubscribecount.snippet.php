@@ -26,6 +26,6 @@
 
 	$newsletter = new Newsletter($modx);
 
-	return $newsletter->getCount($modx->getOption('groups', $scriptProperties, false));
+	return $newsletter->getCount($modx->getOption('groups', $scriptProperties, array()));
 	
 ?>

@@ -10,7 +10,7 @@
         <field key="editedon" dbtype="timestamp" phptype="timestamp" attributes="ON UPDATE CURRENT_TIMESTAMP" null="false" default=""/>
         
         <index alias="PRIMARY" name="PRIMARY" primary="true" unique="true">
-                <column key="id" collation="A" null="false" />
+        	<column key="id" collation="A" null="false" />
         </index>
         
         <aggregate alias="modResource" local="resource_id" class="modResource" foreign="id" owner="foreign" cardinality="one" />
@@ -20,14 +20,28 @@
     	<field key="id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" generated="native"/>
     	<field key="name" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
     	<field key="email" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
-		<field key="groups" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
 		<field key="confirm" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
         <field key="active" dbtype="int" precision="1" phptype="integer" null="false" default="0"/>
         <field key="editedon" dbtype="timestamp" phptype="timestamp" attributes="ON UPDATE CURRENT_TIMESTAMP" null="false" default=""/>
         
         <index alias="PRIMARY" name="PRIMARY" primary="true" unique="true">
-                <column key="id" collation="A" null="false" />
+        	<column key="id" collation="A" null="false" />
         </index>
+
+        <aggregate alias="NewsletterSubscriptionsGroups" local="id" class="NewsletterSubscriptionsGroups" foreign="parent_id" owner="local" cardinality="many" />
+    </object>
+    
+    <object class="NewsletterSubscriptionsGroups" table="newsletter_subscriptions" extends="xPDOSimpleObject">
+    	<field key="id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" generated="native"/>
+    	<field key="parent_id" dbtype="int" precision="11" phptype="integer" null="false" default=""/>
+    	<field key="group_id" dbtype="int" precision="11" phptype="integer" null="false" default=""/>
+    	
+        <index alias="PRIMARY" name="PRIMARY" primary="true" unique="true">
+        	<column key="id" collation="A" null="false" />
+        </index>
+
+        <aggregate alias="NewsletterSubscriptions" local="parent_id" class="NewsletterSubscriptions" foreign="id" owner="foreign" cardinality="one" />
+        <aggregate alias="NewsletterGroups" local="group_id" class="NewsletterGroups" foreign="id" owner="foreign" cardinality="one" />
     </object>
     
     <object class="NewsletterGroups" table="newsletter_groups" extends="xPDOSimpleObject">
@@ -39,7 +53,9 @@
         <field key="editedon" dbtype="timestamp" phptype="timestamp" attributes="ON UPDATE CURRENT_TIMESTAMP" null="false" default=""/>
         
         <index alias="PRIMARY" name="PRIMARY" primary="true" unique="true">
-                <column key="id" collation="A" null="false" />
+        	<column key="id" collation="A" null="false" />
         </index>
+
+        <aggregate alias="NewsletterSubscriptionsGroups" local="id" class="NewsletterSubscriptionsGroups" foreign="group_id" owner="local" cardinality="many" />
     </object>
 </model>

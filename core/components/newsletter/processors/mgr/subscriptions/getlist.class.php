@@ -91,16 +91,17 @@
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
-			$groups = explode(',', $object->groups);
-
-			foreach ($this->modx->getCollection('NewsletterGroups') as $key => $value) {
-				if (in_array($value->id, $groups)) {
-					$groups[array_search($value->id, $groups)] = $value->name.(2 == $this->modx->getCount('modContext') ? '' : ' ('.$value->context.')');
+			$groups = array();
+	
+			foreach ($object->getMany('NewsletterSubscriptionsGroups') as $group) {
+				if (null !== ($group = $group->getOne('NewsletterGroups'))) {
+					$groups[$group->id] = $group->name;
 				}
 			}
-			
+
 			$array = array_merge($object->toArray(), array(
-				'group_names' => implode(', ', $groups)
+				'groups'		=> array_keys($groups),
+				'group_names' 	=> implode(', ', $groups)
 			));
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', null))) {

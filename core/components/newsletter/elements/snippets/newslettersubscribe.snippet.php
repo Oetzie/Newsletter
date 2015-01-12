@@ -38,21 +38,20 @@
 			);
 
 			if (false === ($subscribe = $newsletter->subscribe($properties))) {
-				$form->getValidator()->setBulkError('extension_newsletter_confirm');
+				$form->getValidator()->setBulkError('extension_newsletter_subscribe_confirm');
 			}
 			break;
 		case 'After':
 			if ($form->isValid()) {
 				$properties = array(
 					'type'		=> 'subscribe',
-					'values'	=> array_merge(array(
-						'groups'	=> $modx->getOption('newsletterGroups', $form->extensionScriptProperties, ''),
-					), $form->getValues()),
+					'values'		=> $form->getValues(),
+					'groups'		=> $modx->getOption('newsletterGroups', $form->extensionScriptProperties, ''),
 					'confirmKey'	=> $modx->getOption('confirmKey', $scriptProperties)
 				);
 
 				if (false === ($subscribe = $newsletter->subscribe($properties))) {
-					$form->getValidator()->setBulkError('extension_newsletter');
+					$form->getValidator()->setBulkError('extension_newsletter_subscribe');
 				}
 			}
 

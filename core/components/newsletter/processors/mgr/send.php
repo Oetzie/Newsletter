@@ -55,13 +55,13 @@
 					
 					$groups = array_filter(array_map('trim', explode(',', $value->groups)));
 					
-					foreach ($modx->getCollection('NewsletterSubscriptions', array('active' => 1)) as $subscriptionKey => $subscriptionValue) {
-			    		foreach (explode(',', $subscriptionValue->groups) as $id) {
-				    		if (in_array($id, $groups) && !array_key_exists($subscriptionValue->email, $emails)) {
-					    		$emails[$subscriptionValue->email] = $subscriptionValue->toArray();
-				    		}
-			    		}
-		    		}
+					foreach ($groups as $key => $value) {
+						foreach ($this->modx->getCollection('NewsletterSubscriptionsGroups', array('group_id' => $value)) as $group) {
+							if (null !== ($subscription = $group->getOne('NewsletterSubscriptions'))) {
+								$emails[$subscription->email] = $subscription->toArray();
+							}
+						}
+					}
 	
 		    		$ch = curl_init();
 	        		curl_setopt($ch, CURLOPT_URL, $url);
