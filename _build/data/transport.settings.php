@@ -23,7 +23,7 @@
 	$settings[2] = $modx->newObject('modSystemSetting');
 	$settings[2]->fromArray(array(
 		'key' 		=> PKG_NAME_LOWER.'_email',
-		'value' 	=> $modx->getOption('emailsender', null, ''),
+		'value' 	=> '',
 		'xtype' 	=> 'textfield',
 		'namespace' => PKG_NAME_LOWER,
 		'area' 		=> PKG_NAME_LOWER
@@ -32,7 +32,7 @@
 	$settings[3] = $modx->newObject('modSystemSetting');
 	$settings[3]->fromArray(array(
 		'key' 		=> PKG_NAME_LOWER.'_name',
-		'value' 	=> $modx->getOption('site_name', null, ''),
+		'value' 	=> '',
 		'xtype' 	=> 'textfield',
 		'namespace' => PKG_NAME_LOWER,
 		'area' 		=> PKG_NAME_LOWER

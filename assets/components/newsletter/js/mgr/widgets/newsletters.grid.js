@@ -326,19 +326,13 @@ Newsletter.window.CreateNewsletter = function(config) {
 			value		: 0,
 			id			: 'modx-resource-parent-hidden'
 		}, {
-			xtype		: 'hidden',
-			value		: 0,
-			id			: 'modx-resource-parent-old-hidden'
-		}, {
-			xtype		: 'hidden',
-			id			: 'modx-resource-context-key'
-		}, {
     		xtype		: 'modx-field-parent-change',
     		fieldLabel	: _('newsletter.label_resource'),
 			description	: MODx.expandHelp ? '' : _('newsletter.label_resource_desc'),
 			anchor		: '100%',
 			allowBlank	: false,
-			formpanel	: 'newsletter-panel-home'
+			formpanel	: 'newsletter-panel-home',
+			contextcmp	: null
 		}, {
         	xtype		: MODx.expandHelp ? 'label' : 'hidden',
             html		: _('newsletter.label_resource_desc'),
@@ -376,20 +370,14 @@ Newsletter.window.UpdateNewsletter = function(config) {
 			value		: config.record.resource_id || 0,
 			id			: 'modx-resource-parent-hidden'
 		}, {
-			xtype		: 'hidden',
-			value		: config.record.resource_id || 0,
-			id			: 'modx-resource-parent-old-hidden'
-		}, {
-			xtype		: 'hidden',
-			id			: 'modx-resource-context-key'
-		}, {
     		xtype		: 'modx-field-parent-change',
     		fieldLabel	: _('newsletter.label_resource'),
 			description	: MODx.expandHelp ? '' : _('newsletter.label_resource_desc'),
 			anchor		: '100%',
 			allowBlank	: false,
 			value		: config.record.resource_name_alias,
-			formpanel	: 'newsletter-panel-home'
+			formpanel	: 'newsletter-panel-home',
+			contextcmp	: null
 		}, {
         	xtype		: MODx.expandHelp ? 'label' : 'hidden',
             html		: _('newsletter.label_resource_desc'),
