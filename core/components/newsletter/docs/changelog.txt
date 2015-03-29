@@ -3,6 +3,14 @@ Newsletter
 ----------------------
 
 ----------------------
+Version: 1.1.2-pl
+Released: 2015-03-29
+----------------------
+- Some bugfixed
+- Dutch lexicon edit
+- XML import/export function
+
+----------------------
 Version: 1.1.1-pl
 Released: 2014-11-29
 ----------------------

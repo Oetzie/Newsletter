@@ -65,7 +65,10 @@
 	$_lang['newsletter.subscription_activate_selected_confirm']		= 'Are you sure you want to activate the selected subscriptions?';
 	$_lang['newsletter.subscription_deactivate_selected']			= 'Deactivate selected subscriptions';
 	$_lang['newsletter.subscription_deactivate_selected_confirm']	= 'Are you sure you want to deactivate the selected subscriptions?';
-	$_lang['newsletter.subscription_export']						= 'Export';
+	$_lang['newsletter.subscription_import']						= 'Import subscription';
+	$_lang['newsletter.subscription_import_desc']					= 'Select a xml file to import subscriptions or groups. The file must be a valid XML format.';
+	$_lang['newsletter.subscription_export']						= 'Export subscription';
+	$_lang['newsletter.subscription_export_desc']					= 'Select the data that needs to be exported.';
 	
 	$_lang['newsletter.group']										= 'Group';
 	$_lang['newsletter.groups']										= 'Groups';
@@ -110,6 +113,14 @@
 	$_lang['newsletter.label_send_date_desc']						= 'Selecteer a date when the  newsletter should be send, if no date selected the newsletter will be send automatic tonight at 00:00.';
 	$_lang['newsletter.label_subscriptions']						= 'Subscriptions';
 	$_lang['newsletter.label_subscriptions_desc']					= '';
+	$_lang['newsletter.label_import_subscription']					= 'Subscriptions';
+	$_lang['newsletter.label_import_subscription_desc']				= 'If checked, all subscriptions will be imported.';
+	$_lang['newsletter.label_import_groups']						= 'Groups';
+	$_lang['newsletter.label_import_groups_desc']					= 'If checked, all groups will be imported.';
+	$_lang['newsletter.label_export_subscription']					= 'Subscriptions';
+	$_lang['newsletter.label_export_subscription_desc']				= 'If checked, all existing subscription will be exported.';
+	$_lang['newsletter.label_export_groups']						= 'Groups';
+	$_lang['newsletter.label_export_groups_desc']					= 'If checked, all existing groups will be exported.';
 	
 	$_lang['newsletter.filter_context']								= 'Filter on context...';
 	$_lang['newsletter.pending']									= 'Pending';

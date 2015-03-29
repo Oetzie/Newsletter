@@ -13,20 +13,24 @@ Newsletter.grid.Subscriptions = function(config) {
 			name	: 'activate',
 			handler	: this.activateSelectedSubscription,
 			scope	: this
-		},{
+		}, {
 			text	: _('newsletter.deactivate_selected'),
 			name	: 'deactivate',
 			handler	: this.activateSelectedSubscription,
 			scope	: this
-		},{
+		}, {
 			text	: _('newsletter.remove_selected'),
 			handler	: this.removeSelectedSubscription,
 			scope	: this
+		}, '-', {
+       		text	: _('newsletter.subscription_import'),
+	   		handler	: this.importSubscriptions,
+	   		scope	: this
+		}, {
+       		text	: _('newsletter.subscription_export'),
+	   		handler	: this.exportSubscriptions,
+	   		scope	: this
 		}]
-	}, {
-        text	: _('export'),
-        handler	: this.exportSubscriptions,
-        scope	: this
 	}, '->', {
         xtype		: 'textfield',
         name 		: 'newsletter-filter-search-subscriptions',
@@ -225,8 +229,48 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             }
     	});
     },
+    importSubscriptions: function(btn, e) {
+        if (this.importSubscriptionsWindow) {
+	        this.importSubscriptionsWindow.destroy();
+        }
+        
+        this.importSubscriptionsWindow = MODx.load({
+	        xtype		: 'newsletter-window-subscription-import',
+	        closeAction	:'close',
+	        listeners	: {
+		        'success'	: {
+            		fn		: function() {
+            			this.getSelectionModel().clearSelections(true);
+            			this.refresh();
+            		},
+		        	scope		:this
+		        }
+	         }
+        });
+        
+        this.importSubscriptionsWindow.show(e.target);
+    },
     exportSubscriptions: function(btn, e) {
-		MODx.Ajax.request({
+	    if (this.exportSubscriptionsWindow) {
+	        this.exportSubscriptionsWindow.destroy();
+        }
+        
+        this.exportSubscriptionsWindow = MODx.load({
+	        xtype		: 'newsletter-window-subscription-export',
+	        closeAction	:'close',
+	        listeners	: {
+		        'success'	: {
+            		fn		: function() {
+            			location.href = this.config.url + '?action=mgr/subscriptions/export&download=1&HTTP_MODAUTH=' + MODx.siteId;
+            		},
+		        	scope		:this
+		        }
+	         }
+        });
+        
+        this.exportSubscriptionsWindow.show(e.target);
+        
+		/*MODx.Ajax.request({
 			url		: this.config.url,
 			params	: {
             	action	: 'mgr/subscriptions/export'
@@ -239,7 +283,7 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
 					scope	:this
 				}
 			}
-		});
+		});*/
     },
     updateSubscription: function(btn, e) {
         if (this.updateSubscriptionWindow) {
@@ -535,3 +579,112 @@ Ext.extend(Newsletter.window.UpdateSubscription, MODx.Window, {
 });
 
 Ext.reg('newsletter-window-subscription-update', Newsletter.window.UpdateSubscription);
+
+Newsletter.window.ImportSubscriptions = function(config) {
+    config = config || {};
+
+    Ext.applyIf(config, {
+    	autoHeight	: true,
+        title 		: _('newsletter.subscription_import'),
+        url			: Newsletter.config.connectorUrl,
+        baseParams	: {
+            action		: 'mgr/subscriptions/import'
+        },
+        defauls		: {
+	        labelAlign	: 'top',
+            border		: false
+        },
+        fields		: [{
+	        html 		: _('newsletter.subscription_import_desc'),
+	        cls			: 'panel-desc',
+	        style		: 'margin-bottom: 10px;'
+        }, {
+	        xtype		: 'fileuploadfield',
+            fieldLabel	: _('file'),
+            buttonText	: _('upload.buttons.upload'),
+            name		: 'file',
+            anchor		: '100%'
+        }, {
+	        xtype		: 'checkbox',
+            boxLabel	: _('newsletter.label_import_groups'),
+            description	: MODx.expandHelp ? '' : _('newsletter.label_import_groups_desc'),
+            name		: 'groups',
+            inputValue	: 1,
+            checked		: true
+        }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_import_groups_desc'),
+            cls			: 'desc-under',
+        }, {
+	        xtype		: 'checkbox',
+            boxLabel	: _('newsletter.label_import_subscription'),
+            description	: MODx.expandHelp ? '' : _('newsletter.label_import_subscription_desc'),
+            name		: 'subscriptions',
+            inputValue	: 1,
+            checked		: true
+        }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_import_subscription_desc'),
+            cls			: 'desc-under'
+        }],
+        fileUpload	: true,
+        saveBtnText	: _('import')
+    });
+    
+    Newsletter.window.ImportSubscriptions.superclass.constructor.call(this, config);
+};
+
+Ext.extend(Newsletter.window.ImportSubscriptions, MODx.Window);
+
+Ext.reg('newsletter-window-subscription-import', Newsletter.window.ImportSubscriptions);
+
+Newsletter.window.ExportSubscriptions = function(config) {
+    config = config || {};
+
+    Ext.applyIf(config, {
+    	autoHeight	: true,
+        title 		: _('newsletter.subscription_export'),
+        url			: Newsletter.config.connectorUrl,
+        baseParams	: {
+            action		: 'mgr/subscriptions/export'
+        },
+        defauls		: {
+	        labelAlign	: 'top',
+            border		: false
+        },
+        fields		: [{
+	        html 		: _('newsletter.subscription_export_desc'),
+	        cls			: 'panel-desc',
+	        style		: 'margin-bottom: 10px;'
+        }, {
+	        xtype		: 'checkbox',
+            boxLabel	: _('newsletter.label_export_groups'),
+            description	: MODx.expandHelp ? '' : _('newsletter.label_export_groups_desc'),
+            name		: 'groups',
+            inputValue	: 1,
+            checked		: true
+        }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_export_groups_desc'),
+            cls			: 'desc-under',
+        }, {
+	        xtype		: 'checkbox',
+            boxLabel	: _('newsletter.label_export_subscription'),
+            description	: MODx.expandHelp ? '' : _('newsletter.label_export_subscription_desc'),
+            name		: 'subscriptions',
+            inputValue	: 1,
+            checked		: true
+        }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_export_subscription_desc'),
+            cls			: 'desc-under'
+        }],
+        saveBtnText	: _('export')
+    });
+    
+    Newsletter.window.ExportSubscriptions.superclass.constructor.call(this, config);
+};
+
+Ext.extend(Newsletter.window.ExportSubscriptions, MODx.Window);
+
+Ext.reg('newsletter-window-subscription-export', Newsletter.window.ExportSubscriptions);

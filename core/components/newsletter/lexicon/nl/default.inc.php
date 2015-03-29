@@ -43,8 +43,8 @@
 	$_lang['newsletter.newsletters']								= 'Nieuwsbrieven';
 	$_lang['newsletter.newsletters_desc']							= 'Hier kun je alle nieuwsbrief beheren van jouw MODX website. Controleer de nieuwsbrief goed voordat je hem verstuurd, na het versturen kun je alleen nog de webversie wijzigen en verschijnt hij bij alle ingeschreven leden in de e-mail inbox met eventuele fouten. Definitieve nieuwsbrieven worden iedere nacht om 00:00 automatisch verstuurd in verband met het zware proces van het versturen van 100en e-mails.';
 	$_lang['newsletter.newsletter_cronjob_desc']					= 'Om nieuwsbrieven automatisch te kunnen versturen kun je gebruik maken van een cronjob, indien je een cronjob voor de nieuwsbrieven hebt ingesteld of geen gebruik wilt maken van een cronjob kun je deze melding uitzetten via systeeminstellingen.';
-	$_lang['newsletter.newsletter_create']							= 'Maak nieuwe nieuwsbrief';
-	$_lang['newsletter.newsletter_update']							= 'Nieuwsbrief updaten';
+	$_lang['newsletter.newsletter_create']							= 'Nieuwe nieuwsbrief';
+	$_lang['newsletter.newsletter_update']							= 'Nieuwsbrief wijzigen';
 	$_lang['newsletter.newsletter_remove']							= 'Nieuwsbrief verwijderen';
 	$_lang['newsletter.newsletter_remove_confirm']					= 'Weet je zeker dat je deze nieuwsbrief wilt verwijderen?';
 	$_lang['newsletter.newsletter_preview']							= 'Nieuwsbrief bekijken';
@@ -55,8 +55,8 @@
 	$_lang['newsletter.subscription']								= 'Inschrijving';
 	$_lang['newsletter.subscriptions']								= 'Inschrijvingen';
 	$_lang['newsletter.subscriptions_desc']							= 'Hier kun je alle nieuwsbrief inschrijvingen beheren van de nieuwsbrieven.';
-	$_lang['newsletter.subscription_create']						= 'Maak nieuwe inschrijving';
-	$_lang['newsletter.subscription_update']						= 'Inschrijving updaten';
+	$_lang['newsletter.subscription_create']						= 'Nieuwe inschrijving';
+	$_lang['newsletter.subscription_update']						= 'Inschrijving wijzigen';
 	$_lang['newsletter.subscription_remove']						= 'Inschrijving verwijderen';
 	$_lang['newsletter.subscription_remove_confirm']				= 'Weet je zeker dat je deze inschrijving wilt verwijderen?';
 	$_lang['newsletter.subscription_remove_selected']				= 'Geselecteerde inschrijvingen verwijderen';
@@ -65,13 +65,16 @@
 	$_lang['newsletter.subscription_activate_selected_confirm']		= 'Weet je zeker dat je de geselecteerde inschrijvingen wilt activeren?';
 	$_lang['newsletter.subscription_deactivate_selected']			= 'Geselecteerde inschrijvingen deactiveren';
 	$_lang['newsletter.subscription_deactivate_selected_confirm']	= 'Weet je zeker dat je de geselecteerde inschrijvingen wilt deactiveren?';
-	$_lang['newsletter.subscription_export']						= 'Exporteer';
+	$_lang['newsletter.subscription_import']						= 'Inschrijvingen importeren';
+	$_lang['newsletter.subscription_import_desc']					= 'Selecteer een XML bestand om inschrijvingen of groepen te importeren. Het moet een geldig XML formaat zijn.';
+	$_lang['newsletter.subscription_export']						= 'Inschrijvingen exporteren';
+	$_lang['newsletter.subscription_export_desc']					= 'Selecteer de gegevens die geëxporteerd moeten worden.';
 	
 	$_lang['newsletter.group']										= 'Groep';
 	$_lang['newsletter.groups']										= 'Groepen';
-	$_lang['newsletter.groups_desc']								= 'Hier kun je alle groepen voor de inschrijvingen instellen van de nieuwsbrieven.';
-	$_lang['newsletter.group_create']								= 'Maak nieuwe groep';
-	$_lang['newsletter.group_update']								= 'Groep updaten';
+	$_lang['newsletter.groups_desc']								= 'Hier kun je alle groepen (mailinglijsten) voor de inschrijvingen instellen van de nieuwsbrieven.';
+	$_lang['newsletter.group_create']								= 'Nieuwe groep';
+	$_lang['newsletter.group_update']								= 'Groep wijzigen';
 	$_lang['newsletter.group_remove']								= 'Groep verwijderen';
 	$_lang['newsletter.group_remove_confirm']						= 'Weet je zeker dat je deze groep wilt verwijderen? Dit verwijderd ook alle inschrijvingen van deze groep.';
 	$_lang['newsletter.group_remove_selected']						= 'Geselecteerde groepen verwijderen';
@@ -81,8 +84,8 @@
 	$_lang['newsletter.group_deactivate_selected']					= 'Geselecteerde groepen deactiveren';
 	$_lang['newsletter.group_deactivate_selected_confirm']			= 'Weet je zeker dat je de geselecteerde groepen wilt deactiveren?';
 	
-	$_lang['newsletter.label_resource']								= 'Document';
-	$_lang['newsletter.label_resource_desc']						= 'Selecteer het document die als nieuwsbrief dient.';
+	$_lang['newsletter.label_resource']								= 'Pagina';
+	$_lang['newsletter.label_resource_desc']						= 'Selecteer het pagina die als nieuwsbrief dient.';
 	$_lang['newsletter.label_email']								= 'E-mailadres';
 	$_lang['newsletter.label_email_desc']							= 'Het e-mailadres van de inschrijving.';
 	$_lang['newsletter.label_name']									= 'Naam';
@@ -110,6 +113,14 @@
 	$_lang['newsletter.label_send_date_desc']						= 'Selecteer een datum wanneer de nieuwsbrief verstuurd moet worden, als er geen datum word geselecteerd word hij vannacht om 00:00 automatisch verstuurd.';
 	$_lang['newsletter.label_subscriptions']						= 'Inschrijvingen';
 	$_lang['newsletter.label_subscriptions_desc']					= '';
+	$_lang['newsletter.label_import_subscription']					= 'Inschrijvingen';
+	$_lang['newsletter.label_import_subscription_desc']				= 'Indien aangevinkt, zullen alle inschrijvingen geïmporteerd worden.';
+	$_lang['newsletter.label_import_groups']						= 'Groepen';
+	$_lang['newsletter.label_import_groups_desc']					= 'Indien aangevinkt, zullen alle groepen geïmporteerd worden.';
+	$_lang['newsletter.label_export_subscription']					= 'Inschrijvingen';
+	$_lang['newsletter.label_export_subscription_desc']				= 'Indien aangevinkt, zullen alle bestaande inschrijvingen geëxporteerd worden.';
+	$_lang['newsletter.label_export_groups']						= 'Groepen';
+	$_lang['newsletter.label_export_groups_desc']					= 'Indien aangevinkt, zullen alle bestaande groepen geëxporteerd worden.';
 	
 	$_lang['newsletter.filter_context']								= 'Filter op context...';
 	$_lang['newsletter.pending']									= 'In afwachting';
