@@ -73,6 +73,12 @@
 		 * @return Object.
 		 */
 		public function prepareQueryBeforeCount(xPDOQuery $c) {
+			if ('' != ($confirm = $confirm = $this->getProperty('confirm'))) {
+				$c->where(array(
+					'active' 	=> $confirm
+				));
+			}
+			
 			$query = $this->getProperty('query');
 			
 			if (!empty($query)) {

@@ -61,10 +61,10 @@
 	$_lang['newsletter.subscription_remove_confirm']				= 'Weet je zeker dat je deze inschrijving wilt verwijderen?';
 	$_lang['newsletter.subscription_remove_selected']				= 'Geselecteerde inschrijvingen verwijderen';
 	$_lang['newsletter.subscription_remove_selected_confirm']		= 'Weet je zeker dat je de geselecteerde inschrijvingen wilt verwijderen?';
-	$_lang['newsletter.subscription_activate_selected']				= 'Geselecteerde inschrijvingen activeren';
-	$_lang['newsletter.subscription_activate_selected_confirm']		= 'Weet je zeker dat je de geselecteerde inschrijvingen wilt activeren?';
-	$_lang['newsletter.subscription_deactivate_selected']			= 'Geselecteerde inschrijvingen deactiveren';
-	$_lang['newsletter.subscription_deactivate_selected_confirm']	= 'Weet je zeker dat je de geselecteerde inschrijvingen wilt deactiveren?';
+	$_lang['newsletter.subscription_activate_selected']				= 'Geselecteerde inschrijvingen bevestigen';
+	$_lang['newsletter.subscription_activate_selected_confirm']		= 'Weet je zeker dat je de geselecteerde inschrijvingen wilt bevestigen?';
+	$_lang['newsletter.subscription_deactivate_selected']			= 'Geselecteerde inschrijvingen de-bevestigen';
+	$_lang['newsletter.subscription_deactivate_selected_confirm']	= 'Weet je zeker dat je de geselecteerde inschrijvingen wilt de-bevestigen?';
 	$_lang['newsletter.subscription_import']						= 'Inschrijvingen importeren';
 	$_lang['newsletter.subscription_import_desc']					= 'Selecteer een XML bestand om inschrijvingen of groepen te importeren. Het moet een geldig XML formaat zijn.';
 	$_lang['newsletter.subscription_export']						= 'Inschrijvingen exporteren';
@@ -121,16 +121,22 @@
 	$_lang['newsletter.label_export_subscription_desc']				= 'Indien aangevinkt, zullen alle bestaande inschrijvingen geëxporteerd worden.';
 	$_lang['newsletter.label_export_groups']						= 'Groepen';
 	$_lang['newsletter.label_export_groups_desc']					= 'Indien aangevinkt, zullen alle bestaande groepen geëxporteerd worden.';
+	$_lang['newsletter.label_confirm']								= 'Bevestigd';
 	
 	$_lang['newsletter.filter_context']								= 'Filter op context...';
+	$_lang['newsletter.filter_confirm']								= 'Filter op bevestiging...';
 	$_lang['newsletter.pending']									= 'In afwachting';
 	$_lang['newsletter.test']										= 'Test nieuwsbrief';
 	$_lang['newsletter.permanent']									= 'Definitieve nieuwsbrief';
+	$_lang['newsletter.confirmed']									= 'Bevestigd';
+	$_lang['newsletter.notconfirmed']								= 'Niet bevestigd';
 	$_lang['newsletter.resource_does_not_exists']					= 'Dit document bestaat niet of is verwijderd.';
 	$_lang['newsletter.newsletter_send_succes']						= 'Succes!';
 	$_lang['newsletter.newsletter_send_succes_desc']				= 'De nieuwsbrief is succesvol verstuurd en opgeslagen.';
-	$_lang['newsletter.activate_selected']							= 'Activeer geselecteerden';
-	$_lang['newsletter.deactivate_selected']						= 'Deactiveer geselecteerden';
-	$_lang['newsletter.remove_selected']							= 'Verwijder geselecteerden';
+	$_lang['newsletter.activate_selected']							= 'Geselecteerden activeren';
+	$_lang['newsletter.deactivate_selected']						= 'Geselecteerden deactiveren';
+	$_lang['newsletter.remove_selected']							= 'Geselecteerden verwijderen';
+	$_lang['newsletter.confirm_selected']							= 'Geselecteerden bevestigen';
+	$_lang['newsletter.deconfirm_selected']							= 'Geselecteerden de-bevestigen';
 	
 ?>

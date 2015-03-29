@@ -9,18 +9,18 @@ Newsletter.grid.Subscriptions = function(config) {
 	}, {
 		text	: _('bulk_actions'),
 		menu	: [{
-			text	: _('newsletter.activate_selected'),
+			text	: _('newsletter.remove_selected'),
+			handler	: this.removeSelectedSubscription,
+			scope	: this
+		}, '-', {
+			text	: _('newsletter.confirm_selected'),
 			name	: 'activate',
 			handler	: this.activateSelectedSubscription,
 			scope	: this
 		}, {
-			text	: _('newsletter.deactivate_selected'),
+			text	: _('newsletter.deconfirm_selected'),
 			name	: 'deactivate',
 			handler	: this.activateSelectedSubscription,
-			scope	: this
-		}, {
-			text	: _('newsletter.remove_selected'),
-			handler	: this.removeSelectedSubscription,
 			scope	: this
 		}, '-', {
        		text	: _('newsletter.subscription_import'),
@@ -32,6 +32,18 @@ Newsletter.grid.Subscriptions = function(config) {
 	   		scope	: this
 		}]
 	}, '->', {
+    	xtype		: 'newsletter-combo-confirm',
+    	name		: 'newsletter-filter-confirm-subscriptions',
+        id			: 'newsletter-filter-confirm-subscriptions',
+        emptyText	: _('newsletter.filter_confirm'),
+        listeners	: {
+        	'select'	: {
+	            	fn			: this.filterConfirm,
+	            	scope		: this   
+		    }
+		},
+		width: 150
+    }, {
         xtype		: 'textfield',
         name 		: 'newsletter-filter-search-subscriptions',
         id			: 'newsletter-filter-search-subscriptions',
@@ -95,7 +107,7 @@ Newsletter.grid.Subscriptions = function(config) {
             width		: 150,
             fixed		: true
         }, {
-            header		: _('newsletter.label_active'),
+            header		: _('newsletter.label_confirm'),
             dataIndex	: 'active',
             sortable	: true,
             editable	: true,
@@ -135,12 +147,18 @@ Newsletter.grid.Subscriptions = function(config) {
 };
 
 Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
+    filterConfirm: function(tf, nv, ov) {
+        this.getStore().baseParams.confirm = tf.getValue();
+        this.getBottomToolbar().changePage(1);
+    },
     filterSearch: function(tf, nv, ov) {
         this.getStore().baseParams.query = tf.getValue();
         this.getBottomToolbar().changePage(1);
     },
     clearFilter: function() {
+	    this.getStore().baseParams.confirm = '';
 	    this.getStore().baseParams.query = '';
+	    Ext.getCmp('newsletter-filter-confirm-subscriptions').reset();
 	    Ext.getCmp('newsletter-filter-search-subscriptions').reset();
         this.getBottomToolbar().changePage(1);
     },
@@ -269,21 +287,6 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         });
         
         this.exportSubscriptionsWindow.show(e.target);
-        
-		/*MODx.Ajax.request({
-			url		: this.config.url,
-			params	: {
-            	action	: 'mgr/subscriptions/export'
-            },
-			listeners: {
-				'success': {
-					fn			:	function() {
-						location.href = this.config.url + '?action=mgr/subscriptions/export&download=1&HTTP_MODAUTH=' + MODx.siteId;
-					},
-					scope	:this
-				}
-			}
-		});*/
     },
     updateSubscription: function(btn, e) {
         if (this.updateSubscriptionWindow) {
@@ -688,3 +691,29 @@ Newsletter.window.ExportSubscriptions = function(config) {
 Ext.extend(Newsletter.window.ExportSubscriptions, MODx.Window);
 
 Ext.reg('newsletter-window-subscription-export', Newsletter.window.ExportSubscriptions);
+
+Newsletter.combo.ConfirmTypes = function(config) {
+    config = config || {};
+    
+    Ext.applyIf(config, {
+        store: new Ext.data.ArrayStore({
+            mode	: 'local',
+            fields	: ['type','label'],
+            data	: [
+	            ['1', _('newsletter.confirmed')],
+               	['0', _('newsletter.notconfirmed')]
+            ]
+        }),
+        remoteSort	: ['label', 'asc'],
+        hiddenName	: 'type',
+        valueField	: 'type',
+        displayField: 'label',
+        mode		: 'local'
+    });
+    
+    Newsletter.combo.ConfirmTypes.superclass.constructor.call(this,config);
+};
+
+Ext.extend(Newsletter.combo.ConfirmTypes, MODx.combo.ComboBox);
+
+Ext.reg('newsletter-combo-confirm', Newsletter.combo.ConfirmTypes);

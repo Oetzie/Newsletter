@@ -61,10 +61,10 @@
 	$_lang['newsletter.subscription_remove_confirm']				= 'Are you sure you want to delete this subscription?';
 	$_lang['newsletter.subscription_remove_selected']				= 'Delete selected subscriptions';
 	$_lang['newsletter.subscription_remove_selected_confirm']		= 'Are you sure you want to delete the selected subscriptions?';
-	$_lang['newsletter.subscription_activate_selected']				= 'Activate selected subscriptions';
-	$_lang['newsletter.subscription_activate_selected_confirm']		= 'Are you sure you want to activate the selected subscriptions?';
-	$_lang['newsletter.subscription_deactivate_selected']			= 'Deactivate selected subscriptions';
-	$_lang['newsletter.subscription_deactivate_selected_confirm']	= 'Are you sure you want to deactivate the selected subscriptions?';
+	$_lang['newsletter.subscription_activate_selected']				= 'Confirm selected subscriptions';
+	$_lang['newsletter.subscription_activate_selected_confirm']		= 'Are you sure you want to confirm the selected subscriptions?';
+	$_lang['newsletter.subscription_deactivate_selected']			= 'De-confirm selected subscriptions';
+	$_lang['newsletter.subscription_deactivate_selected_confirm']	= 'Are you sure you want to de-confirm the selected subscriptions?';
 	$_lang['newsletter.subscription_import']						= 'Import subscription';
 	$_lang['newsletter.subscription_import_desc']					= 'Select a xml file to import subscriptions or groups. The file must be a valid XML format.';
 	$_lang['newsletter.subscription_export']						= 'Export subscription';
@@ -121,16 +121,22 @@
 	$_lang['newsletter.label_export_subscription_desc']				= 'If checked, all existing subscription will be exported.';
 	$_lang['newsletter.label_export_groups']						= 'Groups';
 	$_lang['newsletter.label_export_groups_desc']					= 'If checked, all existing groups will be exported.';
+	$_lang['newsletter.label_confirm']								= 'Confirmed';
 	
 	$_lang['newsletter.filter_context']								= 'Filter on context...';
+	$_lang['newsletter.filter_confirm']								= 'Filter on confirmation...';
 	$_lang['newsletter.pending']									= 'Pending';
 	$_lang['newsletter.test']										= 'Test newsletter';
 	$_lang['newsletter.permanent']									= 'Permanent newsletter';
+	$_lang['newsletter.confirmed']									= 'Confirmed';
+	$_lang['newsletter.notconfirmed']								= 'Not confirmed';
 	$_lang['newsletter.resource_does_not_exists']					= 'This resource does not exists or is deleted.';
 	$_lang['newsletter.newsletter_send_succes']						= 'Success!';
 	$_lang['newsletter.newsletter_send_succes_desc']				= 'The newsletter is send successful and saved.';
 	$_lang['newsletter.activate_selected']							= 'Activate selected';
 	$_lang['newsletter.deactivate_selected']						= 'Deactivate selected';
 	$_lang['newsletter.remove_selected']							= 'Delete selected';
+	$_lang['newsletter.confirm_selected']							= 'Confirm selected';
+	$_lang['newsletter.deconfirm_selected']							= 'De-confirm selected';
 	
 ?>
