@@ -1,5 +1,5 @@
 <?php
-
+	
 	/**
 	 * Newsletter
 	 *
@@ -21,43 +21,6 @@
 	 * Newsletter; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
-
-	class GroupsRemoveSelectedProcessor extends modProcessor {
-		/**
-		 * @acces public.
-		 * @var String.
-		 */
-		public $classKey = 'NewsletterGroups';
-		
-		/**
-		 * @acces public.
-		 * @var Array.
-		 */
-		public $languageTopics = array('newsletter:default');
-		
-		/**
-		 * @acces public.
-		 * @var String.
-		 */
-		public $objectType = 'newsletter.groups';
-		
-		/**
-		 * @acces public.
-		 * @return Mixed.
-		 */
-		public function process() {
-			foreach (explode(',', $this->getProperty('ids')) as $key => $value) {
-				if (false !== ($object = $this->modx->getObject($this->classKey, array('id' => $value)))) {
-					$this->modx->removeCollection('NewsletterSubscriptionsGroups', array('group_id' => $object->get('id')));
-					
-					$object->remove();
-				}
-			}
-			
-			return $this->outputArray(array());
-		}
-	}
-
-	return 'GroupsRemoveSelectedProcessor';
-
+	 
+	class NewsletterListsNewsletters extends xPDOSimpleObject {}
 ?>

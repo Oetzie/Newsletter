@@ -46,7 +46,7 @@
 		 * @return Mixed.
 		 */
 		public function afterRemove() {
-			$this->modx->removeCollection('NewsletterSubscriptionsGroups', array('parent_id' => $this->object->get('id')));
+			$this->modx->removeCollection('NewsletterListsSubscriptions', array('subscription_id' => $this->getProperty('id')));
 
 			return parent::afterRemove();
 		}

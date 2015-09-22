@@ -22,18 +22,15 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	$xpdo_meta_map['NewsletterNewsletters']= array(
+	$xpdo_meta_map['NewsletterListsNewsletters']= array(
 		'package' 	=> 'newsletter',
 		'version' 	=> '1.0',
-		'table' 	=> 'newsletter_newsletters',
+		'table' 	=> 'newsletter_lists_newsletters',
 		'extends' 	=> 'xPDOSimpleObject',
 		'fields' 	=> array(
-			'id'			=> null,
-			'resource_id'	=> null,
-			'emails'		=> null,
-			'send'			=> null,
-			'send_date'		=> null,
-			'editedon' 		=> null
+			'id'				=> null,
+			'list_id'			=> null,
+			'newsletter_id'		=> null
 		),
 		'fieldMeta'	=> array(
 			'id' 		=> array(
@@ -44,36 +41,18 @@
 				'index' 	=> 'pk',
 				'generated'	=> 'native'
 			),
-			'resource_id' => array(
+			'list_id' => array(
 				'dbtype' 	=> 'int',
 				'precision' => '11',
 				'phptype' 	=> 'integer',
 				'null' 		=> false
 			),
-			'emails' 	=> array(
-				'dbtype' 	=> 'text',
-				'precision' => '2048',
-				'phptype' 	=> 'string',
-				'null' 		=> false
-			),
-			'send'		=> array(
+			'newsletter_id' => array(
 				'dbtype' 	=> 'int',
-				'precision' => '1',
+				'precision' => '11',
 				'phptype' 	=> 'integer',
-				'null' 		=> false,
-				'default'	=> 0
-			),
-			'send_date' => array(
-				'dbtype' 	=> 'date',
-				'phptype' 	=> 'timestamp',
 				'null' 		=> false
 			),
-			'editedon' 	=> array(
-				'dbtype' 	=> 'timestamp',
-				'phptype' 	=> 'timestamp',
-				'attributes' => 'ON UPDATE CURRENT_TIMESTAMP',
-				'null' 		=> false
-			)
 		),
 		'indexes'	=> array(
 			'PRIMARY'	=> array(
@@ -89,19 +68,19 @@
 			)
 		),
 		'aggregates' => array(
-			'modResource' => array(
-				'local'			=> 'resource_id',
-				'class' 		=> 'modResource',
+			'NewsletterLists' => array(
+				'local' 		=> 'list_id',
+				'class' 		=> 'NewsletterLists',
 				'foreign' 		=> 'id',
 				'owner' 		=> 'foreign',
 				'cardinality' 	=> 'one'
 			),
-			'NewsletterListsNewsletters' => array(
-				'local' 		=> 'id',
-				'class' 		=> 'NewsletterListsNewsletters',
-				'foreign'		=> 'newsletter_id',
-				'owner' 		=> 'local',
-				'cardinality' 	=> 'many'
+			'NewsletterNewsletters' => array(
+				'local' 		=> 'newsletter_id',
+				'class' 		=> 'NewsletterNewsletters',
+				'foreign' 		=> 'id',
+				'owner' 		=> 'foreign',
+				'cardinality' 	=> 'one'
 			)
 		)
 	);

@@ -74,8 +74,10 @@
 		 */
 		public function prepareQueryBeforeCount(xPDOQuery $c) {
 			$c->innerjoin('modResource', 'modResource', array('modResource.id = NewsletterNewsletters.resource_id'));
+			$c->innerjoin('modContext', 'modContext', array('modResource.context_key = modContext.key'));
 			$c->select($this->modx->getSelectColumns('NewsletterNewsletters', 'NewsletterNewsletters'));
 			$c->select($this->modx->getSelectColumns('modResource', 'modResource', 'resource_', array('pagetitle', 'longtitle', 'context_key', 'published')));
+			$c->select($this->modx->getSelectColumns('modContext', 'modContext', 'context_', array('key', 'name')));
 			
 			$context = $this->getProperty('context');
 			
@@ -102,10 +104,20 @@
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
+			$lists = array();
+	
+			foreach ($object->getMany('NewsletterListsNewsletters') as $list) {
+				if (null !== ($list = $list->getOne('NewsletterLists'))) {
+					$lists[$list->id] = $list->name;
+				}
+			}
+			
 			$array = array_merge($object->toArray(), array(
-				'resource_url'			=> $this->modx->makeUrl($object->resource_id, '', '', 'full'),
+				'resource_url'			=> $this->modx->makeUrl($object->resource_id, null, null, 'full'),
 				'resource_name' 		=> empty($object->resource_longtitle) ? $object->resource_pagetitle : $object->resource_longtitle,
-				'resource_name_alias' 	=> (empty($object->resource_longtitle) ? $object->resource_pagetitle : $object->resource_longtitle).' ('.$object->resource_id.')'
+				'resource_name_alias' 	=> (empty($object->resource_longtitle) ? $object->resource_pagetitle : $object->resource_longtitle).' ('.$object->resource_id.')',
+				'lists'					=> array_keys($lists),
+				'lists_names' 			=> implode(', ', $lists)
 			));
 
 			if (in_array($array['send_date'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', null))) {

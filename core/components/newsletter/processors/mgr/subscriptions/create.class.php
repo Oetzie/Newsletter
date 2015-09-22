@@ -57,21 +57,16 @@
 		 * @acces public.
 		 * @return Mixed.
 		 */
-		public function afterSave() {
-			if (null !== ($groups = $this->getProperty('groups'))) {
-				foreach ($groups as $id) {
-					if (null !== ($group = $this->modx->newObject('NewsletterSubscriptionsGroups'))) {
-						$group->fromArray(array(
-							'parent_id'	=> $this->object->get('id'),
-							'group_id'	=> $id
-						));
-						
-						$group->save();
+		public function beforeSave() {
+			if (null !== ($lists = $this->getProperty('lists'))) {
+				foreach ($lists as $id) {
+					if (null !== ($list = $this->modx->newObject('NewsletterListsSubscriptions', array('list_id' => $id)))) {
+						$this->object->addMany($list);
 					}
 				}
 			}
 			
-			return parent::afterSave();
+			return parent::beforeSave();
 		}
 	}
 	

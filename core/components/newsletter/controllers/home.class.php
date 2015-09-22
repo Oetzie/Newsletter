@@ -31,7 +31,7 @@
 			$this->addJavascript($this->newsletter->config['jsUrl'].'mgr/widgets/home.panel.js');
 			$this->addJavascript($this->newsletter->config['jsUrl'].'mgr/widgets/newsletters.grid.js');
 			$this->addJavascript($this->newsletter->config['jsUrl'].'mgr/widgets/subscriptions.grid.js');
-			$this->addJavascript($this->newsletter->config['jsUrl'].'mgr/widgets/groups.grid.js');
+			$this->addJavascript($this->newsletter->config['jsUrl'].'mgr/widgets/lists.grid.js');
 			$this->addLastJavascript($this->newsletter->config['jsUrl'].'mgr/sections/home.js');
 		}
 		

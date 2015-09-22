@@ -40,6 +40,18 @@
 		 * @var String.
 		 */
 		public $objectType = 'newsletter.newsletters';
+		
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+		public function initialize() {
+			require_once $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'/model/newsletter/newsletter.class.php';
+			
+			$this->newsletter = new Newsletter($this->modx);
+
+			return parent::initialize();
+		}
 
 		/**
 		 * @acces public.
@@ -52,7 +64,11 @@
 			);
 			
 			if (null === ($resource = $this->modx->getObject('modResource', $criterea))) {
-				$this->addFieldError('resource_id', $this->modx->lexicon('newsletter.resource_does_not_exists'));
+				$this->addFieldError('resource', $this->modx->lexicon('newsletter.resource_does_not_exists'));
+			} else {
+				if (!in_array($resource->template, $this->modx->getOption('template', $this->newsletter->config, array()))) {
+					$this->addFieldError('resource', $this->modx->lexicon('newsletter.resource_template'));
+				}
 			}
 			
 			return parent::beforeSave();

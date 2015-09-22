@@ -3,7 +3,6 @@
 	<object class="NewsletterNewsletters" table="newsletter_newsletters" extends="xPDOSimpleObject">
     	<field key="id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" generated="native"/>
     	<field key="resource_id" dbtype="int" precision="11" phptype="integer" null="false" default=""/>
-        <field key="groups" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
         <field key="emails" dbtype="text" precision="2048" phptype="string" null="false" default=""/>
         <field key="send" dbtype="int" precision="1" phptype="integer" null="false" default="0"/>
         <field key="send_date" dbtype="date" phptype="timestamp" null="false" default=""/>
@@ -14,13 +13,15 @@
         </index>
         
         <aggregate alias="modResource" local="resource_id" class="modResource" foreign="id" owner="foreign" cardinality="one" />
+		<aggregate alias="NewsletterListsNewsletters" local="id" class="NewsletterListsNewsletters" foreign="newsletter_id" owner="local" cardinality="many" />
     </object>
     
 	<object class="NewsletterSubscriptions" table="newsletter_subscriptions" extends="xPDOSimpleObject">
     	<field key="id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" generated="native"/>
+    	<field key="context" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
     	<field key="name" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
     	<field key="email" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
-		<field key="confirm" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
+		<field key="token" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
         <field key="active" dbtype="int" precision="1" phptype="integer" null="false" default="0"/>
         <field key="editedon" dbtype="timestamp" phptype="timestamp" attributes="ON UPDATE CURRENT_TIMESTAMP" null="false" default=""/>
         
@@ -28,25 +29,11 @@
         	<column key="id" collation="A" null="false" />
         </index>
 
-        <aggregate alias="NewsletterSubscriptionsGroups" local="id" class="NewsletterSubscriptionsGroups" foreign="parent_id" owner="local" cardinality="many" />
+        <aggregate alias="NewsletterListsSubscriptions" local="id" class="NewsletterListsSubscriptions" foreign="subscription_id" owner="local" cardinality="many" />
     </object>
-    
-    <object class="NewsletterSubscriptionsGroups" table="newsletter_subscriptions" extends="xPDOSimpleObject">
-    	<field key="id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" generated="native"/>
-    	<field key="parent_id" dbtype="int" precision="11" phptype="integer" null="false" default=""/>
-    	<field key="group_id" dbtype="int" precision="11" phptype="integer" null="false" default=""/>
-    	
-        <index alias="PRIMARY" name="PRIMARY" primary="true" unique="true">
-        	<column key="id" collation="A" null="false" />
-        </index>
 
-        <aggregate alias="NewsletterSubscriptions" local="parent_id" class="NewsletterSubscriptions" foreign="id" owner="foreign" cardinality="one" />
-        <aggregate alias="NewsletterGroups" local="group_id" class="NewsletterGroups" foreign="id" owner="foreign" cardinality="one" />
-    </object>
-    
-    <object class="NewsletterGroups" table="newsletter_groups" extends="xPDOSimpleObject">
+    <object class="NewsletterLists" table="newsletter_lists" extends="xPDOSimpleObject">
     	<field key="id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" generated="native"/>
-    	<field key="context" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
     	<field key="name" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
     	<field key="description" dbtype="text" precision="2048" phptype="string" null="false" default=""/>
     	<field key="active" dbtype="int" precision="1" phptype="integer" null="false" default="1"/>
@@ -56,6 +43,33 @@
         	<column key="id" collation="A" null="false" />
         </index>
 
-        <aggregate alias="NewsletterSubscriptionsGroups" local="id" class="NewsletterSubscriptionsGroups" foreign="group_id" owner="local" cardinality="many" />
+		<aggregate alias="NewsletterListsNewsletters" local="id" class="NewsletterListsNewsletters" foreign="lists_id" owner="local" cardinality="many" />
+        <aggregate alias="NewsletterListsSubscriptions" local="id" class="NewsletterListsSubscriptions" foreign="lists_id" owner="local" cardinality="many" />
+    </object>
+    
+    <object class="NewsletterListsNewsletters" table="newsletter_lists_newsletters" extends="xPDOSimpleObject">
+    	<field key="id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" generated="native"/>
+    	<field key="list_id" dbtype="int" precision="11" phptype="integer" null="false" default=""/>
+    	<field key="newsletter_id" dbtype="int" precision="11" phptype="integer" null="false" default=""/>
+    	
+        <index alias="PRIMARY" name="PRIMARY" primary="true" unique="true">
+        	<column key="id" collation="A" null="false" />
+        </index>
+
+		<aggregate alias="NewsletterLists" local="list_id" class="NewsletterLists" foreign="id" owner="foreign" cardinality="one" />
+        <aggregate alias="NewsletterNewsletters" local="newsletter_id" class="NewsletterNewsletters" foreign="id" owner="foreign" cardinality="one" />
+    </object>
+    
+    <object class="NewsletterListsSubscriptions" table="newsletter_lists_subscriptions" extends="xPDOSimpleObject">
+    	<field key="id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" generated="native"/>
+    	<field key="list_id" dbtype="int" precision="11" phptype="integer" null="false" default=""/>
+    	<field key="subscription_id" dbtype="int" precision="11" phptype="integer" null="false" default=""/>
+    	
+        <index alias="PRIMARY" name="PRIMARY" primary="true" unique="true">
+        	<column key="id" collation="A" null="false" />
+        </index>
+
+		<aggregate alias="NewsletterLists" local="list_id" class="NewsletterLists" foreign="id" owner="foreign" cardinality="one" />
+        <aggregate alias="NewsletterSubscriptions" local="subscription_id" class="NewsletterSubscriptions" foreign="id" owner="foreign" cardinality="one" />
     </object>
 </model>

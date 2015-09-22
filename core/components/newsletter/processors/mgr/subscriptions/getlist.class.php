@@ -73,9 +73,14 @@
 		 * @return Object.
 		 */
 		public function prepareQueryBeforeCount(xPDOQuery $c) {
-			if ('' != ($confirm = $confirm = $this->getProperty('confirm'))) {
+			$c->innerjoin('modContext', 'modContext', array('NewsletterSubscriptions.context = modContext.key'));
+			$c->select($this->modx->getSelectColumns('NewsletterSubscriptions', 'NewsletterSubscriptions'));
+			$c->select($this->modx->getSelectColumns('modContext', 'modContext', 'context_', array('key', 'name')));
+			
+			
+			if ('' != ($confirm = $this->getProperty('confirm'))) {
 				$c->where(array(
-					'active' 	=> $confirm
+					'NewsletterSubscriptions.active' 	=> $confirm
 				));
 			}
 			
@@ -83,8 +88,8 @@
 			
 			if (!empty($query)) {
 				$c->where(array(
-					'name:LIKE' 	=> '%'.$query.'%',
-					'OR:email:LIKE' => '%'.$query.'%'
+					'NewsletterSubscriptions.name:LIKE' 	=> '%'.$query.'%',
+					'OR:NewsletterSubscriptions.email:LIKE' => '%'.$query.'%'
 				));
 			}
 			
@@ -97,17 +102,17 @@
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
-			$groups = array();
+			$lists = array();
 	
-			foreach ($object->getMany('NewsletterSubscriptionsGroups') as $group) {
-				if (null !== ($group = $group->getOne('NewsletterGroups'))) {
-					$groups[$group->id] = $group->name;
+			foreach ($object->getMany('NewsletterListsSubscriptions') as $list) {
+				if (null !== ($list = $list->getOne('NewsletterLists'))) {
+					$lists[$list->id] = $list->name;
 				}
 			}
-
+			
 			$array = array_merge($object->toArray(), array(
-				'groups'		=> array_keys($groups),
-				'group_names' 	=> implode(', ', $groups)
+				'lists'			=> array_keys($lists),
+				'lists_names' 	=> implode(', ', $lists)
 			));
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', null))) {

@@ -2,11 +2,11 @@
 
 	return array(
 		array(
-	        'name' 		=> 'confirmKey',
-	        'desc' 		=> 'newslettersubscribe_snippet_confirmkey_desc',
+	        'name' 		=> 'param',
+	        'desc' 		=> 'newslettersubscribe_snippet_param_desc',
 	        'type' 		=> 'textfield',
 	        'options' 	=> '',
-	        'value'		=> 'confirm',
+	        'value'		=> 'token',
 	        'area'		=> PKG_NAME_LOWER,
 	        'lexicon' 	=> PKG_NAME_LOWER.':default'
 	    ),

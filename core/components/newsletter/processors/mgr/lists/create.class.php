@@ -21,6 +21,38 @@
 	 * Newsletter; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
-	 
-	class NewsletterGroups extends xPDOSimpleObject {}
+
+	class ListsCreateProcessor extends modObjectCreateProcessor {
+		/**
+		 * @acces public.
+		 * @var String.
+		 */
+		public $classKey = 'NewsletterLists';
+		
+		/**
+		 * @acces public.
+		 * @var Array.
+		 */
+		public $languageTopics = array('newsletter:default');
+		
+		/**
+		 * @acces public.
+		 * @var String.
+		 */
+		public $objectType = 'newsletter.lists';
+		
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+		public function initialize() {
+			if (null === $this->getProperty('active')) {
+				$this->setProperty('active', 0);
+			}
+
+			return parent::initialize();
+		}
+	}
+	
+	return 'ListsCreateProcessor';
 ?>

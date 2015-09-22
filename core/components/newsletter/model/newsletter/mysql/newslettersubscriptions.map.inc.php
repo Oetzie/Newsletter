@@ -29,9 +29,10 @@
 		'extends' 	=> 'xPDOSimpleObject',
 		'fields' 	=> array(
 			'id'			=> null,
+			'context'		=> null,
 			'name'			=> null,
 			'email'			=> null,
-			'confirm'		=> null,
+			'token'			=> null,
 			'active'		=> null,
 			'editedon' 		=> null
 		),
@@ -43,6 +44,12 @@
 				'null' 		=> false,
 				'index' 	=> 'pk',
 				'generated'	=> 'native'
+			),
+			'context'	=> array(
+				'dbtype' 	=> 'varchar',
+				'precision' => '75',
+				'phptype' 	=> 'string',
+				'null' 		=> false
 			),
 			'name' 		=> array(
 				'dbtype' 	=> 'varchar',
@@ -56,7 +63,7 @@
 				'phptype' 	=> 'string',
 				'null' 		=> false
 			),
-			'confirm' 	=> array(
+			'token' 	=> array(
 				'dbtype' 	=> 'varchar',
 				'precision' => '255',
 				'phptype' 	=> 'string',
@@ -67,7 +74,7 @@
 				'precision' => '1',
 				'phptype' 	=> 'integer',
 				'null' 		=> false,
-				'default'	=> 0
+				'default'	=> 1
 			),
 			'editedon' 	=> array(
 				'dbtype' 	=> 'timestamp',
@@ -90,10 +97,10 @@
 			)
 		),
 		'aggregates' => array(
-			'NewsletterSubscriptionsGroups'	=> array(
+			'NewsletterListsSubscriptions' => array(
 				'local' 		=> 'id',
-				'class' 		=> 'NewsletterSubscriptionsGroups',
-				'foreign'		=> 'parent_id',
+				'class' 		=> 'NewsletterListsSubscriptions',
+				'foreign'		=> 'subscription_id',
 				'owner' 		=> 'local',
 				'cardinality' 	=> 'many'
 			)

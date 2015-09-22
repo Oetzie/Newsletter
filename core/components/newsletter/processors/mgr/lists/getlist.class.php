@@ -22,12 +22,12 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class GroupsGetListProcessor extends modObjectGetListProcessor {
+	class ListsGetListProcessor extends modObjectGetListProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'NewsletterGroups';
+		public $classKey = 'NewsletterLists';
 		
 		/**
 		 * @acces public.
@@ -51,7 +51,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $objectType = 'newsletter.groups';
+		public $objectType = 'newsletter.lists';
 		
 		/**
 		 * @acces public.
@@ -73,12 +73,6 @@
 		 * @return Object.
 		 */
 		public function prepareQueryBeforeCount(xPDOQuery $c) {
-			$context = $this->getProperty('context');
-			
-			if (!empty($context)) {
-				$c->where(array('context' => $context));
-			}
-			
 			$query = $this->getProperty('query');
 			
 			if (!empty($query)) {
@@ -98,8 +92,8 @@
 		public function prepareRow(xPDOObject $object) {
 			$subscriptions = array();
 
-			foreach ($object->getMany('NewsletterSubscriptionsGroups') as $group) {
-				if (null !== ($subscription = $group->getOne('NewsletterSubscriptions'))) {
+			foreach ($object->getMany('NewsletterListsSubscriptions') as $list) {
+				if (null !== ($subscription = $list->getOne('NewsletterSubscriptions'))) {
 					$subscriptions[$subscription->id] = $subscription->name;
 				}
 			}
@@ -118,6 +112,6 @@
 		}
 	}
 
-	return 'GroupsGetListProcessor';
+	return 'ListsGetListProcessor';
 	
 ?>

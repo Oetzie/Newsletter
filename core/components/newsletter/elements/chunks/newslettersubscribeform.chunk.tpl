@@ -7,10 +7,9 @@
 	&autoRespondEmailFrom=`[[++newsletter_email]]=[[++newsletter_name]]`
 	&autoRespondEmailSubject=`Nieuwsbrief inschrijving [[++site_name]]`
 
-	&newsletterGroups=`2`
 	&newsletterRedirect=`10`
 
-	&redirect=`28`
+	&redirect=`20`
 ]]
 				[[+form.error]]
 				<p class="info">Velden gemarkeerd met een sterretje zijn verplicht.</p>

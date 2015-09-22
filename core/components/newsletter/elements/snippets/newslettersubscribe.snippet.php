@@ -1,5 +1,5 @@
 <?php
-
+	
 	/**
 	 * Newsletter
 	 *
@@ -31,23 +31,24 @@
 	switch($prefix) {
 		case 'Before':
 			$properties = array(
-				'type'			=> 'confirm',
+				'type'			=> 'complete',
 				'values'		=> $modx->request->getParameters(),
 				'resource'		=> $modx->getOption('newsletterRedirect', $form->extensionScriptProperties, false),
-				'confirmKey'	=> $modx->getOption('confirmKey', $scriptProperties)
+				'param'			=> $modx->getOption('param', $scriptProperties)
 			);
 
 			if (false === ($subscribe = $newsletter->subscribe($properties))) {
 				$form->getValidator()->setBulkError('extension_newsletter_subscribe_confirm');
 			}
+
 			break;
 		case 'After':
 			if ($form->isValid()) {
 				$properties = array(
-					'type'		=> 'subscribe',
+					'type'			=> 'subscribe',
 					'values'		=> $form->getValues(),
-					'groups'		=> $modx->getOption('newsletterGroups', $form->extensionScriptProperties, ''),
-					'confirmKey'	=> $modx->getOption('confirmKey', $scriptProperties)
+					'lists'			=> $modx->getOption('newsletterLists', $form->extensionScriptProperties, $modx->getOption('primaryLists', $newsletter->config)),
+					'param'			=> $modx->getOption('param', $scriptProperties)
 				);
 
 				if (false === ($subscribe = $newsletter->subscribe($properties))) {

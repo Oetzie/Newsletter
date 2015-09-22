@@ -3,10 +3,19 @@ Newsletter
 ----------------------
 
 ----------------------
+Version: 1.2.0-pl
+Released: 2015-10-20
+----------------------
+- Some bugfixes
+- Complete new database structure
+- Complete new code
+- CSV import/export function
+
+----------------------
 Version: 1.1.2-pl
 Released: 2015-03-29
 ----------------------
-- Some bugfixed
+- Some bugfixes
 - Dutch lexicon edit
 - XML import/export function
 

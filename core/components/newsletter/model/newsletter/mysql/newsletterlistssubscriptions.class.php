@@ -22,45 +22,8 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class GroupsActivateSelectedProcessor extends modProcessor {
-		/**
-		 * @acces public.
-		 * @var String.
-		 */
-		public $classKey = 'NewsletterGroups';
-		
-		/**
-		 * @acces public.
-		 * @var Array.
-		 */
-		public $languageTopics = array('newsletter:default');
-		
-		/**
-		 * @acces public.
-		 * @var String.
-		 */
-		public $objectType = 'newsletter.groups';
-		
-		/**
-		 * @acces public.
-		 * @return Mixed.
-		 */
-		public function process() {
-			foreach (explode(',', $this->getProperty('ids')) as $key => $value) {
-				$criteria = array('id' => $value);
-				
-				if (false !== ($object = $this->modx->getObject($this->classKey, $criteria))) {
-					$object->fromArray(array(
-						'active' => 'activate' == $this->getProperty('type') ? 1 : 0
-					));
-					$object->save();
-				}
-			}
-			
-			return $this->outputArray(array());
-		}
-	}
-
-	return 'GroupsActivateSelectedProcessor';
-
+	require_once (dirname(dirname(__FILE__)) . '/newsletterlistssubscriptions.class.php');
+	
+	class NewsletterListsSubscriptions_mysql extends NewsletterListsSubscriptions {}
+	
 ?>

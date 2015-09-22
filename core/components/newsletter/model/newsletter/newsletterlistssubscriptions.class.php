@@ -1,5 +1,5 @@
 <?php
-
+	
 	/**
 	 * Newsletter
 	 *
@@ -21,14 +21,6 @@
 	 * Newsletter; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
-
-	define('MODX_API_MODE', true);
-
-	require_once dirname(dirname(dirname(dirname(__FILE__)))).'/index.php';
-	
-	// Wierd MODx Bug
-	$modx->getService('error','error.modError', '', '');
-
-	echo require_once $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'/processors/mgr/send.php';
-
+	 
+	class NewsletterListsSubscriptions extends xPDOSimpleObject {}
 ?>

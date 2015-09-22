@@ -2,9 +2,9 @@
 	&extensions=`newsletterUnSubscribe`
 	&validate=`nospam:blank,email:email:required`
 
-	&newsletterRedirect=`29`
+	&newsletterRedirect=`21`
 
-	&redirect=`29`
+	&redirect=`21`
 ]]
 				[[+form.error]]
 				<p class="info">Velden gemarkeerd met een sterretje zijn verplicht.</p>

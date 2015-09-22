@@ -1,5 +1,5 @@
 <?php
-	
+
 	/**
 	 * Newsletter
 	 *
@@ -22,12 +22,12 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class GroupsCreateProcessor extends modObjectCreateProcessor {
+	class ListsRemoveSelectedProcessor extends modProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'NewsletterGroups';
+		public $classKey = 'NewsletterLists';
 		
 		/**
 		 * @acces public.
@@ -39,20 +39,46 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $objectType = 'newsletter.groups';
+		public $objectType = 'newsletter.lists';
+		
+		/**
+		 * @acces public.
+		 * @var Object.
+		 */
+		public $newsletter;
 		
 		/**
 		 * @acces public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
-			if (null === $this->getProperty('active')) {
-				$this->setProperty('active', 0);
-			}
+			require_once $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'/model/newsletter/newsletter.class.php';
+			
+			$this->newsletter = new Newsletter($this->modx);
 
 			return parent::initialize();
 		}
+		
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+		public function process() {
+			foreach (explode(',', $this->getProperty('ids')) as $key => $value) {
+				if (false !== ($object = $this->modx->getObject($this->classKey, array('id' => $value)))) {
+					if ($this->modx->getOption('primaryKey', $this->newsletter->config, 1) != $object->get('id')) {
+						$this->modx->removeCollection('NewsletterListsNewsletters', array('list_id' => $object->get('id')));
+						$this->modx->removeCollection('NewsletterListsSubscriptions', array('list_id' => $object->get('id')));
+					
+						$object->remove();
+					}
+				}
+			}
+			
+			return $this->outputArray(array());
+		}
 	}
-	
-	return 'GroupsCreateProcessor';
+
+	return 'ListsRemoveSelectedProcessor';
+
 ?>

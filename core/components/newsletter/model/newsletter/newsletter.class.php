@@ -62,6 +62,10 @@
 				'assetsUrl' 			=> $assetsUrl,
 				'connectorUrl'			=> $assetsUrl.'connector.php',
 				'helpurl'				=> 'newsletter',
+				'template'				=> explode(',', $this->modx->getOption('newsletter_template', null, '')),
+				'primaryLists'			=> explode(',', $this->modx->getOption('newsletter_primary_lists', null, '1')),
+				'nameSender'			=> $this->modx->getOption('newsletter_name', null, $this->modx->getOption('site_name')),
+				'emailSender'			=> $this->modx->getOption('newsletter_email', null, $this->modx->getOption('emailsender')),
 				'context'				=> 2 == $this->modx->getCount('modContext') ? 0 : 1
 			), $config);	
 		
@@ -84,11 +88,14 @@
 		public function subscribe($properties = array()) {
 			if (false !== ($values = $this->modx->getOption('values', $properties, false))) {
 				switch($this->modx->getOption('type', $properties, 'subscribe')) {
-					case 'confirm':
-						if (false !== ($email = $this->modx->getOption($properties['confirmKey'], $values, false))) {
-							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', array('confirm' => $email))) {
-								$this->modx->setPlaceholder('newsletter_last_id', $subscription->id);
-								
+					case 'complete':
+						if (false !== ($token = $this->modx->getOption($this->modx->getOption('param', $properties), $values, false))) {
+							$criterea = array(
+								'context' 	=> $this->modx->context->key,
+								'token' 	=> $token
+							);
+
+							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea)) {
 								$subscription->fromArray(array(
 									'active'	=> 1
 								));
@@ -101,54 +108,64 @@
 									return true;	
 								}
 							}
-						} else {
-							return null;
 						}
 						
+						return null;
+						
 						break;
-					case 'subscribe':
-						if (false !== ($email = $this->modx->getOption('email', $values, false))) {
-							if (!$subscription = $this->modx->getObject('NewsletterSubscriptions', array('email' => $email))) {
+					default:
+						if (!empty($email = $this->modx->getOption('email', $values, ''))) {
+							$token = md5(time());
+							
+							$criterea = array(
+								'context' 	=> $this->modx->context->key,
+								'email' 	=> $email
+							);
+									
+							if (null === ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
 								$subscription = $this->modx->newObject('NewsletterSubscriptions');
 							}
 
-							$confirm = md5(time());
-
-							$subscription->fromArray(array_merge($values, array(
+							$subscription->fromArray(array_merge($values, $criterea, array(
 								'active'	=> 0,
-								'confirm'	=> $confirm,
+								'token'		=> $token,
 							)));
 
 							if ($subscription->save()) {
-								$groups = $this->modx->getOption('groups', $values, array());
-								$groups = is_string($groups) ? explode(',', $groups) : $groups;
-
-								if (false !== ($defaultGroups = $this->modx->getOption('groups', $properties, false))) {
-									if (is_string($defaultGroups)) {
-										$defaultGroups = explode(',', $defaultGroups);
-									}
-				
-									$groups = array_merge($groups, $defaultGroups);
+								$lists = $this->modx->getOption('lists', $values, '');
+								$defaultLists = $this->modx->getOption('lists', $properties, '');
+								
+								if (!is_array($lists)) {
+									$lists = explode(',', $lists);
 								}
 								
-								foreach ($groups as $group) {
-									if (null !== ($group = $this->modx->getObject('NewsletterGroups', array('id' => $group)))) {
-										if (!$newGroup = $this->modx->getObject('NewsletterSubscriptionsGroups', array('parent_id' => $subscription->id, 'group_id' => $group->id))) {
-											if (null !== ($newGroup = $this->modx->newObject('NewsletterSubscriptionsGroups'))) {
-												$newGroup->fromArray(array(
-													'parent_id'	=> $subscription->id,
-													'group_id'	=> $group->id
+								if (!is_array($defaultLists)) {
+									$defaultLists = explode(',', $defaultLists);
+								}
+
+								foreach (array_filter(array_merge($defaultLists, $lists)) as $id) {
+									if (null !== ($list = $this->modx->getObject('NewsletterLists', array('id' => $id)))) {
+										$criterea = array(
+											'list_id'			=> $list->id,
+											'subscription_id' 	=> $subscription->id
+										);
+					
+										if (null === $list->getOne('NewsletterListsSubscriptions', $criterea)) {
+											if (null !== ($newList = $this->modx->newObject('NewsletterListsSubscriptions'))) {
+												$newList->fromArray(array(
+													'list_id'			=> $list->id,
+													'subscription_id' 	=> $subscription->id
 												));
 											
-												$newGroup->save();
+												$newList->save();
 											}
 										}
 									}
 								}
 		
 								$this->modx->setPlaceholders(array(
-									'newsletter_last_id'		=> $subscription->id,
-									'newsletter_confirm_link'	=> $confirm
+									'newsletter_token'		=> $token,
+									'newsletter_last_id'	=> $subscription->id
 								));
 					
 								return true;	
@@ -170,9 +187,14 @@
 		public function unsubscribe($properties = array()) {
 			if (false !== ($values = $this->modx->getOption('values', $properties, false))) {
 				switch($this->modx->getOption('type', $properties, 'unsubscribe')) {
-					case 'confirm':
-						if (false !== ($email = $this->modx->getOption($properties['confirmKey'], $values, false))) {
-							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', array('email' => $email))) {
+					case 'complete':
+						if (false !== ($email = $this->modx->getOption($this->modx->getOption('param', $properties), $values, false))) {
+							$criterea = array(
+								'context' 	=> $this->modx->context->key,
+								'email' 	=> $email
+							);
+
+							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea)) {
 								if ($subscription->remove()) {
 									if (false !== ($resource = $this->modx->getOption('resource', $properties, false))) {
 										$this->modx->sendRedirect($this->modx->makeUrl($resource, null, null, 'full'));
@@ -181,41 +203,49 @@
 									return true;
 								}
 							}
-						} else {
-							return null;
 						}
 						
+						return null;
+						
 						break;
-					case 'unsubscribe':
+					default:
 						if (false !== ($email = $this->modx->getOption('email', $values, false))) {
-							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', array('email' => $email))) {
-								$this->modx->setPlaceholder('newsletter_last_id', $subscription->id);
+							$criterea = array(
+								'context' 	=> $this->modx->context->key,
+								'email' 	=> $email
+							);
+							
+							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea)) {
+								$lists = $this->modx->getOption('lists', $values, '');
+								$defaultLists = $this->modx->getOption('lists', $properties, '');
 								
-								if ($this->modx->getOption('groups', $values, false) || $this->modx->getOption('groups', $properties, false)) {
-									$groups = $this->modx->getOption('groups', $values, array());
-									$groups = is_string($groups) ? explode(',', $groups) : $groups;
+								if (!is_array($lists)) {
+									$lists = explode(',', $lists);
+								}
+								
+								if (!is_array($defaultLists)) {
+									$defaultLists = explode(',', $defaultLists);
+								}
+								
+								$lists = array_filter(array_merge($defaultLists, $lists));
 
-									if (false !== ($defaultGroups = $this->modx->getOption('groups', $properties, false))) {
-										if (is_string($defaultGroups)) {
-											$defaultGroups = explode(',', $defaultGroups);
-										}
-				
-										$groups = array_merge($groups, $defaultGroups);
-									}
-	
-									foreach ($groups as $group) {
-										$this->modx->removeCollection('NewsletterSubscriptionsGroups', array('parent_id' => $subscription->id, 'group_id' => $group));
-									}
-				
-									if (0 == $this->modx->getCount('NewsletterSubscriptionsGroups', array('parent_id' => $subscription->id))) {
-										return $subscription->remove();
-									} else {
-										return true;
-									}
-								} else {
-									$this->modx->removeCollection('NewsletterSubscriptionsGroups', array('parent_id' => $subscription->id));
+								if (empty($lists)) {
+									$this->modx->removeCollection('NewsletterListsSubscriptions', array('subscription_id' => $subscription->id));
 									
 									return $subscription->remove();
+								} else {
+									foreach ($lists as $id) {
+										$this->modx->removeCollection('NewsletterListsSubscriptions', array(
+											'list_id' 			=> $id,
+											'subscription_id' 	=> $subscription->id
+										));
+									}
+									
+									if (0 == $this->modx->getCount('NewsletterListsSubscriptions', array('subscription_id' => $subscription->id))) {
+										return $subscription->remove();
+									}
+									
+									return true;
 								}
 							}
 						}
@@ -229,20 +259,28 @@
 		
 		/**
 		 * @acces public.
-		 * @param String $groups.
+		 * @param String $lists.
 		 * @return Integer.
 		 */
-		public function getCount($groups = array()) {
+		public function getCount($lists = array()) {
 			$count = 0;
 			
-			foreach (is_string($groups) ? explode(',', $groups) : $groups as $key => $group) {
-				$critera = array(
-					'id'		=> $group,
-					'context' 	=> $this->modx->resource->context_key
-				);
+			if (!is_array($lists)) {
+				$lists = explode(',', $lists);
+			}
 			
-				foreach ($this->modx->getCollection('NewsletterGroups', $critera) as $key => $group) {
-					$count += (int) $this->modx->getCount('NewsletterSubscriptionsGroups', array('group_id' => $group->id));
+			foreach ($lists as $id) {
+				if (null !== ($list = $this->modx->getObject('NewsletterLists', array('id' => $id)))) {
+					foreach ($list->getMany('NewsletterListsSubscriptions') as $newList) {
+						$criterea = array(
+							'id' 		=> $newList->subscription_id,
+							'context' 	=> $this->modx->resource->context_key
+						);
+						
+						if (null !== ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
+							$count += 1;
+						}
+					}
 				}
 			}
 				

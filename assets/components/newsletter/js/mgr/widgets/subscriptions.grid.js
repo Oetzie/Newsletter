@@ -22,16 +22,21 @@ Newsletter.grid.Subscriptions = function(config) {
 			name	: 'deactivate',
 			handler	: this.activateSelectedSubscription,
 			scope	: this
-		}, '-', {
-       		text	: _('newsletter.subscription_import'),
-	   		handler	: this.importSubscriptions,
-	   		scope	: this
-		}, {
-       		text	: _('newsletter.subscription_export'),
-	   		handler	: this.exportSubscriptions,
-	   		scope	: this
 		}]
 	}, '->', {
+    	xtype		: 'modx-combo-context',
+    	hidden		: 0 == parseInt(Newsletter.config.context) ? true : false,
+    	name		: 'newsletter-filter-context-subscriptions',
+        id			: 'newsletter-filter-context-subscriptions',
+        emptyText	: _('newsletter.filter_context'),
+        listeners	: {
+        	'select'	: {
+	            	fn			: this.filterContext,
+	            	scope		: this   
+		    }
+		},
+		width: 250
+    }, {
     	xtype		: 'newsletter-combo-confirm',
     	name		: 'newsletter-filter-confirm-subscriptions',
         id			: 'newsletter-filter-confirm-subscriptions',
@@ -42,8 +47,8 @@ Newsletter.grid.Subscriptions = function(config) {
 	            	scope		: this   
 		    }
 		},
-		width: 150
-    }, {
+		width: 200
+    }, '-', {
         xtype		: 'textfield',
         name 		: 'newsletter-filter-search-subscriptions',
         id			: 'newsletter-filter-search-subscriptions',
@@ -81,15 +86,6 @@ Newsletter.grid.Subscriptions = function(config) {
 
     columns = new Ext.grid.ColumnModel({
         columns: [sm, {
-            header		: _('newsletter.label_email'),
-            dataIndex	: 'email',
-            sortable	: true,
-            editable	: true,
-            width		: 150,
-            editor		: {
-            	xtype		: 'textfield'
-            }
-        }, {
             header		: _('newsletter.label_name'),
             dataIndex	: 'name',
             sortable	: true,
@@ -100,14 +96,23 @@ Newsletter.grid.Subscriptions = function(config) {
             	xtype		: 'textfield'
             }
         }, {
-            header		: _('newsletter.label_groups'),
-            dataIndex	: 'group_names',
+            header		: _('newsletter.label_email'),
+            dataIndex	: 'email',
+            sortable	: true,
+            editable	: true,
+            width		: 150,
+            editor		: {
+            	xtype		: 'textfield'
+            }
+        }, {
+            header		: _('newsletter.label_lists'),
+            dataIndex	: 'lists_names',
             sortable	: true,
             editable	: false,
             width		: 150,
             fixed		: true
         }, {
-            header		: _('newsletter.label_confirm'),
+            header		: _('newsletter.label_confirmed'),
             dataIndex	: 'active',
             sortable	: true,
             editable	: true,
@@ -124,6 +129,12 @@ Newsletter.grid.Subscriptions = function(config) {
             editable	: false,
             fixed		: true,
 			width		: 200
+        }, {
+            header		: _('newsletter.label_context'),
+            dataIndex	: 'context_name',
+            sortable	: true,
+            hidden		: true,
+            editable	: false
         }]
     });
     
@@ -137,16 +148,24 @@ Newsletter.grid.Subscriptions = function(config) {
         },
         autosave	: true,
         save_action	: 'mgr/subscriptions/updateFromGrid',
-        fields		: ['id', 'name', 'email', 'groups', 'group_names', 'active', 'editedon'],
+        fields		: ['id', 'context', 'context_key', 'context_name', 'name', 'email', 'lists', 'lists_names', 'token', 'active', 'editedon'],
         paging		: true,
         pageSize	: MODx.config.default_per_page > 30 ? MODx.config.default_per_page : 30,
-        sortBy		: 'email'
+        sortBy		: 'email',
+        grouping	: 0 == parseInt(Newsletter.config.context) ? false : true,
+        groupBy		: 'context_name',
+        singleText	: _('newsletter.subscription'),
+        pluralText	: _('newsletter.subscriptions')
     });
     
     Newsletter.grid.Subscriptions.superclass.constructor.call(this, config);
 };
 
 Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
+	filterContext: function(tf, nv, ov) {
+        this.getStore().baseParams.context = tf.getValue();
+        this.getBottomToolbar().changePage(1);
+    },
     filterConfirm: function(tf, nv, ov) {
         this.getStore().baseParams.confirm = tf.getValue();
         this.getBottomToolbar().changePage(1);
@@ -156,8 +175,10 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         this.getBottomToolbar().changePage(1);
     },
     clearFilter: function() {
+	    this.getStore().baseParams.context = '';
 	    this.getStore().baseParams.confirm = '';
 	    this.getStore().baseParams.query = '';
+	    Ext.getCmp('newsletter-filter-context-subscriptions').reset();
 	    Ext.getCmp('newsletter-filter-confirm-subscriptions').reset();
 	    Ext.getCmp('newsletter-filter-search-subscriptions').reset();
         this.getBottomToolbar().changePage(1);
@@ -184,6 +205,8 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
 	        listeners	: {
 		        'success'	: {
             		fn		: function() {
+	            		Ext.getCmp('newsletter-grid-lists').refresh();
+	            		
             			this.getSelectionModel().clearSelections(true);
             			this.refresh();
             		},
@@ -193,6 +216,31 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         });
         
         this.createSubscriptionWindow.show(e.target);
+    },
+    updateSubscription: function(btn, e) {
+        if (this.updateSubscriptionWindow) {
+	        this.updateSubscriptionWindow.destroy();
+        }
+        
+        this.updateSubscriptionWindow = MODx.load({
+	        xtype		: 'newsletter-window-subscription-update',
+	        record		: this.menu.record,
+	        closeAction	:'close',
+	        listeners	: {
+		        'success'	: {
+            		fn		: function() {
+	            		Ext.getCmp('newsletter-grid-lists').refresh();
+	            		
+            			this.getSelectionModel().clearSelections(true);
+            			this.refresh();
+            		},
+		        	scope		:this
+		        }
+	         }
+        });
+        
+        this.updateSubscriptionWindow.setValues(this.menu.record);
+        this.updateSubscriptionWindow.show(e.target);
     },
     activateSelectedSubscription: function(btn, e) {
     	var cs = this.getSelectedAsList();
@@ -213,6 +261,8 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             listeners: {
             	'success': {
             		fn		: function() {
+	            		Ext.getCmp('newsletter-grid-lists').refresh();
+	            		
             			this.getSelectionModel().clearSelections(true);
             			this.refresh();
             		},
@@ -239,6 +289,8 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             listeners: {
             	'success': {
             		fn		: function() {
+	            		Ext.getCmp('newsletter-grid-lists').refresh();
+	            		
             			this.getSelectionModel().clearSelections(true);
             			this.refresh();
             		},
@@ -246,70 +298,6 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             	}
             }
     	});
-    },
-    importSubscriptions: function(btn, e) {
-        if (this.importSubscriptionsWindow) {
-	        this.importSubscriptionsWindow.destroy();
-        }
-        
-        this.importSubscriptionsWindow = MODx.load({
-	        xtype		: 'newsletter-window-subscription-import',
-	        closeAction	:'close',
-	        listeners	: {
-		        'success'	: {
-            		fn		: function() {
-            			this.getSelectionModel().clearSelections(true);
-            			this.refresh();
-            		},
-		        	scope		:this
-		        }
-	         }
-        });
-        
-        this.importSubscriptionsWindow.show(e.target);
-    },
-    exportSubscriptions: function(btn, e) {
-	    if (this.exportSubscriptionsWindow) {
-	        this.exportSubscriptionsWindow.destroy();
-        }
-        
-        this.exportSubscriptionsWindow = MODx.load({
-	        xtype		: 'newsletter-window-subscription-export',
-	        closeAction	:'close',
-	        listeners	: {
-		        'success'	: {
-            		fn		: function() {
-            			location.href = this.config.url + '?action=mgr/subscriptions/export&download=1&HTTP_MODAUTH=' + MODx.siteId;
-            		},
-		        	scope		:this
-		        }
-	         }
-        });
-        
-        this.exportSubscriptionsWindow.show(e.target);
-    },
-    updateSubscription: function(btn, e) {
-        if (this.updateSubscriptionWindow) {
-	        this.updateSubscriptionWindow.destroy();
-        }
-        
-        this.updateSubscriptionWindow = MODx.load({
-	        xtype		: 'newsletter-window-subscription-update',
-	        record		: this.menu.record,
-	        closeAction	:'close',
-	        listeners	: {
-		        'success'	: {
-            		fn		: function() {
-            			this.getSelectionModel().clearSelections(true);
-            			this.refresh();
-            		},
-		        	scope		:this
-		        }
-	         }
-        });
-        
-        this.updateSubscriptionWindow.setValues(this.menu.record);
-        this.updateSubscriptionWindow.show(e.target);
     },
     removeSubscription: function(btn, e) {
     	MODx.msg.confirm({
@@ -323,6 +311,8 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             listeners: {
             	'success': {
             		fn		: function() {
+	            		Ext.getCmp('newsletter-grid-lists').refresh();
+	            		
             			this.getSelectionModel().clearSelections(true);
             			this.refresh();
             		},
@@ -362,7 +352,7 @@ Newsletter.window.CreateSubscription = function(config) {
                 labelSeparator : ''
             },
         	items		: [{
-	        	columnWidth	: .9,
+	        	columnWidth	: .8,
 	        	items		: [{
 			        xtype		: 'textfield',
 		            fieldLabel	: _('newsletter.label_name'),
@@ -375,18 +365,18 @@ Newsletter.window.CreateSubscription = function(config) {
 		            cls			: 'desc-under'
 		        }]
 	        }, {
-		        columnWidth	: .1,
+		        columnWidth	: .2,
 		        style		: 'margin-right: 0;',
 		        items		: [{
 			        xtype		: 'checkbox',
-		            fieldLabel	: _('newsletter.label_active'),
-		            description	: MODx.expandHelp ? '' : _('newsletter.label_active_desc'),
+		            fieldLabel	: _('newsletter.label_confirmed'),
+		            description	: MODx.expandHelp ? '' : _('newsletter.label_confirmed_desc'),
 		            name		: 'active',
 		            inputValue	: 1,
 		            checked		: true
 		        }, {
 		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-		            html		: _('newsletter.label_active_desc'),
+		            html		: _('newsletter.label_confirmed_desc'),
 		            cls			: 'desc-under'
 		        }]
 	        }]	
@@ -402,60 +392,40 @@ Newsletter.window.CreateSubscription = function(config) {
             html		: _('newsletter.label_email_desc'),
             cls			: 'desc-under'
         }, {
+	    	layout		: 'form',
+	    	hidden		: 0 == parseInt(Newsletter.config.context) ? true : false,
+			defaults 	: {
+				labelSeparator : ''	
+			},
+	    	items		: [{
+	        	xtype		: 'modx-combo-context',
+	        	fieldLabel	: _('newsletter.label_context'),
+	        	description	: MODx.expandHelp ? '' : _('newsletter.label_context_desc'),
+	        	name		: 'context',
+	        	anchor		: '100%',
+	        	allowBlank	: false,
+	        	value		: MODx.config.default_context
+	        }, {
+	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+	        	html		: _('newsletter.label_context_desc'),
+	        	cls			: 'desc-under'
+	        }]
+	    }, {
 	       	xtype		: 'label',
-	       	fieldLabel	: _('newsletter.label_groups')
+	       	fieldLabel	: _('newsletter.label_lists')
 	    }, {
         	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-            html		: _('newsletter.label_groups_desc'),
+            html		: _('newsletter.label_lists_desc'),
             cls			: 'desc-under'
         }, {
-	        xtype		: 'container',
-	        id			: 'newsletter-groups',
-		    listeners	: {
-		        'render'	: {
-		        	fn 			: this.groups,
-					scope 		: this
-				}
-	        }
-        }]
+			xtype		: 'newsletter-combo-lists'
+		}]
     });
     
     Newsletter.window.CreateSubscription.superclass.constructor.call(this, config);
 };
 
-Ext.extend(Newsletter.window.CreateSubscription, MODx.Window, {
-	groups : function() {
-		Ext.Ajax.request({
-			url		: Newsletter.config.connectorUrl,
-			params	: {
-            	action		: 'mgr/groups/getlist'
-			},
-			success : function(response, opts) {
-				var items = [];
-
-				Ext.each(Ext.decode(response.responseText).results, function(record) {
-					items.push({
-				        xtype		: 'checkbox',
-			            boxLabel	: record.name + (0 == parseInt(Newsletter.config.context) ? '' : ' (' + record.context + ')'),
-			            description	: MODx.expandHelp ? '' : record.description,
-			            name		: 'groups[]',
-			            inputValue	: record.id
-			        });
-				});
-
-				var cmp = Ext.getCmp('newsletter-groups');
-				
-				cmp.add({
-		        	xtype		: 'checkboxgroup',
-		        	columns		: 2,
-		        	items		: items
-		        });
-		        
-		        cmp.doLayout();
-			}
-		});
-	}
-});
+Ext.extend(Newsletter.window.CreateSubscription, MODx.Window);
 
 Ext.reg('newsletter-window-subscription-create', Newsletter.window.CreateSubscription);
 
@@ -484,7 +454,7 @@ Newsletter.window.UpdateSubscription = function(config) {
                 labelSeparator : ''
             },
         	items		: [{
-	        	columnWidth	: .9,
+	        	columnWidth	: .8,
 	        	items		: [{
 			        xtype		: 'textfield',
 		            fieldLabel	: _('newsletter.label_name'),
@@ -497,17 +467,17 @@ Newsletter.window.UpdateSubscription = function(config) {
 		            cls			: 'desc-under'
 		        }]
 	        }, {
-		        columnWidth	: .1,
+		        columnWidth	: .2,
 		        style		: 'margin-right: 0;',
 		        items		: [{
 			        xtype		: 'checkbox',
-		            fieldLabel	: _('newsletter.label_active'),
-		            description	: MODx.expandHelp ? '' : _('newsletter.label_active_desc'),
+		            fieldLabel	: _('newsletter.label_confirmed'),
+		            description	: MODx.expandHelp ? '' : _('newsletter.label_confirmed_desc'),
 		            name		: 'active',
 		            inputValue	: 1
 		        }, {
 		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-		            html		: _('newsletter.label_active_desc'),
+		            html		: _('newsletter.label_confirmed_desc'),
 		            cls			: 'desc-under'
 		        }]
 	        }]	
@@ -523,174 +493,43 @@ Newsletter.window.UpdateSubscription = function(config) {
             html		: _('newsletter.label_email_desc'),
             cls			: 'desc-under'
         }, {
+	    	layout		: 'form',
+	    	hidden		: 0 == parseInt(Newsletter.config.context) ? true : false,
+			defaults 	: {
+				labelSeparator : ''	
+			},
+	    	items		: [{
+	        	xtype		: 'modx-combo-context',
+	        	fieldLabel	: _('newsletter.label_context'),
+	        	description	: MODx.expandHelp ? '' : _('newsletter.label_context_desc'),
+	        	name		: 'context',
+	        	anchor		: '100%',
+	        	allowBlank	: false,
+	        	value		: MODx.config.default_context
+	        }, {
+	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+	        	html		: _('newsletter.label_context_desc'),
+	        	cls			: 'desc-under'
+	        }]
+	    }, {
 	       	xtype		: 'label',
-	       	fieldLabel	: _('newsletter.label_groups')
+	       	fieldLabel	: _('newsletter.label_lists')
 	    }, {
         	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-            html		: _('newsletter.label_groups_desc'),
+            html		: _('newsletter.label_lists_desc'),
             cls			: 'desc-under'
         }, {
-	        xtype		: 'container',
-	        id			: 'newsletter-groups',
-		    listeners	: {
-		        'render'	: {
-		        	fn 			: this.groups,
-					scope 		: this
-				}
-	        }
-        }]
+			xtype		: 'newsletter-combo-lists',
+			value		: config.record.lists
+		}]
     });
     
     Newsletter.window.UpdateSubscription.superclass.constructor.call(this, config);
 };
 
-Ext.extend(Newsletter.window.UpdateSubscription, MODx.Window, {
-	groups : function() {
-		var value = this.record.groups;
-
-		Ext.Ajax.request({
-			url		: Newsletter.config.connectorUrl,
-			params	: {
-            	action		: 'mgr/groups/getlist'
-			},
-			success : function(response, opts) {
-				var items = [];
-
-				Ext.each(Ext.decode(response.responseText).results, function(record) {
-					items.push({
-				        xtype		: 'checkbox',
-			            boxLabel	: record.name + (0 == parseInt(Newsletter.config.context) ? '' : ' (' + record.context + ')'),
-			            description	: MODx.expandHelp ? '' : record.description,
-			            name		: 'groups[]',
-			            inputValue	: record.id,
-			            checked		: -1 != value.indexOf(record.id) ? true : false
-			        });
-				});
-
-				var cmp = Ext.getCmp('newsletter-groups');
-				
-				cmp.add({
-		        	xtype		: 'checkboxgroup',
-		        	columns		: 2,
-		        	items		: items
-		        });
-		        
-		        cmp.doLayout();
-			}
-		});
-	}
-});
+Ext.extend(Newsletter.window.UpdateSubscription, MODx.Window);
 
 Ext.reg('newsletter-window-subscription-update', Newsletter.window.UpdateSubscription);
-
-Newsletter.window.ImportSubscriptions = function(config) {
-    config = config || {};
-
-    Ext.applyIf(config, {
-    	autoHeight	: true,
-        title 		: _('newsletter.subscription_import'),
-        url			: Newsletter.config.connectorUrl,
-        baseParams	: {
-            action		: 'mgr/subscriptions/import'
-        },
-        defauls		: {
-	        labelAlign	: 'top',
-            border		: false
-        },
-        fields		: [{
-	        html 		: _('newsletter.subscription_import_desc'),
-	        cls			: 'panel-desc',
-	        style		: 'margin-bottom: 10px;'
-        }, {
-	        xtype		: 'fileuploadfield',
-            fieldLabel	: _('file'),
-            buttonText	: _('upload.buttons.upload'),
-            name		: 'file',
-            anchor		: '100%'
-        }, {
-	        xtype		: 'checkbox',
-            boxLabel	: _('newsletter.label_import_groups'),
-            description	: MODx.expandHelp ? '' : _('newsletter.label_import_groups_desc'),
-            name		: 'groups',
-            inputValue	: 1,
-            checked		: true
-        }, {
-        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-            html		: _('newsletter.label_import_groups_desc'),
-            cls			: 'desc-under',
-        }, {
-	        xtype		: 'checkbox',
-            boxLabel	: _('newsletter.label_import_subscription'),
-            description	: MODx.expandHelp ? '' : _('newsletter.label_import_subscription_desc'),
-            name		: 'subscriptions',
-            inputValue	: 1,
-            checked		: true
-        }, {
-        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-            html		: _('newsletter.label_import_subscription_desc'),
-            cls			: 'desc-under'
-        }],
-        fileUpload	: true,
-        saveBtnText	: _('import')
-    });
-    
-    Newsletter.window.ImportSubscriptions.superclass.constructor.call(this, config);
-};
-
-Ext.extend(Newsletter.window.ImportSubscriptions, MODx.Window);
-
-Ext.reg('newsletter-window-subscription-import', Newsletter.window.ImportSubscriptions);
-
-Newsletter.window.ExportSubscriptions = function(config) {
-    config = config || {};
-
-    Ext.applyIf(config, {
-    	autoHeight	: true,
-        title 		: _('newsletter.subscription_export'),
-        url			: Newsletter.config.connectorUrl,
-        baseParams	: {
-            action		: 'mgr/subscriptions/export'
-        },
-        defauls		: {
-	        labelAlign	: 'top',
-            border		: false
-        },
-        fields		: [{
-	        html 		: _('newsletter.subscription_export_desc'),
-	        cls			: 'panel-desc',
-	        style		: 'margin-bottom: 10px;'
-        }, {
-	        xtype		: 'checkbox',
-            boxLabel	: _('newsletter.label_export_groups'),
-            description	: MODx.expandHelp ? '' : _('newsletter.label_export_groups_desc'),
-            name		: 'groups',
-            inputValue	: 1,
-            checked		: true
-        }, {
-        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-            html		: _('newsletter.label_export_groups_desc'),
-            cls			: 'desc-under',
-        }, {
-	        xtype		: 'checkbox',
-            boxLabel	: _('newsletter.label_export_subscription'),
-            description	: MODx.expandHelp ? '' : _('newsletter.label_export_subscription_desc'),
-            name		: 'subscriptions',
-            inputValue	: 1,
-            checked		: true
-        }, {
-        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-            html		: _('newsletter.label_export_subscription_desc'),
-            cls			: 'desc-under'
-        }],
-        saveBtnText	: _('export')
-    });
-    
-    Newsletter.window.ExportSubscriptions.superclass.constructor.call(this, config);
-};
-
-Ext.extend(Newsletter.window.ExportSubscriptions, MODx.Window);
-
-Ext.reg('newsletter-window-subscription-export', Newsletter.window.ExportSubscriptions);
 
 Newsletter.combo.ConfirmTypes = function(config) {
     config = config || {};

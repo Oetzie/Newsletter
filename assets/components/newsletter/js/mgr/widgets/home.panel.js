@@ -53,17 +53,17 @@ Newsletter.panel.Home = function(config) {
 				}]
 			}, {
 				layout		: 'form',
-				title		: _('newsletter.groups'),
+				title		: _('newsletter.lists'),
 				defaults	: {
 					autoHeight	: true,
 					autoWidth	: true,
 					border		: false
 				},
 				items		: [{
-					html			: '<p>'+_('newsletter.groups_desc')+'</p>',
+					html			: '<p>'+_('newsletter.lists_desc')+'</p>',
 					bodyCssClass	: 'panel-desc'
 				}, {
-					xtype			: 'newsletter-grid-groups',
+					xtype			: 'newsletter-grid-lists',
 					cls				: 'main-wrapper',
 					preventRender	: true
 				}]

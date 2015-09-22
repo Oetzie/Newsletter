@@ -22,8 +22,8 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	require_once (dirname(dirname(__FILE__)) . '/newslettersubscriptionsgroups.class.php');
+	require_once (dirname(dirname(__FILE__)) . '/newsletterlistsnewsletters.class.php');
 	
-	class NewsletterSubscriptionsGroups_mysql extends NewsletterSubscriptionsGroups {}
+	class NewsletterListsNewsletters_mysql extends NewsletterListsNewsletters {}
 	
 ?>

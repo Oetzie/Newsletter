@@ -48,7 +48,7 @@
 		public function process() {
 			foreach (explode(',', $this->getProperty('ids')) as $key => $value) {
 				if (false !== ($object = $this->modx->getObject($this->classKey, array('id' => $value)))) {
-					$this->modx->removeCollection('NewsletterSubscriptionsGroups', array('parent_id' => $object->get('id')));
+					$this->modx->removeCollection('NewsletterListsSubscriptions', array('subscription_id' => $object->get('id')));
 					
 					$object->remove();
 				}

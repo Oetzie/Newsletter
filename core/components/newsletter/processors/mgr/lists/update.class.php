@@ -22,12 +22,12 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class GroupsUpdateProcessor extends modObjectUpdateProcessor {
+	class ListsUpdateProcessor extends modObjectUpdateProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'NewsletterGroups';
+		public $classKey = 'NewsletterLists';
 		
 		/**
 		 * @acces public.
@@ -39,7 +39,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $objectType = 'newsletter.groups';
+		public $objectType = 'newsletter.lists';
 		
 		/**
 		 * @acces public.
@@ -54,6 +54,6 @@
 		}
 	}
 	
-	return 'GroupsUpdateProcessor';
+	return 'ListsUpdateProcessor';
 	
 ?>

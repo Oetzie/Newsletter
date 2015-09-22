@@ -1,6 +1,5 @@
 <?php
-
-	/**
+/**
 	 * Newsletter
 	 *
 	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
@@ -31,10 +30,10 @@
 	switch($prefix) {
 		case 'Before':
 			$properties = array(
-				'type'			=> 'confirm',
+				'type'			=> 'complete',
 				'values'		=> $modx->request->getParameters(),
 				'resource'		=> $modx->getOption('newsletterRedirect', $form->extensionScriptProperties, false),
-				'confirmKey'	=> $modx->getOption('confirmKey', $scriptProperties)
+				'param'			=> $modx->getOption('param', $scriptProperties)
 			);
 
 			if (false === ($unsubscribe = $newsletter->unsubscribe($properties))) {
@@ -44,10 +43,10 @@
 		case 'After':
 			if ($form->isValid()) {
 				$properties = array(
-					'type'		=> 'unsubscribe',
+					'type'			=> 'unsubscribe',
 					'values'		=> $form->getValues(),
-					'groups'		=> $modx->getOption('newsletterGroups', $form->extensionScriptProperties, ''),
-					'confirmKey'	=> $modx->getOption('confirmKey', $scriptProperties)
+					'lists'			=> $modx->getOption('newsletterLists', $form->extensionScriptProperties, $modx->getOption('primaryLists', $newsletter->config)),
+					'param'			=> $modx->getOption('param', $scriptProperties)
 				);
 
 				if (false === ($unsubscribe = $newsletter->unsubscribe($properties))) {
