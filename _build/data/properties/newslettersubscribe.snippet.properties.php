@@ -3,19 +3,19 @@
 	return array(
 		array(
 	        'name' 		=> 'param',
-	        'desc' 		=> 'newslettersubscribe_snippet_confirm_desc',
-	        'type' 		=> 'combo-boolean',
+	        'desc' 		=> 'newslettersubscribe_snippet_param_desc',
+	        'type' 		=> 'textfield',
 	        'options' 	=> '',
-	        'value'		=> '1',
+	        'value'		=> 'token',
 	        'area'		=> PKG_NAME_LOWER,
 	        'lexicon' 	=> PKG_NAME_LOWER.':default'
 	    ),
 	    array(
 	        'name' 		=> 'confirm',
-	        'desc' 		=> 'newslettersubscribe_snippet_param_desc',
-	        'type' 		=> 'textfield',
+	        'desc' 		=> 'newslettersubscribe_snippet_confirm_desc',
+	        'type' 		=> 'combo-boolean',
 	        'options' 	=> '',
-	        'value'		=> 'token',
+	        'value'		=> '1',
 	        'area'		=> PKG_NAME_LOWER,
 	        'lexicon' 	=> PKG_NAME_LOWER.':default'
 	    )
