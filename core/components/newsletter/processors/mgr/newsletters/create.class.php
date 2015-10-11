@@ -55,6 +55,14 @@
 			require_once $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'/model/newsletter/newsletter.class.php';
 			
 			$this->newsletter = new Newsletter($this->modx);
+			
+			if ($this->newsletter->hasPermission()) {
+				if (null === $this->getProperty('hidden')) {
+					$this->setProperty('hidden', 0);
+				}
+			} else {
+				$this->setProperty('hidden', 0);
+			}
 
 			return parent::initialize();
 		}

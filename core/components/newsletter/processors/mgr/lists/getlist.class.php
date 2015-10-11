@@ -55,13 +55,24 @@
 		
 		/**
 		 * @acces public.
+		 * @var Object.
+		 */
+		public $newsletter;
+		
+		/**
+		 * @acces public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
 			$initialized = parent::initialize();
 			
+			require_once $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'/model/newsletter/newsletter.class.php';
+			
+			$this->newsletter = new Newsletter($this->modx);
+			
 			$this->setDefaultProperties(array(
 				'dateFormat' => '%b %d, %Y %I:%M %p',
+				'hidden'	 => false
 			));
 			
 			return $initialized;
@@ -108,7 +119,9 @@
 				$array['editedon'] = strftime($this->getProperty('dateFormat', '%b %d, %Y %I:%M %p'), strtotime($array['editedon']));
 			}
 			
-			return $array;	
+			if ($this->newsletter->hasPermission() || 0 == $array['hidden'] || (bool) $this->getProperty('hidden')) {
+				return $array;
+			}	
 		}
 	}
 

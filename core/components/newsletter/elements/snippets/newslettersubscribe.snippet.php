@@ -47,7 +47,9 @@
 				$properties = array(
 					'type'			=> 'subscribe',
 					'values'		=> $form->getValues(),
-					'lists'			=> $modx->getOption('newsletterLists', $form->extensionScriptProperties, $modx->getOption('primaryLists', $newsletter->config)),
+					'lists'			=> $modx->getOption('newsletterLists', $form->extensionScriptProperties),
+					'resource'		=> $modx->getOption('newsletterRedirect', $form->extensionScriptProperties, false),
+					'confirm'		=> $modx->getOption('newsletterConfirm', $form->extensionScriptProperties, $modx->getOption('confirm', $scriptProperties)),
 					'param'			=> $modx->getOption('param', $scriptProperties)
 				);
 

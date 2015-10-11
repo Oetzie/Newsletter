@@ -55,10 +55,20 @@
 		
 		/**
 		 * @acces public.
+		 * @var Object.
+		 */
+		public $newsletter;
+		
+		/**
+		 * @acces public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
 			$initialized = parent::initialize();
+			
+			require_once $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'/model/newsletter/newsletter.class.php';
+			
+			$this->newsletter = new Newsletter($this->modx);
 			
 			$this->setDefaultProperties(array(
 				'dateFormat' => '%b %d, %Y %I:%M %p',
@@ -117,13 +127,21 @@
 				'resource_name' 		=> empty($object->resource_longtitle) ? $object->resource_pagetitle : $object->resource_longtitle,
 				'resource_name_alias' 	=> (empty($object->resource_longtitle) ? $object->resource_pagetitle : $object->resource_longtitle).' ('.$object->resource_id.')',
 				'lists'					=> array_keys($lists),
-				'lists_names' 			=> implode(', ', $lists)
+				'lists_names' 			=> implode(', ', $lists),
+				'send_at'				=> 2 == $object->send_status ? 'timestamp' : '',
+				'send_details'			=> array()
 			));
+			
+			foreach ($object->getMany('NewsletterNewslettersInfo') as $sendDetail) {
+				$array['send_details'][] = array_merge($sendDetail->toArray(), array(
+					'timestamp' => date($this->modx->getOption('manager_date_format', 'Y-m-d').', '.$this->modx->getOption('manager_time_format', 'H:i'), strtotime($sendDetail->timestamp))
+				));
+			}
 
-			if (in_array($array['send_date'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
-				$array['send_date'] = date('Y-m-d 00:00:00');
+			if (in_array($array['send_date'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', '0000-00-00', null))) {
+				$array['send_date'] = '';
 			} else {
-				$array['send_date'] = date('Y-m-d 00:00:00', strtotime($array['send_date']));
+				$array['send_date'] = date('Y-m-d', strtotime($array['send_date']));
 			}
 			
 			$array['send_date_format'] = date($this->modx->getOption('manager_date_format', 'Y-m-d'), strtotime($array['send_date']));
@@ -134,7 +152,9 @@
 				$array['editedon'] = strftime($this->getProperty('dateFormat', '%b %d, %Y %I:%M %p'), strtotime($array['editedon']));
 			}
 			
-			return $array;
+			if ($this->newsletter->hasPermission() || 0 == $array['hidden'] || (bool) $this->getProperty('hidden')) {
+				return $array;
+			}
 		}
 	}
 

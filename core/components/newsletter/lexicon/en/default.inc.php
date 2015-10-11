@@ -32,15 +32,18 @@
 	$_lang['setting_newsletter_token']								= 'Cronjob token';
 	$_lang['setting_newsletter_token_desc']							= 'This token needs to be send along with the cronjob so that the newsletter can not be send by random people. Without this token automatically send newsletters is not working.';
 	$_lang['setting_newsletter_email']								= 'Newsletter sender';
-	$_lang['setting_newsletter_email_desc']							= 'The e-mail address where the newsletter is sent of.';
+	$_lang['setting_newsletter_email_desc']							= 'The e-mail address where the newsletter is send from.';
 	$_lang['setting_newsletter_name']								= 'Newsletter sender name';
-	$_lang['setting_newsletter_name_desc']							= 'The name where the newsletter is sent of.';
+	$_lang['setting_newsletter_name_desc']							= 'The name where the newsletter is send from.';
 	$_lang['setting_newsletter_template']							= 'Newsletter template';
 	$_lang['setting_newsletter_template_desc']						= 'The ID of the template that get used as a newsletter, to separate templates use a comma.';
 	$_lang['setting_newsletter_primary_lists']						= 'Primary mailinglist';
 	$_lang['setting_newsletter_primary_lists_desc']					= 'The primary mailinglist, this is where all subscriptions will be placed in, to separate primary mailinglists use a comma.';
+	$_lang['setting_newsletter_admin_groups']						= 'Admin usergroups';
+	$_lang['setting_newsletter_admin_groups_desc']					= 'The usergroups that has access to the admin part of the newsletters, to separate usergroups use a comma.';
 	
 	$_lang['newslettersubscribe_snippet_confirmkey_desc']			= 'The URL parameter for the confirmation. Default is "token".';
+	$_lang['newslettersubscribe_snippet_confirm_desc']				= 'If "Yes" there will be sent a confirmation email which must confirm the subscription.';
 	$_lang['newsletterunsubscribe_snippet_confirmkey_desc']			= 'The URL parameter for the confirmation. Default is "token".';
 	
 	$_lang['newsletter.newsletter']									= 'Newsletter';
@@ -86,6 +89,8 @@
 	
 	$_lang['newsletter.label_resource']								= 'Resource';
 	$_lang['newsletter.label_resource_desc']						= 'Select a resource for the newsletter.';
+	$_lang['newsletter.label_hidden_newsletter']					= 'Hidden newsletter';
+	$_lang['newsletter.label_hidden_newsletter_desc']				= 'Hidden newsletter, hide this newsletter for the not \'Admin usergroups\'.';
 	$_lang['newsletter.label_email']								= 'E-mail address';
 	$_lang['newsletter.label_email_desc']							= 'The e-mail address of the subscription.';
 	$_lang['newsletter.label_name']									= 'Name';
@@ -94,6 +99,8 @@
 	$_lang['newsletter.label_context_desc']							= 'The context of the subscription.';
 	$_lang['newsletter.label_primary_list']							= 'Primary mailing list';
 	$_lang['newsletter.label_primary_list_desc']					= 'Primary mailing list, in this mailing list are all subscriptions placed in by default.';
+	$_lang['newsletter.label_hidden_list']							= 'Hidden mailing list';
+	$_lang['newsletter.label_hidden_list_desc']						= 'Hidden mailing list, hide this mailing list for the not \'Admin usergroups\'.';
 	$_lang['newsletter.label_list_name']							= 'Name';
 	$_lang['newsletter.label_list_name_desc']						= 'The name of the mailing list.';
 	$_lang['newsletter.label_list_description']						= 'Description';
@@ -110,10 +117,16 @@
 	$_lang['newsletter.label_published_desc']						= '';
 	$_lang['newsletter.label_send']									= 'Send';
 	$_lang['newsletter.label_send_desc']							= '';
+	$_lang['newsletter.label_send_status']							= 'Status';
+	$_lang['newsletter.label_send_status_desc']						= '';
 	$_lang['newsletter.label_send_at']								= 'Send newsletter at';
 	$_lang['newsletter.label_send_at_desc']							= 'Choose a moment when the newsletter needs to be send.';
 	$_lang['newsletter.label_send_date']							= 'Send at';
-	$_lang['newsletter.label_send_date_desc']						= 'Select a date when the newsletter needs to be send, at this date the newsletter will be send 01:00 automaticly.';
+	$_lang['newsletter.label_send_date_desc']						= 'Select a date from when the newsletter needs to be send, from this date the newsletter will be send 01:00 automaticly.';
+	$_lang['newsletter.label_send_repeat']							= 'Number of times to send';
+	$_lang['newsletter.label_send_repeat_desc']						= 'The number of times to send the newsletter, for unlimited use "0".';
+	$_lang['newsletter.label_send_interval']						= 'To send every few days';
+	$_lang['newsletter.label_send_interval_desc']					= 'The number of days between sending the newsletter from the first send date. 7 days is every week, 14 days is every to weeks etc.';
 	$_lang['newsletter.label_send_to_lists']						= 'Send to mailing list(s)';
 	$_lang['newsletter.label_send_to_lists_desc']					= 'The mailing list(s) where the newsletter needs to be send.';
 	$_lang['newsletter.label_send_to_emails']						= 'Send to the e-mail address(es)';
@@ -126,9 +139,12 @@
 	$_lang['newsletter.label_headers_desc']							= '';
 	$_lang['newsletter.filter_context']								= 'Filter at context...';
 	$_lang['newsletter.filter_confirm']								= 'Filter at confirmation...';
-	$_lang['newsletter.send_now']									= 'This moment';
-	$_lang['newsletter.send_later']									= 'Another moment';
-	$_lang['newsletter.newsletter_pending']							= 'Pending';
+	$_lang['newsletter.send_immediately']							= 'This moment';
+	$_lang['newsletter.send_timestamp']								= 'Another moment';
+	$_lang['newsletter.newsletter_status_pending']					= 'In queue';
+	$_lang['newsletter.newsletter_status_send']						= 'Send';
+	$_lang['newsletter.newsletter_status_notsend']					= 'Not send';
+	$_lang['newsletter.newsletter_send_detail']						= 'This newsletter is send at <strong>{timestamp}</strong>.';
 	$_lang['newsletter.confirmed']									= 'Confirmed';
 	$_lang['newsletter.notconfirmed']								= 'Not confirmed';
 	$_lang['newsletter.resource_does_not_exists']					= 'The resource of the newsletter does not exists or is deleted.';

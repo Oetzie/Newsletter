@@ -47,7 +47,7 @@
 		 */
 		public function initialize() {
 			$this->setDefaultProperties(array(
-				'send'			=> 0,
+				'send_status'	=> 0,
 				'send_date'		=> '0000-00-00'
 			));
 

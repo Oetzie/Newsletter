@@ -64,7 +64,7 @@
 		 * @return Mixed.
 		 */
 		public function beforeRemove() {
-			if ($this->modx->getOption('primaryKey', $this->newsletter->config, 1) == $this->getProperty('id')) {
+			if (1 == $this->object->primairy) {
 				$this->failure($this->modx->lexicon('newsletter.lists_remove_primary_list.'));
 			}
 			
@@ -76,7 +76,7 @@
 		 * @return Mixed.
 		 */
 		public function afterRemove() {
-			if ($this->modx->getOption('primaryKey', $this->newsletter->config, 1) == $this->getProperty('id')) {
+			if (1 != $this->object->primairy) {
 				$this->modx->removeCollection('NewsletterListsNewsletter', array('list_id' => $this->getProperty('id')));
 				$this->modx->removeCollection('NewsletterListsSubscriptions', array('list_id' => $this->getProperty('id')));
 			}

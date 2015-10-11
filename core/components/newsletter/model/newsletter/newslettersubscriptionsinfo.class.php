@@ -1,5 +1,5 @@
 <?php
-
+	
 	/**
 	 * Newsletter
 	 *
@@ -22,37 +22,5 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 	 
-	class SubscriptionsRemoveProcessor extends modObjectRemoveProcessor {
-		/**
-		 * @acces public.
-		 * @var String.
-		 */
-		public $classKey = 'NewsletterSubscriptions';
-		
-		/**
-		 * @acces public.
-		 * @var Array.
-		 */
-		public $languageTopics = array('newsletter:default');
-		
-		/**
-		 * @acces public.
-		 * @var String.
-		 */
-		public $objectType = 'newsletter.subscriptions';
-		
-		/**
-		 * @acces public.
-		 * @return Mixed.
-		 */
-		public function afterRemove() {
-			$this->modx->removeCollection('NewsletterListsSubscriptions', array('subscription_id' => $this->getProperty('id')));
-			$this->modx->removeCollection('NewsletterSubscriptionsInfo', array('subscription_id' => $this->getProperty('id')));
-
-			return parent::afterRemove();
-		}
-	}
-	
-	
-	return 'SubscriptionsRemoveProcessor';
+	class NewsletterSubscriptionsInfo extends xPDOSimpleObject {}
 ?>

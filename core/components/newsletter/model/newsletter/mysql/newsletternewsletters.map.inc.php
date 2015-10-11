@@ -30,9 +30,12 @@
 		'fields' 	=> array(
 			'id'			=> null,
 			'resource_id'	=> null,
-			'emails'		=> null,
-			'send'			=> null,
+			'send_status'	=> null,
+			'send_repeat'	=> null,
+			'send_interval'	=> null,
 			'send_date'		=> null,
+			'send_emails'	=> null,
+			'hidden'		=> null,
 			'editedon' 		=> null
 		),
 		'fieldMeta'	=> array(
@@ -50,23 +53,44 @@
 				'phptype' 	=> 'integer',
 				'null' 		=> false
 			),
-			'emails' 	=> array(
-				'dbtype' 	=> 'text',
-				'precision' => '2048',
-				'phptype' 	=> 'string',
-				'null' 		=> false
-			),
-			'send'		=> array(
+			'send_status' => array(
 				'dbtype' 	=> 'int',
 				'precision' => '1',
 				'phptype' 	=> 'integer',
 				'null' 		=> false,
 				'default'	=> 0
 			),
+			'send_repeat' => array(
+				'dbtype' 	=> 'int',
+				'precision' => '11',
+				'phptype' 	=> 'integer',
+				'null' 		=> false,
+				'default'	=> 1
+			),
+			'send_interval' => array(
+				'dbtype' 	=> 'int',
+				'precision' => '11',
+				'phptype' 	=> 'integer',
+				'null' 		=> false,
+				'default'	=> 7
+			),
 			'send_date' => array(
 				'dbtype' 	=> 'date',
 				'phptype' 	=> 'timestamp',
 				'null' 		=> false
+			),
+			'send_emails' => array(
+				'dbtype' 	=> 'text',
+				'precision' => '2048',
+				'phptype' 	=> 'string',
+				'null' 		=> false
+			),
+			'hidden'	=> array(
+				'dbtype' 	=> 'int',
+				'precision' => '1',
+				'phptype' 	=> 'integer',
+				'null' 		=> false,
+				'default'	=> 0
 			),
 			'editedon' 	=> array(
 				'dbtype' 	=> 'timestamp',
@@ -99,6 +123,13 @@
 			'NewsletterListsNewsletters' => array(
 				'local' 		=> 'id',
 				'class' 		=> 'NewsletterListsNewsletters',
+				'foreign'		=> 'newsletter_id',
+				'owner' 		=> 'local',
+				'cardinality' 	=> 'many'
+			),
+			'NewsletterNewslettersInfo' => array(
+				'local' 		=> 'id',
+				'class' 		=> 'NewsletterNewslettersInfo',
 				'foreign'		=> 'newsletter_id',
 				'owner' 		=> 'local',
 				'cardinality' 	=> 'many'

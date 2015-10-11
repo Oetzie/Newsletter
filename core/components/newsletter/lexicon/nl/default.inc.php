@@ -39,8 +39,11 @@
 	$_lang['setting_newsletter_template_desc']						= 'De ID van de template die als nieuwsbrief word gebruikt. Meerdere templates scheiden met een komma.';
 	$_lang['setting_newsletter_primary_lists']						= 'Primaire mailinglijst';
 	$_lang['setting_newsletter_primary_lists_desc']					= 'De primaire mailinglijst, hier worden standaard alle inschrijvingen in geplaatst. Meerdere mailinglijsten scheiden met een komma.';
+	$_lang['setting_newsletter_admin_groups']						= 'Admin gebruikersgroepen';
+	$_lang['setting_newsletter_admin_groups_desc']					= 'De gebruikersgroepen die toegang hebben tot de admin gedeelte van de nieuwsbrieven. Meerdere gebruikersgroepen scheiden met een komma.';
 	
 	$_lang['newslettersubscribe_snippet_param_desc']				= 'De URL parameter voor de bevestiging. Standaard is "token".';
+	$_lang['newslettersubscribe_snippet_confirm_desc']				= 'Indien "Ja" zal er een bevestigingsmail gestuurd worden die de inschrijver dient te bevestigen.';
 	$_lang['newsletterunsubscribe_snippet_param_desc']				= 'De URL parameter voor de bevestiging. Standaard is "token".';
 	
 	$_lang['newsletter.newsletter']									= 'Nieuwsbrief';
@@ -86,6 +89,8 @@
 	
 	$_lang['newsletter.label_resource']								= 'Pagina';
 	$_lang['newsletter.label_resource_desc']						= 'Selecteer de pagina die als nieuwsbrief dient.';
+	$_lang['newsletter.label_hidden_newsletter']					= 'Verborgen nieuwsbrief';
+	$_lang['newsletter.label_hidden_newsletter_desc']				= 'Verborgen nieuwsbrief, deze nieuwsbrief verbergen voor de niet \'Admin gebruikersgroepen\'.';
 	$_lang['newsletter.label_email']								= 'E-mailadres';
 	$_lang['newsletter.label_email_desc']							= 'Het e-mailadres van de inschrijving.';
 	$_lang['newsletter.label_name']									= 'Naam';
@@ -94,6 +99,8 @@
 	$_lang['newsletter.label_context_desc']							= 'De context van de inschrijving.';
 	$_lang['newsletter.label_primary_list']							= 'Primaire mailinglijst';
 	$_lang['newsletter.label_primary_list_desc']					= 'Primaire mailinglijst, in deze mailinglijst worden standaard alle inschrijvingen in geplaatst.';
+	$_lang['newsletter.label_hidden_list']							= 'Verborgen mailinglijst';
+	$_lang['newsletter.label_hidden_list_desc']						= 'Verborgen mailinglijst, deze mailinglijst verbergen voor de niet \'Admin gebruikersgroepen\'.';
 	$_lang['newsletter.label_list_name']							= 'Naam';
 	$_lang['newsletter.label_list_name_desc']						= 'De naam van de mailinglijst.';
 	$_lang['newsletter.label_list_description']						= 'Beschrijving';
@@ -110,10 +117,16 @@
 	$_lang['newsletter.label_published_desc']						= '';
 	$_lang['newsletter.label_send']									= 'Verstuurd';
 	$_lang['newsletter.label_send_desc']							= '';
+	$_lang['newsletter.label_send_status']							= 'Status';
+	$_lang['newsletter.label_send_status_desc']						= '';
 	$_lang['newsletter.label_send_at']								= 'Nieuwsbrief versturen op';
 	$_lang['newsletter.label_send_at_desc']							= 'Kies een moment waarop je de nieuwsbrief wilt versturen.';
-	$_lang['newsletter.label_send_date']							= 'Namelijk op';
-	$_lang['newsletter.label_send_date_desc']						= 'Selecteer een datum wanneer de nieuwsbrief verstuurd moet worden, op die datum word de nieuwsbrief om 01:00 automatisch verstuurd.';
+	$_lang['newsletter.label_send_date']							= 'Versturen vanaf';
+	$_lang['newsletter.label_send_date_desc']						= 'Selecteer een datum vanaf wanneer de nieuwsbrief verstuurd moet worden, vanaf die datum word de nieuwsbrief om 01:00 automatisch verstuurd.';
+	$_lang['newsletter.label_send_repeat']							= 'Aantal keer versturen';
+	$_lang['newsletter.label_send_repeat_desc']						= 'Het aantal keer dat de nieuwsbrief verstuurd moet worden, voor oneindig gebruik "0".';
+	$_lang['newsletter.label_send_interval']						= 'Om de zoveel dagen versturen';
+	$_lang['newsletter.label_send_interval_desc']					= 'Het aantal dagen wat er tussen het versturen van de nieuwsbrief moet zitten vanaf de eerste verzend datum. 7 dagen is elke week, 14 dagen is elke twee week etc.';
 	$_lang['newsletter.label_send_to_lists']						= 'Versturen naar de mailinglijst(en)';
 	$_lang['newsletter.label_send_to_lists_desc']					= 'De mailinglijst(en) waar de nieuwsbrief naar gestuurd moet worden.';
 	$_lang['newsletter.label_send_to_emails']						= 'Versturen naar de e-mailadres(sen)';
@@ -126,9 +139,12 @@
 	$_lang['newsletter.label_headers_desc']							= '';
 	$_lang['newsletter.filter_context']								= 'Filter op context...';
 	$_lang['newsletter.filter_confirm']								= 'Filter op bevestiging...';
-	$_lang['newsletter.send_now']									= 'Dit moment';
-	$_lang['newsletter.send_later']									= 'Een ander moment';
-	$_lang['newsletter.newsletter_pending']							= 'In afwachting';
+	$_lang['newsletter.send_immediately']							= 'Dit moment';
+	$_lang['newsletter.send_timestamp']								= 'Een ander moment kiezen';
+	$_lang['newsletter.newsletter_status_pending']					= 'In wachtrij';
+	$_lang['newsletter.newsletter_status_send']						= 'Verstuurd';
+	$_lang['newsletter.newsletter_status_notsend']					= 'Niet verstuurd';
+	$_lang['newsletter.newsletter_send_detail']						= 'Deze nieuwsbrief is verstuurd op <strong>{timestamp}</strong>.';
 	$_lang['newsletter.confirmed']									= 'Bevestigd';
 	$_lang['newsletter.notconfirmed']								= 'Niet bevestigd';
 	$_lang['newsletter.resource_does_not_exists']					= 'De pagina die als nieuwsbrief dient bestaat niet of is verwijderd.';

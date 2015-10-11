@@ -43,7 +43,7 @@
 				Ext.onReady(function() {
 					MODx.config.help_url = "http://rtfm.modx.com/extras/revo/'.$this->newsletter->getHelpUrl().'";
 			
-					Newsletter.config = '.$this->modx->toJSON($this->newsletter->config).';
+					Newsletter.config = '.$this->modx->toJSON(array_merge(array('admin' => $this->newsletter->hasPermission()), $this->newsletter->config)).';
 				});
 			</script>');
 			

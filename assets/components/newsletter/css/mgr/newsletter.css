@@ -11,3 +11,12 @@
 	   -moz-border-radius: 3px;
 	   		border-radius: 3px;
 }
+
+.grid-row-inactive,
+.grid-row-inactive a,
+.grid-row-inactive .red,
+.grid-row-inactive .green,
+.grid-row-inactive .orange,
+.inactive-checkbox {
+    color: #999 !important;
+}

@@ -56,10 +56,10 @@
 			
 			$this->newsletter = new Newsletter($this->modx);
 
-			if ('now' == $this->getProperty('send_at') || empty($this->getProperty('lists'))) {
-				$this->setProperty('send', 0);
+			if ('immediately' == $this->getProperty('send_at') || empty($this->getProperty('lists'))) {
+				$this->setProperty('send_status', 0);
 			} else {
-				$this->setProperty('send', 2);
+				$this->setProperty('send_status', 2);
 			}
 			
 			return parent::initialize();
@@ -80,69 +80,44 @@
 				}
 			}
 			
-			if ('now' == $this->getProperty('send_at')) {
-				if (null !== ($mail = $this->modx->getService('mail', 'mail.modPHPMailer'))) {
-					$criterea = array(
-						'id' 		=> $this->getProperty('resource_id'),
-						'deleted' 	=> 0
-					);
+			$this->object->save();
 			
-					if (null !== ($resource = $this->modx->getObject('modResource', $criterea))) {
-						if (in_array($resource->template, $this->modx->getOption('template', $this->newsletter->config, array()))) {
-							$emails = array();
-							
-							foreach (explode(',', $this->getProperty('emails')) as $email) {
-								if (!empty($email)) {
-									$emails[trim($email)] = array(
-										'name'	=> '',
-										'email'	=> trim($email)	
-									);
-								}
-							}
-							
-							foreach ($this->object->getMany('NewsletterListsNewsletters') as $newsletterList) {
-								$list = $newsletterList->getOne('NewsletterLists');
-									
-								foreach ($list->getMany('NewsletterListsSubscriptions') as $newsletterSubscription) {
-									$criterea = array(
-										'id' 		=> $newsletterSubscription->subscription_id,
-										'context' 	=> $resource->context_key,
-										'active'	=> 1
-									);
-									
-									if (null !== ($subscription = $newsletterSubscription->getOne('NewsletterSubscriptions', $criterea))) {
-										$emails[trim($subscription->email)] = array(
-											'name'	=> trim($subscription->name),
-											'email'	=> trim($subscription->email)
-										);
-									}
-								}
-							}
+			if ('immediately' == $this->getProperty('send_at')) {
+				if (null !== ($mail = $this->modx->getService('mail', 'mail.modPHPMailer'))) {
+					if (false !== ($newsletter = $this->newsletter->getNewsletter($this->getProperty('id'), true))) {
+						if (in_array($newsletter->get('resource')->template, $this->modx->getOption('template', $this->newsletter->config, array()))) {
+							$subscriptions = $this->newsletter->getSubscriptions($newsletter);
 							
 							$curl = curl_init();
-							
+						
 							curl_setopt($curl, CURLOPT_HEADER, false);
-							curl_setopt($curl, CURLOPT_URL, $this->modx->makeUrl($resource->id, null, null, 'full'));
+							curl_setopt($curl, CURLOPT_URL, $this->modx->makeUrl($newsletter->get('resource')->id, null, null, 'full'));
 							curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 							
-							$newsletterContent = curl_exec($curl);
+							$newsletterBody 	= curl_exec($curl);
+							$newsletterTitle 	= '' == $newsletter->get('resource')->longtitle ? $newsletter->get('resource')->pagetitle : $newsletter->get('resource')->longtitle;
 							
 							curl_close($curl);
 							
-							foreach ($emails as $key => $value) {
-								$newsletterTitle = empty($resource->longtitle) ? $resource->pagetitle : $resource->longtitle;
-								
+							foreach ($subscriptions as $subscription) {
 					    		$mail->setHTML(true);
+					    		
+					    		foreach ($subscription as $key => $value) {
+						    		$newsletterBody = str_replace('{{'.$key.'}}', $value, $newsletterBody);
+						    		$newsletterTitle = str_replace('{{'.$key.'}}', $value, $newsletterTitle);
+					    		}
 					    		
 					    		$mail->set(modMail::MAIL_FROM, 		$this->modx->getOption('emailSender', $this->newsletter->config));
 								$mail->set(modMail::MAIL_FROM_NAME, $this->modx->getOption('emailName', $this->newsletter->config));
-								$mail->set(modMail::MAIL_SUBJECT, 	str_replace(array('{{subscribe_name}}', '{{subscribe_email}}'), array($value['name'], $value['email']), $newsletterTitle));
-								$mail->set(modMail::MAIL_BODY, 		str_replace(array('{{subscribe_name}}', '{{subscribe_email}}'), array($value['name'], $value['email']), $newsletterContent));
-							
-								$mail->address('to', $value['email']);
+								$mail->set(modMail::MAIL_BODY, 		$newsletterBody);
+								$mail->set(modMail::MAIL_SUBJECT, 	$newsletterTitle);
+								
+								$mail->address('to', $subscription['subscribe_email']);
 								
 								if (!$mail->send()) {
-									$this->modx->log(modX::LOG_LEVEL_ERROR, '[Newsletter] An error occurred while trying to send the email: '.$mail->mailer->ErrorInfo);
+									$this->modx->log(modX::LOG_LEVEL_ERROR, '[Newsletter] An error occurred while trying to send newsletter (#'.$newsletter->id.') to '.$subscription['subscribe_email'].' : '.$mail->mailer->ErrorInfo);
+								} else {
+									$succes[] = $subscription['subscribe_email'];
 								}
 						
 								$mail->reset();
@@ -154,7 +129,7 @@
 						$this->failure($this->modx->lexicon('newsletter.newsletter_send_failed_resource_desc'));
 					}
 				} else {
-					$this->modx->log(modX::LOG_LEVEL_ERROR, '[Newsletter] An error occurred while trying to send a newsletter ('.$this->getProperty('id').'), modPHPMailer could not be loaded.');
+					$this->modx->log(modX::LOG_LEVEL_ERROR, '[Newsletter] An error occurred while trying to send newsletters, modPHPMailer could not be loaded.');
 					
 					$this->failure($this->modx->lexicon('newsletter.newsletter_send_failed_desc'));
 				}

@@ -29,6 +29,8 @@
 	    	2 => 'NewsletterLists',
 	    	4 => 'NewsletterListsNewsletters',
 	    	5 => 'NewsletterListsSubscriptions',
+	    	5 => 'NewsletterNewslettersInfo',
+	    	6 => 'NewsletterSubscriptionsInfo'
 	    )
 	);
 	

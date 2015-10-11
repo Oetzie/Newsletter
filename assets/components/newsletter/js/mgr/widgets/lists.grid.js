@@ -50,7 +50,21 @@ Newsletter.grid.Lists = function(config) {
     expander = new Ext.grid.RowExpander({
         tpl : new Ext.Template(
             '<p class="desc">{description}</p>'
-        )
+        ),
+	    getRowClass : function(record, rowIndex, p, ds){
+	        p.cols = p.cols-1;
+	        var content = this.bodyContent[record.id];
+	        if(!content && !this.lazyRender){
+	            content = this.getBodyContent(record, rowIndex);
+	        }
+	        if(content){
+	            p.body = content;
+	        }
+	        
+	        var cls = this.state[record.id] ? 'x-grid3-row-expanded' : 'x-grid3-row-collapsed';
+	        
+	        return 1 == parseInt(record.json.hidden) ? cls + ' grid-row-inactive' : cls;
+	    }
     });
 
     sm = new Ext.grid.CheckboxSelectionModel();
@@ -62,6 +76,7 @@ Newsletter.grid.Lists = function(config) {
             sortable	: true,
             editable	: true,
             width		: 200,
+            renderer	: this.renderName,
             editor		: {
             	xtype		: 'textfield'
             }
@@ -103,13 +118,13 @@ Newsletter.grid.Lists = function(config) {
         },
         autosave	: true,
         save_action	: 'mgr/lists/updateFromGrid',
-        fields		: ['id', 'name', 'description', 'subscriptions', 'active', 'editedon'],
+        fields		: ['id', 'name', 'description', 'subscriptions', 'primary', 'hidden', 'active', 'editedon'],
         paging		: true,
         pageSize	: MODx.config.default_per_page > 30 ? MODx.config.default_per_page : 30,
         sortBy		: 'id',
         plugins		: expander,
         singleText	: _('newsletter.list'),
-        pluralText	: _('newsletter.lists')
+        pluralText	: _('newsletter.lists'),
     });
     
     Newsletter.grid.Lists.superclass.constructor.call(this, config);
@@ -140,7 +155,10 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
 		    scope	: this
 	    }];
 	    
-	    if (-1 == Newsletter.config.primaryLists.indexOf(this.menu.record.id.toString())) {
+	    console.log(this.menu.record);
+	    console.log(this.record);
+	    
+	    if (0 == parseInt(this.menu.record.primary)) {
 	    	menu.push('-', {
 		    	text	: _('newsletter.list_remove'),
 				handler	: this.removeList,
@@ -297,6 +315,11 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
         
         this.exportListWindow.show(e.target);
     },
+    renderName: function(d, c, e) {
+	    c.css = 1 == parseInt(e.json.hidden) ? 'grid-row-inactive' : '';
+	    
+	    return d;
+	},
     renderBoolean: function(d, c) {
     	c.css = 1 == parseInt(d) || d ? 'green' : 'red';
     	
@@ -371,9 +394,19 @@ Newsletter.window.CreateList = function(config) {
         	xtype		: 'checkbox',
         	boxLabel	: _('newsletter.label_primary_list_desc'),
         	anchor		: '100%',
-        	name		: 'primary_list',
+        	name		: 'primary',
+        	inputValue	: 1,
         	checked		: false,
-        	disabled	: true
+        	disabled	: Newsletter.config.admin ? false : true
+        }, {
+        	xtype		: 'checkbox',
+        	boxLabel	: _('newsletter.label_hidden_list_desc'),
+        	anchor		: '100%',
+        	name		: 'hidden',
+        	inputValue	: 1,
+        	checked		: false,
+        	disabled	: Newsletter.config.admin ? false : true,
+        	hidden		: Newsletter.config.admin ? false : true
         }]
     });
     
@@ -452,9 +485,17 @@ Newsletter.window.UpdateList = function(config) {
         	xtype		: 'checkbox',
         	boxLabel	: _('newsletter.label_primary_list_desc'),
         	anchor		: '100%',
-        	name		: 'primary_list',
-        	checked		: -1 != Newsletter.config.primaryLists.indexOf(config.record.id.toString()) ? true : false,
-        	disabled	: true
+        	name		: 'primary',
+        	inputValue	: 1,
+        	disabled	: Newsletter.config.admin ? false : true
+        }, {
+        	xtype		: 'checkbox',
+        	boxLabel	: _('newsletter.label_hidden_list_desc'),
+        	anchor		: '100%',
+        	name		: 'hidden',
+        	inputValue	: 1,
+        	disabled	: Newsletter.config.admin ? false : true,
+        	hidden		: Newsletter.config.admin ? false : true
         }]
     });
     

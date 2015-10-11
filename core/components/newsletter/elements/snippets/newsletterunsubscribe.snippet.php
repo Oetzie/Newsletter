@@ -1,5 +1,6 @@
 <?php
-/**
+
+	/**
 	 * Newsletter
 	 *
 	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
@@ -45,7 +46,7 @@
 				$properties = array(
 					'type'			=> 'unsubscribe',
 					'values'		=> $form->getValues(),
-					'lists'			=> $modx->getOption('newsletterLists', $form->extensionScriptProperties, $modx->getOption('primaryLists', $newsletter->config)),
+					'lists'			=> $modx->getOption('newsletterLists', $form->extensionScriptProperties),
 					'param'			=> $modx->getOption('param', $scriptProperties)
 				);
 

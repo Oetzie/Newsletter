@@ -22,20 +22,17 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	$xpdo_meta_map['NewsletterLists']= array(
+	$xpdo_meta_map['NewsletterSubscriptionsInfo']= array(
 		'package' 	=> 'newsletter',
 		'version' 	=> '1.0',
-		'table' 	=> 'newsletter_lists',
+		'table' 	=> 'newsletter_subscriptions_info',
 		'extends' 	=> 'xPDOSimpleObject',
 		'fields' 	=> array(
-			'id'			=> null,
-			'name'			=> null,
-			'description'	=> null,
-			'primary'		=> null,
-			'hidden'		=> null,
-			'active'		=> null,
-			'editedon' 		=> null
-		),
+			'id'				=> null,
+			'subscription_id'	=> null,
+			'key'				=> null,
+			'content'			=> null
+		),	
 		'fieldMeta'	=> array(
 			'id' 		=> array(
 				'dbtype' 	=> 'int',
@@ -45,43 +42,22 @@
 				'index' 	=> 'pk',
 				'generated'	=> 'native'
 			),
-			'name' 	=> array(
+			'subscription_id' => array(
+				'dbtype' 	=> 'int',
+				'precision' => '11',
+				'phptype' 	=> 'integer',
+				'null' 		=> false
+			),
+			'key' => array(
 				'dbtype' 	=> 'varchar',
-				'precision' => '75',
+				'precision' => '255',
 				'phptype' 	=> 'string',
 				'null' 		=> false
 			),
-			'description' => array(
+			'content' => array(
 				'dbtype' 	=> 'text',
-				'precision' => '2048',
 				'phptype' 	=> 'string',
-				'null' 		=> false
-			),
-			'primary'	=> array(
-				'dbtype' 	=> 'int',
-				'precision' => '1',
-				'phptype' 	=> 'integer',
-				'null' 		=> false,
-				'default'	=> 0
-			),
-			'hidden'	=> array(
-				'dbtype' 	=> 'int',
-				'precision' => '1',
-				'phptype' 	=> 'integer',
-				'null' 		=> false,
-				'default'	=> 0
-			),
-			'active'	=> array(
-				'dbtype' 	=> 'int',
-				'precision' => '1',
-				'phptype' 	=> 'integer',
-				'null' 		=> false,
-				'default'	=> 1
-			),
-			'editedon' 	=> array(
-				'dbtype' 	=> 'timestamp',
-				'phptype' 	=> 'timestamp',
-				'attributes' => 'ON UPDATE CURRENT_TIMESTAMP',
+				'precision' => '2048',
 				'null' 		=> false
 			)
 		),
@@ -99,19 +75,12 @@
 			)
 		),
 		'aggregates' => array(
-			'NewsletterListsNewsletters' => array(
-				'local' 		=> 'id',
-				'class' 		=> 'NewsletterListsNewsletters',
-				'foreign'		=> 'list_id',
-				'owner' 		=> 'local',
-				'cardinality' 	=> 'many'
-			),
-			'NewsletterListsSubscriptions' => array(
-				'local' 		=> 'id',
-				'class' 		=> 'NewsletterListsSubscriptions',
-				'foreign'		=> 'list_id',
-				'owner' 		=> 'local',
-				'cardinality' 	=> 'many'
+			'NewsletterSubscriptionsInfo' => array(
+				'local' 		=> 'subscription_id',
+				'class' 		=> 'NewsletterSubscriptions',
+				'foreign' 		=> 'id',
+				'owner' 		=> 'foreign',
+				'cardinality' 	=> 'one'
 			)
 		)
 	);

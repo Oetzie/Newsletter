@@ -31,8 +31,8 @@
 	
 	$settings[3] = $modx->newObject('modSystemSetting');
 	$settings[3]->fromArray(array(
-		'key' 		=> PKG_NAME_LOWER.'_primary_lists',
-		'value' 	=> '1',
+		'key' 		=> PKG_NAME_LOWER.'_admin_groups',
+		'value' 	=> 'Administrator',
 		'xtype' 	=> 'textfield',
 		'namespace' => PKG_NAME_LOWER,
 		'area' 		=> PKG_NAME_LOWER

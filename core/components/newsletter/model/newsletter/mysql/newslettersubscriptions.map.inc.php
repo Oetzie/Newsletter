@@ -103,6 +103,13 @@
 				'foreign'		=> 'subscription_id',
 				'owner' 		=> 'local',
 				'cardinality' 	=> 'many'
+			),
+			'NewsletterSubscriptionsInfo' => array(
+				'local' 		=> 'id',
+				'class' 		=> 'NewsletterSubscriptionsInfo',
+				'foreign'		=> 'subscription_id',
+				'owner' 		=> 'local',
+				'cardinality' 	=> 'many'
 			)
 		)
 	);

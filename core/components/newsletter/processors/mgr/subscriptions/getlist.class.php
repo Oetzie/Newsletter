@@ -55,11 +55,21 @@
 		
 		/**
 		 * @acces public.
+		 * @var Object.
+		 */
+		public $newsletter;
+		
+		/**
+		 * @acces public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
 			$initialized = parent::initialize();
 			
+			require_once $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'/model/newsletter/newsletter.class.php';
+			
+			$this->newsletter = new Newsletter($this->modx);
+
 			$this->setDefaultProperties(array(
 				'dateFormat' => '%b %d, %Y %I:%M %p',
 			));
@@ -103,16 +113,21 @@
 		 */
 		public function prepareRow(xPDOObject $object) {
 			$lists = array();
+			$listsNames = array();
 	
 			foreach ($object->getMany('NewsletterListsSubscriptions') as $list) {
 				if (null !== ($list = $list->getOne('NewsletterLists'))) {
 					$lists[$list->id] = $list->name;
+					
+					if ($this->newsletter->hasPermission() || 0 == $list->hidden) {
+						$listsNames[$list->id] = $list->name;
+					}
 				}
 			}
 			
 			$array = array_merge($object->toArray(), array(
 				'lists'			=> array_keys($lists),
-				'lists_names' 	=> implode(', ', $lists)
+				'lists_names' 	=> implode(', ', $listsNames)
 			));
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
