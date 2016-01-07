@@ -112,7 +112,7 @@ Newsletter.grid.Lists = function(config) {
     	sm 			: sm,
     	cm			: columns,
         id			: 'newsletter-grid-lists',
-        url			: Newsletter.config.connectorUrl,
+        url			: Newsletter.config.connector_url,
         baseParams	: {
         	action		: 'mgr/lists/getList'
         },
@@ -154,10 +154,7 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
 		    handler	: this.exportList,
 		    scope	: this
 	    }];
-	    
-	    console.log(this.menu.record);
-	    console.log(this.record);
-	    
+
 	    if (0 == parseInt(this.menu.record.primary)) {
 	    	menu.push('-', {
 		    	text	: _('newsletter.list_remove'),
@@ -179,6 +176,8 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
 	        listeners	: {
 		        'success'	: {
 		        	fn		: function() {
+			        	Ext.getCmp('newsletter-grid-subscriptions').refresh();
+			        	
             			this.getSelectionModel().clearSelections(true);
             			this.refresh();
             		},
@@ -201,6 +200,8 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
 	        listeners	: {
 		        'success'	: {
 		        	fn		: function() {
+			        	Ext.getCmp('newsletter-grid-subscriptions').refresh();
+			        	
             			this.getSelectionModel().clearSelections(true);
             			this.refresh();
             		},
@@ -224,6 +225,8 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
             listeners: {
             	'success': {
             		fn		: function() {
+	            		Ext.getCmp('newsletter-grid-subscriptions').refresh();
+	            		
             			this.getSelectionModel().clearSelections(true);
             			this.refresh();
             		},
@@ -242,7 +245,7 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
     	MODx.msg.confirm({
         	title 	: _('newsletter.list_remove_selected'),
         	text	: _('newsletter.list_remove_selected_confirm'),
-        	url		: this.config.url,
+        	url		:Newsletter.config.connector_url,
         	params	: {
             	action	: 'mgr/lists/removeSelected',
             	ids		: cs
@@ -250,6 +253,8 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
             listeners: {
             	'success': {
             		fn		: function() {
+	            		Ext.getCmp('newsletter-grid-subscriptions').refresh();
+	            		
             			this.getSelectionModel().clearSelections(true);
             			this.refresh();
             		},
@@ -335,7 +340,7 @@ Newsletter.window.CreateList = function(config) {
     Ext.applyIf(config, {
     	autoHeight	: true,
         title 		: _('newsletter.list_create'),
-        url			: Newsletter.config.connectorUrl,
+        url			: Newsletter.config.connector_url,
         baseParams	: {
             action		: 'mgr/lists/create'
         },
@@ -423,7 +428,7 @@ Newsletter.window.UpdateList = function(config) {
     Ext.applyIf(config, {
     	autoHeight	: true,
         title 		: _('newsletter.list_update'),
-        url			: Newsletter.config.connectorUrl,
+        url			: Newsletter.config.connector_url,
         baseParams	: {
             action		: 'mgr/lists/update'
         },
@@ -512,7 +517,7 @@ Newsletter.window.ImportList = function(config) {
     Ext.applyIf(config, {
     	autoHeight	: true,
         title 		: _('newsletter.list_import'),
-        url			: Newsletter.config.connectorUrl,
+        url			: Newsletter.config.connector_url,
         baseParams	: {
             action		: 'mgr/lists/import'
         },
@@ -571,7 +576,7 @@ Newsletter.window.ExportList = function(config) {
     Ext.applyIf(config, {
     	autoHeight	: true,
         title 		: _('newsletter.list_export'),
-        url			: Newsletter.config.connectorUrl,
+        url			: Newsletter.config.connector_url,
         baseParams	: {
             action		: 'mgr/lists/export'
         },

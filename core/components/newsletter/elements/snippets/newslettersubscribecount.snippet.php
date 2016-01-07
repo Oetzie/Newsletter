@@ -1,9 +1,9 @@
 <?php
-
+	
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -22,10 +22,27 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	require_once $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'/model/newsletter/newsletter.class.php';
+	$newsletter = $modx->getService('newsletter', 'Newsletter', $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 
-	$newsletter = new Newsletter($modx);
+	if (false !== ($tpl = $modx->getOption('tpl', $scriptProperties, false))) {
+		$counts = $newsletter->getCount($modx->getOption('lists', $scriptProperties));
 
-	return $newsletter->getCount($modx->getOption('lists', $scriptProperties, $modx->getOption('primaryLists', $newsletter->config)));
+		$output = array();
+		
+		foreach ($counts as $count) {
+			$output[] = $modx->getChunk($tpl, $count);
+		}
+
+		if (!empty($output)) {
+			if (false !== ($tplWrapper = $modx->getOption('tplWrapper', $scriptProperties, false))) {
+				return $modx->getChunk($tplWrapper, array(
+					'output' => implode(PHP_EOL, $output)
+				));
+			} else {
+				return implode(PHP_EOL, $output);
+			}
+		}		
+	}
 	
-?>
+	return;
+	

@@ -10,6 +10,8 @@
 			'email_desc'		=> 'Het e-mail adres waarmee de nieuwsbrief verstuurd wordt.',
 			'name'				=> 'Nieuwsbrief afzender naam',
 			'name_desc'			=> 'De naam waarmee de nieuwsbrief verstuurd wordt.',
+			'template'			=> 'Nieuwsbrief template',
+			'template_desc'		=> 'De ID van de template die als nieuwsbrief word gebruikt. Meerdere templates scheiden met een komma.',
 			'token'				=> 'Cronjob token',
 			'token_desc'		=> 'Deze token dient met de cronjob mee gestuurd te worden zodat de nieuwsbrief niet zomaar verstuurd kan worden door willekeurige personen. Zonder deze token werkt het automatisch versturen van de nieuwsbrieven niet.'
 		),
@@ -20,6 +22,8 @@
 			'email_desc'		=> 'The e-mail address where the newsletter is send from.',
 			'name'				=> 'Newsletter sender name',
 			'name_desc'			=> 'The name where the newsletter is send from.',
+			'template'			=> 'Newsletter template',
+			'template_desc'		=> 'The ID of the template that get used as a newsletter, to separate templates use a comma.',
 			'token'				=> 'Cronjob token',
 			'token_desc'		=> 'This token needs to be send along with the cronjob so that the newsletter can not be send by random people. Without this token automatically send newsletters is not working.'
 		)
@@ -31,6 +35,7 @@
 		'newsletter_admin_groups'	=> 'Administrator',
 		'newsletter_email'			=> '',
 		'newsletter_name'			=> '',
+		'newsletter_template'		=> '',
 		'newsletter_token'			=> sha1('newsletter'.strtotime(date('d-m-Y H:i:s')))
 	);
 
@@ -76,9 +81,17 @@
 			</div>
 			<label class="desc-under" style="font-weight: normal;">'.$modx->getOption('name_desc', $translations).'</label>
 			<div class="x-form-item">
-				<label for="ext-comp-newsletter4" class="x-form-item-label" style="width: 150px;">'.$modx->getOption('token', $translations).'</label>
+				<label for="ext-comp-newsletter4" class="x-form-item-label" style="width: 150px;">'.$modx->getOption('template', $translations).'</label>
 				<div class="x-form-element" style="padding-left: 155px">
-					<input type="text" name="newsletter_token" id="ext-comp-newsletter4" value="'.$modx->getOption('newsletter_token', $settings).'" class="x-form-text x-form-field" msgtarget="under" autocomplete="on" size="20" style="width: 350px;">
+					<input type="text" name="newsletter_template" id="ext-comp-newsletter4" value="'.$modx->getOption('newsletter_template', $settings).'" class="x-form-text x-form-field" msgtarget="under" autocomplete="on" size="20" style="width: 350px;">
+				</div>
+				<div class="x-form-clear-left"></div>
+			</div>
+			<label class="desc-under" style="font-weight: normal;">'.$modx->getOption('template_desc', $translations).'</label>
+			<div class="x-form-item">
+				<label for="ext-comp-newsletter5" class="x-form-item-label" style="width: 150px;">'.$modx->getOption('token', $translations).'</label>
+				<div class="x-form-element" style="padding-left: 155px">
+					<input type="text" name="newsletter_token" id="ext-comp-newsletter5" value="'.$modx->getOption('newsletter_token', $settings).'" class="x-form-text x-form-field" msgtarget="under" autocomplete="on" size="20" style="width: 350px;">
 				</div>
 				<div class="x-form-clear-left"></div>
 			</div>

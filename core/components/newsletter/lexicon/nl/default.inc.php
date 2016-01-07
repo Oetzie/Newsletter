@@ -3,7 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -37,8 +37,6 @@
 	$_lang['setting_newsletter_name_desc']							= 'De naam waarmee de nieuwsbrief verstuurd wordt.';
 	$_lang['setting_newsletter_template']							= 'Nieuwsbrief template';
 	$_lang['setting_newsletter_template_desc']						= 'De ID van de template die als nieuwsbrief word gebruikt. Meerdere templates scheiden met een komma.';
-	$_lang['setting_newsletter_primary_lists']						= 'Primaire mailinglijst';
-	$_lang['setting_newsletter_primary_lists_desc']					= 'De primaire mailinglijst, hier worden standaard alle inschrijvingen in geplaatst. Meerdere mailinglijsten scheiden met een komma.';
 	$_lang['setting_newsletter_admin_groups']						= 'Admin gebruikersgroepen';
 	$_lang['setting_newsletter_admin_groups_desc']					= 'De gebruikersgroepen die toegang hebben tot de admin gedeelte van de nieuwsbrieven. Meerdere gebruikersgroepen scheiden met een komma.';
 	
@@ -73,6 +71,15 @@
 	$_lang['newsletter.subscription_activate_selected_confirm']		= 'Weet je zeker dat je de geselecteerde inschrijvingen wilt bevestigen?';
 	$_lang['newsletter.subscription_deactivate_selected']			= 'Geselecteerde inschrijvingen de-bevestigen';
 	$_lang['newsletter.subscription_deactivate_selected_confirm']	= 'Weet je zeker dat je de geselecteerde inschrijvingen wilt de-bevestigen?';
+	$_lang['newsletter.subscription_move_selected']					= 'Geselecteerde inschrijvingen verplaatsen';
+	$_lang['newsletter.subscription_move_selected_desc']			= 'Selecteer de mailinglijst(en) waar de inschrijvingen aan toegevoegd of uit verwijderd moeten worden.';
+	
+	$_lang['newsletter.subscription_info']							= 'Inschrijving info';
+	$_lang['newsletter.subscription_info_desc']						= 'Hier kun je de inschrijving info wijzigen, inschrijving info zijn extra waardes die aan een inschrijving gekoppeld zijn die gebruikt kunnen worden in de nieuwsbrieven.';
+	$_lang['newsletter.subscription_info_create']					= 'Nieuwe inschrijving info';
+	$_lang['newsletter.subscription_info_update']					= 'Inschrijving info wijzigen';
+	$_lang['newsletter.subscription_info_remove']					= 'Inschrijving info verwijderen';
+	$_lang['newsletter.subscription_info_remove_confirm']			= 'Weet je zeker dat je deze inschrijving info wilt verwijderen?';
 	
 	$_lang['newsletter.list']										= 'Mailinglijst';
 	$_lang['newsletter.lists']										= 'Mailinglijsten';
@@ -113,6 +120,8 @@
 	$_lang['newsletter.label_subscriptions_desc']					= '';
 	$_lang['newsletter.label_lists']								= 'Mailinglijst(en)';
 	$_lang['newsletter.label_lists_desc']							= 'De mailinglijst(en) van de inschrijving.';
+	$_lang['newsletter.label_lists_subscriptions']					= 'Mailinglijst(en)';
+	$_lang['newsletter.label_lists_subscriptions_desc']				= 'De mailinglijst(en) van de inschrijving(en).';
 	$_lang['newsletter.label_published']							= 'Gepubliceerd';
 	$_lang['newsletter.label_published_desc']						= '';
 	$_lang['newsletter.label_send']									= 'Verstuurd';
@@ -137,14 +146,21 @@
 	$_lang['newsletter.label_delimiter_desc']						= 'Het scheidingsteken waarmee kolommen gescheiden worden. Standaard is ";".';
 	$_lang['newsletter.label_headers']								= 'Eerste rij kolom titels.';
 	$_lang['newsletter.label_headers_desc']							= '';
+	$_lang['newsletter.label_move']									= 'Verplaatsingstype';
+	$_lang['newsletter.label_move_desc']							= 'De type van de verplaatsing, dit kan toevoegen of verwijderen zijn.';
+	$_lang['newsletter.label_info_key']								= 'Sleutel';
+	$_lang['newsletter.label_info_key_desc']						= 'De sleutel voor de inschrijving info. De inschrijving info zal beschikbaar zijn via de [[+subscribe_sleutel]] tags.';
+	$_lang['newsletter.label_info_content']							= 'Waarde';
+	$_lang['newsletter.label_info_content_desc']					= 'De waarde voor de inschrijving info.';
 	$_lang['newsletter.filter_context']								= 'Filter op context...';
 	$_lang['newsletter.filter_confirm']								= 'Filter op bevestiging...';
+	$_lang['newsletter.extra_settings']								= 'Extra instellingen';
 	$_lang['newsletter.send_immediately']							= 'Dit moment';
 	$_lang['newsletter.send_timestamp']								= 'Een ander moment kiezen';
 	$_lang['newsletter.newsletter_status_pending']					= 'In wachtrij';
 	$_lang['newsletter.newsletter_status_send']						= 'Verstuurd';
 	$_lang['newsletter.newsletter_status_notsend']					= 'Niet verstuurd';
-	$_lang['newsletter.newsletter_send_detail']						= 'Deze nieuwsbrief is verstuurd op <strong>{timestamp}</strong>.';
+	$_lang['newsletter.newsletter_send_detail']						= 'Verstuurd op <strong>{timestamp}</strong>.';
 	$_lang['newsletter.confirmed']									= 'Bevestigd';
 	$_lang['newsletter.notconfirmed']								= 'Niet bevestigd';
 	$_lang['newsletter.resource_does_not_exists']					= 'De pagina die als nieuwsbrief dient bestaat niet of is verwijderd.';
@@ -166,5 +182,10 @@
 	$_lang['newsletter.remove_selected']							= 'Geselecteerden verwijderen';
 	$_lang['newsletter.confirm_selected']							= 'Geselecteerden bevestigen';
 	$_lang['newsletter.deconfirm_selected']							= 'Geselecteerden de-bevestigen';
-	
+	$_lang['newsletter.move_selected']								= 'Geselecteerden verplaatsen';
+	$_lang['newsletter.add']										= 'Toevoegen';
+	$_lang['newsletter.remove']										= 'Verwijderen';
+	$_lang['newsletter.info_key_error_character']					= 'Inschrijving info sleutel bevat niet toegestane tekens. Definieer een andere sleutelnaam.';
+	$_lang['newsletter.info_key_error_exists']						= 'Inschrijving info met deze sleutel bestaat reeds. Definieer een andere sleutelnaam';
+
 ?>

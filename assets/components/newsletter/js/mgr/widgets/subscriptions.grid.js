@@ -22,6 +22,10 @@ Newsletter.grid.Subscriptions = function(config) {
 			name	: 'deactivate',
 			handler	: this.activateSelectedSubscription,
 			scope	: this
+		}, '-', {
+			text	: _('newsletter.move_selected'),
+			handler	: this.moveSelectedSubscription,
+			scope	: this
 		}]
 	}, '->', {
     	xtype		: 'modx-combo-context',
@@ -142,7 +146,7 @@ Newsletter.grid.Subscriptions = function(config) {
     	sm 			: sm,
     	cm			: columns,
         id			: 'newsletter-grid-subscriptions',
-        url			: Newsletter.config.connectorUrl,
+        url			: Newsletter.config.connector_url,
         baseParams	: {
         	action		: 'mgr/subscriptions/getList'
         },
@@ -189,6 +193,10 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
 	        handler	: this.updateSubscription,
 	        scope	: this
 	    }, '-', {
+	        text	: _('newsletter.subscription_info'),
+	        handler	: this.updateInfoSubscription,
+	        scope	: this
+	    }, '-', {
 		    text	: _('newsletter.subscription_remove'),
 		    handler	: this.removeSubscription,
 		    scope	: this
@@ -201,7 +209,7 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         
         this.createSubscriptionWindow = MODx.load({
 	        xtype		: 'newsletter-window-subscription-create',
-	        closeAction	:'close',
+	        closeAction	: 'close',
 	        listeners	: {
 		        'success'	: {
             		fn		: function() {
@@ -225,7 +233,7 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         this.updateSubscriptionWindow = MODx.load({
 	        xtype		: 'newsletter-window-subscription-update',
 	        record		: this.menu.record,
-	        closeAction	:'close',
+	        closeAction	: 'close',
 	        listeners	: {
 		        'success'	: {
             		fn		: function() {
@@ -242,6 +250,33 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         this.updateSubscriptionWindow.setValues(this.menu.record);
         this.updateSubscriptionWindow.show(e.target);
     },
+    updateInfoSubscription: function(btn, e) {
+        if (this.updateInfoSubscriptionWindow) {
+	        this.updateInfoSubscriptionWindow.destroy();
+        }
+        
+        this.updateInfoSubscriptionWindow = MODx.load({
+	        xtype		: 'newsletter-window-subscription-info-update',
+	        record		: this.menu.record,
+	        closeAction	: 'close',
+	        buttons		: [{
+	    		text    	: _('ok'),
+	    		cls			: 'primary-button',
+	    		handler		: function() {
+		    		Ext.getCmp('newsletter-grid-lists').refresh();
+	            		
+        			this.getSelectionModel().clearSelections(true);
+        			this.refresh();
+            			
+	    			this.updateInfoSubscriptionWindow.close();
+	    		},
+	    		scope		: this
+			}]
+        });
+        
+        this.updateInfoSubscriptionWindow.setValues(this.menu.record);
+        this.updateInfoSubscriptionWindow.show(e.target);
+    },
     activateSelectedSubscription: function(btn, e) {
     	var cs = this.getSelectedAsList();
     	
@@ -250,8 +285,8 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         }
         
     	MODx.msg.confirm({
-        	title 	: _('newsletter.subscription_activate_selected'),
-        	text	: _('newsletter.subscription_activate_selected_confirm'),
+        	title 	: 'activate' == btn.name ? _('newsletter.subscription_activate_selected') : _('newsletter.subscription_deactivate_selected'),
+        	text	: 'activate' == btn.name ? _('newsletter.subscription_activate_selected_confirm') : _('newsletter.subscription_deactivate_selected_confirm'),
         	url		: this.config.url,
         	params	: {
             	action	: 'mgr/subscriptions/activateSelected',
@@ -299,11 +334,46 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             }
     	});
     },
+    moveSelectedSubscription: function(btn, e) {
+        if (this.moveSubscriptionWindow) {
+	        this.moveSubscriptionWindow.destroy();
+        }
+        
+        var cs = this.getSelectedAsList();
+    	
+        if (cs === false) {
+        	return false;
+        }
+        
+        var record = {
+	    	ids		: cs  
+        };
+        
+        this.moveSubscriptionWindow = MODx.load({
+	        xtype		: 'newsletter-window-subscription-move',
+	        record		: record,
+	        closeAction	:'close',
+	        listeners	: {
+		        'success'	: {
+            		fn		: function() {
+	            		Ext.getCmp('newsletter-grid-lists').refresh();
+	            		
+            			this.getSelectionModel().clearSelections(true);
+            			this.refresh();
+            		},
+		        	scope		:this
+		        }
+	        }
+        });
+        
+        this.moveSubscriptionWindow.setValues(record);
+        this.moveSubscriptionWindow.show(e.target);
+    },
     removeSubscription: function(btn, e) {
     	MODx.msg.confirm({
         	title 	: _('newsletter.subscription_remove'),
         	text	: _('newsletter.subscription_remove_confirm'),
-        	url		: this.config.url,
+        	url		: Newsletter.config.connector_url,
         	params	: {
             	action	: 'mgr/subscriptions/remove',
             	id		: this.menu.record.id
@@ -336,7 +406,7 @@ Newsletter.window.CreateSubscription = function(config) {
     Ext.applyIf(config, {
     	autoHeight	: true,
         title 		: _('newsletter.subscription_create'),
-        url			: Newsletter.config.connectorUrl,
+        url			: Newsletter.config.connector_url,
         baseParams	: {
             action		: 'mgr/subscriptions/create'
         },
@@ -435,7 +505,7 @@ Newsletter.window.UpdateSubscription = function(config) {
     Ext.applyIf(config, {
     	autoHeight	: true,
         title 		: _('newsletter.subscription_update'),
-        url			: Newsletter.config.connectorUrl,
+        url			: Newsletter.config.connector_url,
         baseParams	: {
             action		: 'mgr/subscriptions/update'
         },
@@ -531,6 +601,88 @@ Ext.extend(Newsletter.window.UpdateSubscription, MODx.Window);
 
 Ext.reg('newsletter-window-subscription-update', Newsletter.window.UpdateSubscription);
 
+Newsletter.window.UpdateInfoSubscription = function(config) {
+    config = config || {};
+    
+    Ext.applyIf(config, {
+    	autoHeight	: true,
+        title 		: _('newsletter.subscription_info'),
+        width		: 500,
+        defauls		: {
+	        labelAlign	: 'top',
+            border		: false
+        },
+        fields		: [{
+	        html 		: '<p>' + _('newsletter.subscription_info_desc') + '</p>',
+	        cls			: 'panel-desc',
+	        style		: 'margin-bottom: 10px;'
+        }, {
+			xtype			: 'newsletter-grid-subscriptions-info',
+			record 			: config.record,
+			preventRender	: true
+		}]
+    });
+    
+    Newsletter.window.UpdateInfoSubscription.superclass.constructor.call(this, config);
+};
+
+Ext.extend(Newsletter.window.UpdateInfoSubscription, MODx.Window);
+
+Ext.reg('newsletter-window-subscription-info-update', Newsletter.window.UpdateInfoSubscription);
+
+Newsletter.window.MoveSelectedSubscription = function(config) {
+    config = config || {};
+    
+    Ext.applyIf(config, {
+    	autoHeight	: true,
+        title 		: _('newsletter.subscription_move_selected'),
+        url			: Newsletter.config.connector_url,
+        baseParams	: {
+            action		: 'mgr/subscriptions/moveSelected'
+        },
+        defauls		: {
+	        labelAlign	: 'top',
+            border		: false
+        },
+        fields		: [{
+	        html 		: '<p>' + _('newsletter.subscription_move_selected_desc') + '</p>',
+	        cls			: 'panel-desc',
+	        style		: 'margin-bottom: 10px;'
+        }, {
+            xtype		: 'hidden',
+            name		: 'ids'
+        }, {
+        	xtype		: 'newsletter-combo-move',
+        	fieldLabel	: _('newsletter.label_move'),
+        	description	: MODx.expandHelp ? '' : _('newsletter.label_move_desc'),
+        	name		: 'type',
+        	anchor		: '100%',
+        	allowBlank	: false,
+        	value		: 'add'
+        }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+        	html		: _('newsletter.label_move_desc'),
+        	cls			: 'desc-under'
+        }, {
+	       xtype		: 'label',
+		   fieldLabel	: _('newsletter.label_lists_subscriptions')
+	    }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_lists_subscriptions_desc'),
+            cls			: 'desc-under'
+        }, {
+			xtype		: 'newsletter-combo-lists',
+			value		: config.record.lists
+		}]
+    });
+    
+    Newsletter.window.MoveSelectedSubscription.superclass.constructor.call(this, config);
+};
+
+Ext.extend(Newsletter.window.MoveSelectedSubscription, MODx.Window);
+
+Ext.reg('newsletter-window-subscription-move', Newsletter.window.MoveSelectedSubscription);
+
 Newsletter.combo.ConfirmTypes = function(config) {
     config = config || {};
     
@@ -556,3 +708,29 @@ Newsletter.combo.ConfirmTypes = function(config) {
 Ext.extend(Newsletter.combo.ConfirmTypes, MODx.combo.ComboBox);
 
 Ext.reg('newsletter-combo-confirm', Newsletter.combo.ConfirmTypes);
+
+Newsletter.combo.Move = function(config) {
+    config = config || {};
+    
+    Ext.applyIf(config, {
+        store: new Ext.data.ArrayStore({
+            mode	: 'local',
+            fields	: ['type','label'],
+            data	: [
+	            ['add', _('newsletter.add')],
+               	['remove', _('newsletter.remove')]
+            ]
+        }),
+        remoteSort	: ['label', 'asc'],
+        hiddenName	: 'type',
+        valueField	: 'type',
+        displayField: 'label',
+        mode		: 'local'
+    });
+    
+    Newsletter.combo.Move.superclass.constructor.call(this,config);
+};
+
+Ext.extend(Newsletter.combo.Move, MODx.combo.ComboBox);
+
+Ext.reg('newsletter-combo-move', Newsletter.combo.Move);

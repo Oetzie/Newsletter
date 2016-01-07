@@ -3,7 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -31,7 +31,8 @@
 			'id'				=> null,
 			'subscription_id'	=> null,
 			'key'				=> null,
-			'content'			=> null
+			'content'			=> null,
+			'editedon' 			=> null
 		),	
 		'fieldMeta'	=> array(
 			'id' 		=> array(
@@ -58,6 +59,12 @@
 				'dbtype' 	=> 'text',
 				'phptype' 	=> 'string',
 				'precision' => '2048',
+				'null' 		=> false
+			),
+			'editedon' 	=> array(
+				'dbtype' 	=> 'timestamp',
+				'phptype' 	=> 'timestamp',
+				'attributes' => 'ON UPDATE CURRENT_TIMESTAMP',
 				'null' 		=> false
 			)
 		),

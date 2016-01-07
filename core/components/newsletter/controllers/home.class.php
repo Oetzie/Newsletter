@@ -3,7 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -27,12 +27,16 @@
 		 * @acces public.
 		 */
 		public function loadCustomCssJs() {
-			$this->addCss($this->newsletter->config['cssUrl'].'mgr/newsletter.css');
-			$this->addJavascript($this->newsletter->config['jsUrl'].'mgr/widgets/home.panel.js');
-			$this->addJavascript($this->newsletter->config['jsUrl'].'mgr/widgets/newsletters.grid.js');
-			$this->addJavascript($this->newsletter->config['jsUrl'].'mgr/widgets/subscriptions.grid.js');
-			$this->addJavascript($this->newsletter->config['jsUrl'].'mgr/widgets/lists.grid.js');
-			$this->addLastJavascript($this->newsletter->config['jsUrl'].'mgr/sections/home.js');
+			$this->addCss($this->modx->getOption('css_url', $this->newsletter->config).'mgr/newsletter.css');
+			
+			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/home.panel.js');
+
+			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/newsletters.grid.js');
+			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/subscriptions.grid.js');
+			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/subscriptions-info.grid.js');
+			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/lists.grid.js');
+			
+			$this->addLastJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/sections/home.js');
 		}
 		
 		/**
@@ -48,7 +52,7 @@
 		* @return String.
 		*/
 		public function getTemplateFile() {
-			return $this->newsletter->config['templatesPath'].'home.tpl';
+			return $this->modx->getOption('templates_path', $this->newsletter->config).'home.tpl';
 		}
 	}
 

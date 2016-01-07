@@ -116,7 +116,7 @@ Newsletter.grid.Newsletters = function(config) {
     Ext.applyIf(config, {
     	cm			: columns,
         id			: 'newsletter-grid-newsletters',
-        url			: Newsletter.config.connectorUrl,
+        url			: Newsletter.config.connector_url,
         baseParams	: {
         	action		: 'mgr/newsletters/getList'
         },
@@ -162,7 +162,7 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
 	        handler	: this.previewNewsletter,
 	        scope	: this
 	    }];
-	    
+
 	    if (1 == parseInt(this.menu.record.resource_published)) {
 		    if (0 == parseInt(this.menu.record.send_status) || 2 == parseInt(this.menu.record.send_status)) {
 			    menu.push({
@@ -253,7 +253,7 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
         if (this.sendNewsletterWindow) {
 	        this.sendNewsletterWindow.destroy();
         }
-        
+
         this.sendNewsletterWindow = MODx.load({
 	        xtype		: 'newsletter-window-newsletter-send',
 	        record		: this.menu.record,
@@ -280,7 +280,7 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
     	MODx.msg.confirm({
         	title 	: _('newsletter.newsletter_cancel'),
         	text	: _('newsletter.newsletter_cancel_confirm'),
-        	url		: this.config.url,
+        	url		: Newsletter.config.connector_url,
         	params	: {
             	action	: 'mgr/newsletters/cancel',
             	id		: this.menu.record.id
@@ -297,7 +297,7 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
     	MODx.msg.confirm({
         	title 	: _('newsletter.newsletter_remove'),
         	text	: _('newsletter.newsletter_remove_confirm'),
-        	url		: this.config.url,
+        	url		: Newsletter.config.connector_url,
         	params	: {
             	action	: 'mgr/newsletters/remove',
             	id		: this.menu.record.id
@@ -333,7 +333,7 @@ Newsletter.window.CreateNewsletter = function(config) {
     Ext.applyIf(config, {
     	autoHeight	: true,
         title 		: _('newsletter.newsletter_create'),
-        url			: Newsletter.config.connectorUrl,
+        url			: Newsletter.config.connector_url,
         baseParams	: {
             action		: 'mgr/newsletters/create'
         },
@@ -387,7 +387,7 @@ Newsletter.window.UpdateNewsletter = function(config) {
     Ext.applyIf(config, {
     	autoHeight	: true,
         title 		: _('newsletter.newsletter_update'),
-        url			: Newsletter.config.connectorUrl,
+        url			: Newsletter.config.connector_url,
         baseParams	: {
             action		: 'mgr/newsletters/update'
         },
@@ -473,8 +473,7 @@ Newsletter.window.PreviewNewsletter = function(config) {
     Newsletter.window.PreviewNewsletter.superclass.constructor.call(this, config);
 };
 
-Ext.extend(Newsletter.window.PreviewNewsletter, MODx.Window, {
-});
+Ext.extend(Newsletter.window.PreviewNewsletter, MODx.Window);
 
 Ext.reg('newsletter-window-newsletter-preview', Newsletter.window.PreviewNewsletter);
 
@@ -489,7 +488,7 @@ Newsletter.window.SendNewsletter = function(config) {
     	autoHeight	: true,
     	width		: 600,
         title 		: _('newsletter.newsletter_send'),
-        url			: Newsletter.config.connectorUrl,
+        url			: Newsletter.config.connector_url,
         baseParams	: {
             action		: 'mgr/newsletters/send'
         },
@@ -511,10 +510,6 @@ Newsletter.window.SendNewsletter = function(config) {
         	anchor		: '100%',
         	allowBlank	: false,
         	listeners	: {
-	        	'render'	: {
-		        	fn 			: this.information,
-		        	scope		: this
-	        	},
 	        	'select'	: {
 		        	fn 			: this.information,
 		        	scope		: this
@@ -525,16 +520,16 @@ Newsletter.window.SendNewsletter = function(config) {
             html		: _('newsletter.label_send_at_desc'),
             cls			: 'desc-under'
 	    }, {
-		    xtype		: 'panel',
-		    id 			: 'newsletter-send-timestamp',
-		    hidden 		: true,
-		    layout 		: 'form',
-		    style		: 'padding-top: 15px',
-		    defaults	: {
+	    	xtype		: 'fieldset',
+	    	title		: _('newsletter.extra_settings'),
+			collapsible : true,
+			collapsed 	: true,
+			id			: 'newsletter-send-timestamp',
+			defaults	: {
                 layout		: 'form',
                 labelSeparator : ''
             },
-		    items		: [{
+			items		: [{
 	        	xtype		: 'datefield',
 	        	fieldLabel	: _('newsletter.label_send_date'),
 	        	description	: MODx.expandHelp ? '' : _('newsletter.label_send_date_desc'),
@@ -592,8 +587,14 @@ Newsletter.window.SendNewsletter = function(config) {
 			            cls			: 'desc-under'
 			        }]
 				}]
-		    }]
-		}, {
+		    }],
+		    listeners	: {
+	        	'render'	: {
+		        	fn 			: this.information,
+		        	scope		: this
+	        	}
+        	}
+	    }, {
 	        layout		: 'column',
             border		: false,
             style		: 'padding-top: 15px',
@@ -638,9 +639,9 @@ Newsletter.window.SendNewsletter = function(config) {
 Ext.extend(Newsletter.window.SendNewsletter, MODx.Window, {
 	information: function(event) {
 		if ('immediately' == event.value || '' == event.value) {
-			Ext.getCmp('newsletter-send-timestamp').hide();
+			Ext.getCmp('newsletter-send-timestamp').collapse();
 		} else {
-			Ext.getCmp('newsletter-send-timestamp').show();
+			Ext.getCmp('newsletter-send-timestamp').expand();
 		}
 	}
 });
@@ -677,7 +678,7 @@ Newsletter.combo.Lists = function(config) {
     config = config || {}; 
     
     Ext.Ajax.request({
-	    url 	: Newsletter.config.connectorUrl,
+	    url 	: Newsletter.config.connector_url,
 	    params 	: { 	
 	        action 	: 'mgr/lists/getlist',
 	        hidden 	: true
@@ -686,7 +687,7 @@ Newsletter.combo.Lists = function(config) {
 		success	: function(result, request) { 
 	        this.setData(Ext.util.JSON.decode(result.responseText));
 	    },
-	    scope	: this,
+	    scope	: this
 	});
     
     Ext.applyIf(config, {

@@ -3,7 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -64,18 +64,14 @@
 		 * @return Mixed.
 		 */
 		public function initialize() {
-			$initialized = parent::initialize();
-			
-			require_once $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'/model/newsletter/newsletter.class.php';
-			
-			$this->newsletter = new Newsletter($this->modx);
-			
+			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
+
 			$this->setDefaultProperties(array(
-				'dateFormat' => '%b %d, %Y %I:%M %p',
+				'dateFormat' => '%b %d, %Y %H:%M',
 				'hidden'	 => false
 			));
 			
-			return $initialized;
+			return parent::initialize();
 		}
 		
 		/**
@@ -102,7 +98,7 @@
 		 */
 		public function prepareRow(xPDOObject $object) {
 			$subscriptions = array();
-
+			
 			foreach ($object->getMany('NewsletterListsSubscriptions') as $list) {
 				if (null !== ($subscription = $list->getOne('NewsletterSubscriptions'))) {
 					$subscriptions[$subscription->id] = $subscription->name;
@@ -113,10 +109,10 @@
 				'subscriptions'	=> count($subscriptions)
 			));
 
-			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
+			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', '0000-00-00', null))) {
 				$array['editedon'] = '';
 			} else {
-				$array['editedon'] = strftime($this->getProperty('dateFormat', '%b %d, %Y %I:%M %p'), strtotime($array['editedon']));
+				$array['editedon'] = strftime($this->getProperty('dateFormat'), strtotime($array['editedon']));
 			}
 			
 			if ($this->newsletter->hasPermission() || 0 == $array['hidden'] || (bool) $this->getProperty('hidden')) {

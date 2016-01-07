@@ -3,7 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -37,14 +37,12 @@
 	$_lang['setting_newsletter_name_desc']							= 'The name where the newsletter is send from.';
 	$_lang['setting_newsletter_template']							= 'Newsletter template';
 	$_lang['setting_newsletter_template_desc']						= 'The ID of the template that get used as a newsletter, to separate templates use a comma.';
-	$_lang['setting_newsletter_primary_lists']						= 'Primary mailinglist';
-	$_lang['setting_newsletter_primary_lists_desc']					= 'The primary mailinglist, this is where all subscriptions will be placed in, to separate primary mailinglists use a comma.';
 	$_lang['setting_newsletter_admin_groups']						= 'Admin usergroups';
 	$_lang['setting_newsletter_admin_groups_desc']					= 'The usergroups that has access to the admin part of the newsletters, to separate usergroups use a comma.';
 	
-	$_lang['newslettersubscribe_snippet_confirmkey_desc']			= 'The URL parameter for the confirmation. Default is "token".';
+	$_lang['newslettersubscribe_snippet_param_desc']				= 'The URL parameter for the confirmation. Default is "token".';
 	$_lang['newslettersubscribe_snippet_confirm_desc']				= 'If "Yes" there will be sent a confirmation email which must confirm the subscription.';
-	$_lang['newsletterunsubscribe_snippet_confirmkey_desc']			= 'The URL parameter for the confirmation. Default is "token".';
+	$_lang['newsletterunsubscribe_snippet_param_desc']				= 'The URL parameter for the confirmation. Default is "token".';
 	
 	$_lang['newsletter.newsletter']									= 'Newsletter';
 	$_lang['newsletter.newsletters']								= 'Newsletters';
@@ -62,7 +60,7 @@
 
 	$_lang['newsletter.subscription']								= 'Subscription';
 	$_lang['newsletter.subscriptions']								= 'Subscriptions';
-	$_lang['newsletter.subscriptions_desc']							= 'Here you can manage al subscriptions for the newsletters, the most subscriptions are subscribed by the website, but can also be imported or exported from other systems.';
+	$_lang['newsletter.subscriptions_desc']							= 'Here you can manage all subscriptions for the newsletters, the most subscriptions are subscribed by the website, but can also be imported or exported from other systems.';
 	$_lang['newsletter.subscription_create']						= 'Create new subscription';
 	$_lang['newsletter.subscription_update']						= 'Update subscription';
 	$_lang['newsletter.subscription_remove']						= 'Delete subscription';
@@ -73,6 +71,15 @@
 	$_lang['newsletter.subscription_activate_selected_confirm']		= 'Are you sure you want to confirm the selected subscriptions?';
 	$_lang['newsletter.subscription_deactivate_selected']			= 'De-confirm selected subscriptions';
 	$_lang['newsletter.subscription_deactivate_selected_confirm']	= 'Are you sure you want to de-confirm the selected subscriptions?';
+	$_lang['newsletter.subscription_move_selected']					= 'Move selected subscriptions';
+	$_lang['newsletter.subscription_move_selected_desc']			= 'Select the mailing list(s) to add or delete the subscriptions from.';
+	
+	$_lang['newsletter.subscription_info']							= 'Subscription info';
+	$_lang['newsletter.subscription_info_desc']						= 'Here you can manage all the subscription info, subscription info are extra values that you can assign to a subscription and can be used in a newsletter.';
+	$_lang['newsletter.subscription_info_create']					= 'Create subscription info';
+	$_lang['newsletter.subscription_info_update']					= 'Update subscription info';
+	$_lang['newsletter.subscription_info_remove']					= 'Delete subscription info';
+	$_lang['newsletter.subscription_info_remove_confirm']			= 'Are you sure you want to delete this subscription info?';
 	
 	$_lang['newsletter.list']										= 'Mailing list';
 	$_lang['newsletter.lists']										= 'Mailing list';
@@ -113,6 +120,8 @@
 	$_lang['newsletter.label_subscriptions_desc']					= '';
 	$_lang['newsletter.label_lists']								= 'Mailing list(s)';
 	$_lang['newsletter.label_lists_desc']							= 'The mailing list(s) of the subscription.';
+	$_lang['newsletter.label_lists_subscriptions']					= 'Mailing list(s)';
+	$_lang['newsletter.label_lists_subscriptions_desc']				= 'The mailing list(s) of the subscription(s).';
 	$_lang['newsletter.label_published']							= 'Published';
 	$_lang['newsletter.label_published_desc']						= '';
 	$_lang['newsletter.label_send']									= 'Send';
@@ -137,14 +146,21 @@
 	$_lang['newsletter.label_delimiter_desc']						= 'The delimiter to separate the columns. Default is ";".';
 	$_lang['newsletter.label_headers']								= 'First row column titles.';
 	$_lang['newsletter.label_headers_desc']							= '';
+	$_lang['newsletter.label_move']									= 'Movement type';
+	$_lang['newsletter.label_move_desc']							= 'The type of the movement, this can be add or remove.';
+	$_lang['newsletter.label_info_key']								= 'Key';
+	$_lang['newsletter.label_info_key_desc']						= 'The key for the subscription info. The subscription info will be avaible by the [[+subscribe_key]] tags.';
+	$_lang['newsletter.label_info_content']							= 'Value';
+	$_lang['newsletter.label_info_content_desc']					= 'The value for the subscription info.';
 	$_lang['newsletter.filter_context']								= 'Filter at context...';
 	$_lang['newsletter.filter_confirm']								= 'Filter at confirmation...';
+	$_lang['newsletter.extra_settings']								= 'Extra settings';
 	$_lang['newsletter.send_immediately']							= 'This moment';
 	$_lang['newsletter.send_timestamp']								= 'Another moment';
 	$_lang['newsletter.newsletter_status_pending']					= 'In queue';
 	$_lang['newsletter.newsletter_status_send']						= 'Send';
 	$_lang['newsletter.newsletter_status_notsend']					= 'Not send';
-	$_lang['newsletter.newsletter_send_detail']						= 'This newsletter is send at <strong>{timestamp}</strong>.';
+	$_lang['newsletter.newsletter_send_detail']						= 'Send at <strong>{timestamp}</strong>.';
 	$_lang['newsletter.confirmed']									= 'Confirmed';
 	$_lang['newsletter.notconfirmed']								= 'Not confirmed';
 	$_lang['newsletter.resource_does_not_exists']					= 'The resource of the newsletter does not exists or is deleted.';
@@ -166,5 +182,10 @@
 	$_lang['newsletter.remove_selected']							= 'Delete selected';
 	$_lang['newsletter.confirm_selected']							= 'Confirm selected';
 	$_lang['newsletter.deconfirm_selected']							= 'De-confirm selected';
-	
+	$_lang['newsletter.move_selected']								= 'Move selected';
+	$_lang['newsletter.add']										= 'Add';
+	$_lang['newsletter.remove']										= 'Remove';
+	$_lang['clientsettings.setting_error_character']				= 'Subscription info contains forbidden characters. Please specify another keyname.';
+	$_lang['clientsettings.setting_error_exists']					= 'Subscription info with that key already exists. Please specify another keyname.';
+
 ?>

@@ -3,7 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -43,11 +43,31 @@
 		
 		/**
 		 * @acces public.
+		 * @var Object.
+		 */
+		public $newsletter;
+		
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+		public function initialize() {
+			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
+
+			return parent::initialize();
+		}
+		
+		/**
+		 * @acces public.
 		 * @return Mixed.
 		 */
 		public function afterRemove() {
-			$this->modx->removeCollection('NewsletterListsSubscriptions', array('subscription_id' => $this->getProperty('id')));
-			$this->modx->removeCollection('NewsletterSubscriptionsInfo', array('subscription_id' => $this->getProperty('id')));
+			$this->modx->removeCollection('NewsletterListsSubscriptions', array(
+				'subscription_id' => $this->getProperty('id')
+			));
+			$this->modx->removeCollection('NewsletterSubscriptionsInfo', array(
+				'subscription_id' => $this->getProperty('id')
+			));
 
 			return parent::afterRemove();
 		}

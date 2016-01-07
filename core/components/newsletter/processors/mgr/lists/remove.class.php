@@ -52,9 +52,7 @@
 		 * @return Mixed.
 		 */
 		public function initialize() {
-			require_once $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'/model/newsletter/newsletter.class.php';
-			
-			$this->newsletter = new Newsletter($this->modx);
+			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 
 			return parent::initialize();
 		}
@@ -77,8 +75,12 @@
 		 */
 		public function afterRemove() {
 			if (1 != $this->object->primairy) {
-				$this->modx->removeCollection('NewsletterListsNewsletter', array('list_id' => $this->getProperty('id')));
-				$this->modx->removeCollection('NewsletterListsSubscriptions', array('list_id' => $this->getProperty('id')));
+				$this->modx->removeCollection('NewsletterListsNewsletter', array(
+					'list_id' => $this->getProperty('id')
+				));
+				$this->modx->removeCollection('NewsletterListsSubscriptions', array(
+					'list_id' => $this->getProperty('id')
+				));
 			}
 
 			return parent::afterRemove();

@@ -3,7 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -52,6 +52,22 @@
 		 * @var String.
 		 */
 		public $objectType = 'newsletter.subscriptions';
+		
+		/**
+		 * @acces public.
+		 * @var Object.
+		 */
+		public $newsletter;
+		
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+		public function initialize() {
+			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
+
+			return parent::initialize();
+		}
 
 		/**
 		 * @acces public.
@@ -60,7 +76,8 @@
 		public function process() {
 			$this->setDefaultProperties(array(
 				'filename'	=> $this->objectType.'.csv',
-				'directory'	=> $this->modx->getOption('core_path').'cache/export/newsletter/'
+				'directory'	=> $this->modx->getOption('core_path').'cache/export/newsletter/',
+				'delimiter'	=> ';'
 			));
 			
 			if (!is_dir($this->getProperty('directory'))) {
@@ -84,17 +101,17 @@
 			if (false !== ($fopen = fopen($this->getProperty('directory').$this->getProperty('filename'), 'w'))) {
 				$columns = array('email', 'name', 'active','context');
 				
-				$row = array($columns);
+				$rows = array($columns);
 	
 				if (null !== ($object = $this->modx->getObject('NewsletterLists', $this->getProperty('id')))) {
 					foreach ($object->getMany('NewsletterListsSubscriptions') as $list) {
 						if (null !== ($subscription = $list->getOne('NewsletterSubscriptions'))) {
-							$row[] = $subscription->toArray();
+							$rows[$subscription->id] = $subscription->toArray();
 						}
 					}
 				}
-				
-				foreach ($row as $key => $value) {
+
+				foreach ($rows as $key => $value) {
 					if (0 == $key) {
 						fputcsv($fopen, $value, $this->getProperty('delimiter'));
 					} else {

@@ -3,7 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -34,16 +34,16 @@
 		 * @return Mixed.
 		 */
 		public function initialize() {
-			require_once $this->modx->getOption('newsletters.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'/model/newsletter/newsletter.class.php';
+			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 			
-			$this->newsletter = new Newsletter($this->modx);
-			
-			$this->addJavascript($this->newsletter->config['jsUrl'].'mgr/newsletter.js');
+			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/newsletter.js');
 			$this->addHtml('<script type="text/javascript">
 				Ext.onReady(function() {
 					MODx.config.help_url = "http://rtfm.modx.com/extras/revo/'.$this->newsletter->getHelpUrl().'";
 			
-					Newsletter.config = '.$this->modx->toJSON(array_merge(array('admin' => $this->newsletter->hasPermission()), $this->newsletter->config)).';
+					Newsletter.config = '.$this->modx->toJSON(array_merge(array(
+						'admin' => $this->newsletter->hasPermission()
+					), $this->newsletter->config)).';
 				});
 			</script>');
 			

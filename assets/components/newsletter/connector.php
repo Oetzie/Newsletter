@@ -3,7 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -26,18 +26,12 @@
 	require_once MODX_CORE_PATH.'config/'.MODX_CONFIG_KEY.'.inc.php';
 	require_once MODX_CONNECTORS_PATH.'index.php';
 	
-	$corePath = $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/');
-	
-	require_once $corePath.'model/newsletter/newsletter.class.php';
-	
-	$modx->newsletter = new Newsletter($modx);
-	
-	$modx->lexicon->load('newsletter:default');
-	
-	$path = $modx->getOption('processorsPath', $modx->newsletter->config, $corePath.'processors/');
-	
+	$newsletter = $modx->getService('newsletter', 'Newsletter', $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
+
+	$modx->lexicon->load($modx->getOption('language', $newsletter->config));
+
 	$modx->request->handleRequest(array(
-		'processors_path' 	=> $path,
+		'processors_path' 	=> $modx->getOption('processors_path', $newsletter->config),
 		'location' 			=> ''
 	));
 

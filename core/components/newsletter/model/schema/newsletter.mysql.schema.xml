@@ -95,7 +95,8 @@
     	<field key="subscription_id" dbtype="int" precision="11" phptype="integer" null="false" default=""/>
     	<field key="key" dbtype="varchar" precision="75" phptype="string" null="false" default=""/>
     	<field key="content" dbtype="text" precision="2048" phptype="string" null="false" default=""/>
-    	
+    	<field key="editedon" dbtype="timestamp" phptype="timestamp" attributes="ON UPDATE CURRENT_TIMESTAMP" null="false" default=""/>
+        
         <index alias="PRIMARY" name="PRIMARY" primary="true" unique="true">
         	<column key="id" collation="A" null="false" />
         </index>

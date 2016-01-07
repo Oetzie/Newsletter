@@ -3,7 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	require_once (dirname(dirname(__FILE__)) . '/newsletterlists.class.php');
+	require_once dirname(dirname(__FILE__)).'/newsletterlists.class.php';
 	
 	class NewsletterLists_mysql extends NewsletterLists {}
 	

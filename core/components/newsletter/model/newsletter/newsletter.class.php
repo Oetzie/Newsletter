@@ -3,7 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -42,34 +42,38 @@
 		*/
 		function __construct(modX &$modx, array $config = array()) {
 			$this->modx =& $modx;
-		
+
 			$corePath 		= $this->modx->getOption('newsletter.core_path', $config, $this->modx->getOption('core_path').'components/newsletter/');
 			$assetsUrl 		= $this->modx->getOption('newsletter.assets_url', $config, $this->modx->getOption('assets_url').'components/newsletter/');
 			$assetsPath 	= $this->modx->getOption('newsletter.assets_path', $config, $this->modx->getOption('assets_path').'components/newsletter/');
 		
 			$this->config = array_merge(array(
-				'basePath'				=> $corePath,
-				'corePath' 				=> $corePath,
-				'modelPath' 			=> $corePath.'model/',
-				'processorsPath' 		=> $corePath.'processors/',
-				'elementsPath' 			=> $corePath.'elements/',
-				'chunksPath' 			=> $corePath.'elements/chunks/',
-				'snippetsPath' 			=> $corePath.'elements/snippets/',
-				'templatesPath' 		=> $corePath.'templates/',
-				'assetsPath' 			=> $assetsPath,
-				'jsUrl' 				=> $assetsUrl.'js/',
-				'cssUrl' 				=> $assetsUrl.'css/',
-				'assetsUrl' 			=> $assetsUrl,
-				'connectorUrl'			=> $assetsUrl.'connector.php',
-				'helpurl'				=> 'newsletter',
+				'namespace'				=> $this->modx->getOption('namespace', $config, 'newsletter'),
+				'helpurl'				=> $this->modx->getOption('namespace', $config, 'newsletter'),
+				'language'				=> 'newsletter:default',
+				'base_path'				=> $corePath,
+				'core_path' 			=> $corePath,
+				'model_path' 			=> $corePath.'model/',
+				'processors_path' 		=> $corePath.'processors/',
+				'elements_path' 		=> $corePath.'elements/',
+				'chunks_path' 			=> $corePath.'elements/chunks/',
+				'cronjobs_path' 		=> $corePath.'elements/cronjobs/',
+				'plugins_path' 			=> $corePath.'elements/plugins/',
+				'snippets_path' 		=> $corePath.'elements/snippets/',
+				'templates_path' 		=> $corePath.'templates/',
+				'assets_path' 			=> $assetsPath,
+				'js_url' 				=> $assetsUrl.'js/',
+				'css_url' 				=> $assetsUrl.'css/',
+				'assets_url' 			=> $assetsUrl,
+				'connector_url'			=> $assetsUrl.'connector.php',
 				'template'				=> explode(',', $this->modx->getOption('newsletter_template', null, '')),
-				'primaryLists'			=> explode(',', $this->modx->getOption('newsletter_primary_lists', null, '1')),
-				'nameSender'			=> $this->modx->getOption('newsletter_name', null, $this->modx->getOption('site_name')),
-				'emailSender'			=> $this->modx->getOption('newsletter_email', null, $this->modx->getOption('emailsender')),
+				'sender_name'			=> $this->modx->getOption('newsletter_name', null, $this->modx->getOption('site_name')),
+				'sender_email'			=> $this->modx->getOption('newsletter_email', null, $this->modx->getOption('emailsender')),
+				'token'					=> $this->modx->getOption('newsletter_token', null, md5(time())),
 				'context'				=> 2 == $this->modx->getCount('modContext') ? 0 : 1
 			), $config);
 		
-			$this->modx->addPackage('newsletter', $this->config['modelPath']);
+			$this->modx->addPackage('newsletter', $this->config['model_path']);
 		}
 		
 		/**
@@ -148,7 +152,7 @@
 
 							$subscription->fromArray(array_merge($values, $criterea, array(
 								'active'	=> (bool) $this->modx->getOption('confirm', $properties) ? 0 : 1,
-								'token'		=> $token,
+								'token'		=> $token
 							)));
 
 							if ($subscription->save()) {
@@ -184,20 +188,27 @@
 									}
 								}
 								
-								$info = $this->modx->getOption('info', $properties, '');
+								$info 			= $this->modx->getOption('info', $properties, '');
+								$reservedInfo 	= array('id', 'context', 'name', 'email', 'token', 'active', 'editedon', 'nospam', 'submit');
 								
 								if (!is_array($info)) {
-									$info = explode(',', $info);
+									$info = array_filter(explode(',', $info));
 								}
 
 								foreach ($values as $key => $value) {
-									if (in_array($key, array_filter($info)) || (empty(array_filter($info)) && !in_array($key, array('id', 'context', 'name', 'email', 'token', 'active', 'editedon', 'nospam', 'submit')))) {
-										$this->modx->removeCollection('NewsletterSubscriptionsInfo', array(
+									if (in_array($key, $info) || (empty($info) && !in_array($key, $reservedInfo))) {
+										$criterea = array(
 											'subscription_id' 	=> $subscription->id,
-											'key'				=> $key
+											'key' 				=> $key
+										);
+										
+										$this->modx->removeCollection('NewsletterSubscriptionsInfo', $criterea);
+										
+										$criterea = array_merge($criterea, array(
+											'content' 			=> $value
 										));
 
-										if (null !== ($subscriptionInfo = $this->modx->newObject('NewsletterSubscriptionsInfo', array('subscription_id' => $subscription->id, 'key' => $key, 'content' => $value)))) {
+										if (null !== ($subscriptionInfo = $this->modx->newObject('NewsletterSubscriptionsInfo', $criterea))) {
 											$subscription->addMany($subscriptionInfo);
 										}
 									}
@@ -284,8 +295,12 @@
 								$lists = array_filter(array_merge($defaultLists, $lists));
 
 								if (empty($lists)) {
-									$this->modx->removeCollection('NewsletterListsSubscriptions', array('subscription_id' => $subscription->id));
-									$this->modx->removeCollection('NewsletterSubscriptionsInfo', array('subscription_id' => $subscription->id));
+									$criterea = array(
+										'subscription_id' => $subscription->id
+									);
+								
+									$this->modx->removeCollection('NewsletterListsSubscriptions', $criterea);
+									$this->modx->removeCollection('NewsletterSubscriptionsInfo', $criterea);
 									
 									return $subscription->remove();
 								} else {
@@ -296,8 +311,12 @@
 										));
 									}
 									
-									if (0 == $this->modx->getCount('NewsletterListsSubscriptions', array('subscription_id' => $subscription->id))) {
-										$this->modx->removeCollection('NewsletterSubscriptionsInfo', array('subscription_id' => $subscription->id));
+									$criterea = array(
+										'subscription_id' => $subscription->id
+									);
+									
+									if (0 == $this->modx->getCount('NewsletterListsSubscriptions', $criterea)) {
+										$this->modx->removeCollection('NewsletterSubscriptionsInfo', $criterea);
 										
 										return $subscription->remove();
 									}
@@ -320,22 +339,26 @@
 		 * @return Integer.
 		 */
 		public function getCount($lists = array()) {
-			$count = 0;
+			$count = array();
 			
 			if (!is_array($lists)) {
 				$lists = explode(',', $lists);
 			}
 			
 			foreach ($lists as $id) {
+				$count[$id] = array(
+					'count'	=> 0
+				);
+				
 				if (null !== ($list = $this->modx->getObject('NewsletterLists', array('id' => $id)))) {
-					foreach ($list->getMany('NewsletterListsSubscriptions') as $newList) {
+					foreach ($list->getMany('NewsletterListsSubscriptions') as $subscriptions) {
 						$criterea = array(
-							'id' 		=> $newList->subscription_id,
+							'id' 		=> $subscriptions->subscription_id,
 							'context' 	=> $this->modx->resource->context_key
 						);
 						
 						if (null !== ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
-							$count += 1;
+							$count[$id]['count'] += 1;
 						}
 					}
 				}
@@ -365,34 +388,48 @@
 			
 			if (null !== ($newsletter = $this->modx->getObject('NewsletterNewsletters', $criterea))) {
 				if (strtotime($newsletter->send_date) <= strtotime(date('d-m-Y')) || $test) {
-					if (null !== ($resource = $newsletter->getOne('modResource'))) {
-						$newsletter->set('resource', $resource);
+					$criterea = array(
+						'id'		=> $newsletter->resource_id,
+						'published'	=> 1,
+						'deleted'	=> 0
+					);
+					
+					if (null !== ($resource = $newsletter->getOne('modResource', $criterea))) {
+						$resource->fromArray(array(
+							'cacheable'	=> 0
+						));
 						
-						$sendDetails = array();
-						
-						foreach ($newsletter->getMany('NewsletterNewslettersInfo') as $sendDetail) {
-							$sendDetails[] = $sendDetail->toArray();
-						}
-						
-						if (0 == $newsletter->send_repeat || $newsletter->send_repeat > count($sendDetails)) {
-							if ($newsletter->send_repeat == count($newsletterSendDetails) + 1) {
-								$newsletter->fromArray(array(
-									'send_status' 	=> 1
-								));
-							} else {
-								$newsletter->fromArray(array(
-									'send_date'	=> date('Y-m-d', strtotime(date('Y/m/d', strtotime($newsletter->send_date)).'+'.$newsletter->send_interval.' days'))
-								));	
+						if ($resource->save()) {
+							$newsletter->set('resource', $resource);
+							
+							$sendDetails = array();
+							
+							foreach ($newsletter->getMany('NewsletterNewslettersInfo') as $sendDetail) {
+								$sendDetails[] = $sendDetail->toArray();
 							}
 							
-							if (!$test) {
-								$newsletter->addMany($this->modx->newObject('NewsletterNewslettersInfo', array(
-									'newsletter_id'	=> $newsletter->id
-								)));
-							}
-
-							if ($newsletter->save()) {
-								return $newsletter;
+							if (0 == $newsletter->send_repeat || $newsletter->send_repeat > count($sendDetails)) {
+								if ($newsletter->send_repeat == count($sendDetails) + 1) {
+									$newsletter->fromArray(array(
+										'send_status' 	=> 1
+									));
+								} else {
+									if (!$test) {
+										$newsletter->fromArray(array(
+											'send_date'	=> date('Y-m-d', strtotime(date('Y/m/d', strtotime($newsletter->send_date)).'+'.$newsletter->send_interval.' days'))
+										));		
+									}
+								}
+								
+								if (!$test) {
+									$newsletter->addMany($this->modx->newObject('NewsletterNewslettersInfo', array(
+										'newsletter_id'	=> $newsletter->id
+									)));
+								}
+	
+								if ($newsletter->save()) {
+									return $newsletter;
+								}
 							}
 						}
 					}
@@ -425,7 +462,7 @@
 				foreach ($list->getMany('NewsletterListsSubscriptions') as $newsletterSubscription) {
 					$criterea = array(
 						'id' 		=> $newsletterSubscription->subscription_id,
-						'context' 	=> $newsletter->get('resource')->context_key,
+						'context' 	=> $newsletter->resource->context_key,
 						'active'	=> 1
 					);
 									
@@ -433,12 +470,12 @@
 						$email = trim($subscription->email);
 						
 						$subscriptions[$email] = array(
-							'subscribe_name'	=> trim($subscription->name),
-							'subscribe_email'	=> $email
+							'name'	=> trim($subscription->name),
+							'email'	=> $email
 						);
 						
 						foreach ($subscription->getMany('NewsletterSubscriptionsInfo') as $info) {
-							$subscriptions[$email]['subscribe_'.$info->key] = $info->content;
+							$subscriptions[$email][$info->key] = $info->content;
 						}
 					}
 				}
