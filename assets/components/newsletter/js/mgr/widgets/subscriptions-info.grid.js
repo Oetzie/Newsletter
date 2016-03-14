@@ -43,7 +43,8 @@ Newsletter.grid.SubscriptionsInfo = function(config) {
         autosave	: true,
         save_action	: 'mgr/subscriptions/info/updateFromGrid',
         fields		: ['id', 'subscription_id', 'key', 'content', 'editedon'],
-        paging		: false,
+        paging		: true,
+        pageSize	: 5,
         sortBy		: 'key'
     });
     

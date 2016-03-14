@@ -605,9 +605,9 @@ Newsletter.window.UpdateInfoSubscription = function(config) {
     config = config || {};
     
     Ext.applyIf(config, {
+	    width 		: 800,
     	autoHeight	: true,
         title 		: _('newsletter.subscription_info'),
-        width		: 500,
         defauls		: {
 	        labelAlign	: 'top',
             border		: false

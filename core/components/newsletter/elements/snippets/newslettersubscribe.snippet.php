@@ -46,6 +46,7 @@
 					'type'			=> 'subscribe',
 					'values'		=> $form->getValues(),
 					'lists'			=> $modx->getOption('newsletterLists', $form->extensionScriptProperties),
+					'info'          => $modx->getOption('newsletterInfo', $form->extensionScriptProperties, ''),
 					'resource'		=> $modx->getOption('newsletterRedirect', $form->extensionScriptProperties, false),
 					'confirm'		=> $modx->getOption('newsletterConfirm', $form->extensionScriptProperties, $modx->getOption('confirm', $scriptProperties)),
 					'param'			=> $modx->getOption('param', $scriptProperties)

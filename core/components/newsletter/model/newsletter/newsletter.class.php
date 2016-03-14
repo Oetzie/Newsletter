@@ -205,7 +205,7 @@
 										$this->modx->removeCollection('NewsletterSubscriptionsInfo', $criterea);
 										
 										$criterea = array_merge($criterea, array(
-											'content' 			=> $value
+											'content' 			=> is_array($value) ? implode(',', $value) : $value
 										));
 
 										if (null !== ($subscriptionInfo = $this->modx->newObject('NewsletterSubscriptionsInfo', $criterea))) {
