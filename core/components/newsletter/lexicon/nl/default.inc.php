@@ -27,18 +27,18 @@
 	
 	$_lang['area_newsletter']										= 'Nieuwsbrief';
 	
-	$_lang['setting_newsletter_cronjob']							= 'Cronjob herinnering';
-	$_lang['setting_newsletter_cronjob_desc']						= 'Zet deze instelling op "Ja" als je een cronjob hebt ingesteld voor de nieuwsbrief, door deze instelling op "Ja" te zetten word de cronjob waarschuwing niet meer getoond in de nieuwsbrieven component.';
-	$_lang['setting_newsletter_token']								= 'Cronjob token';
-	$_lang['setting_newsletter_token_desc']							= 'Deze token dient met de cronjob mee gestuurd te worden zodat de nieuwsbrief niet zomaar verstuurd kan worden door willekeurige personen. Zonder deze token werkt het automatisch versturen van de nieuwsbrieven niet.';
-	$_lang['setting_newsletter_email']								= 'Nieuwsbrief afzender';
-	$_lang['setting_newsletter_email_desc']							= 'Het e-mail adres waarmee de nieuwsbrief verstuurd wordt.';
-	$_lang['setting_newsletter_name']								= 'Nieuwsbrief afzender naam';
-	$_lang['setting_newsletter_name_desc']							= 'De naam waarmee de nieuwsbrief verstuurd wordt.';
-	$_lang['setting_newsletter_template']							= 'Nieuwsbrief template';
-	$_lang['setting_newsletter_template_desc']						= 'De ID van de template die als nieuwsbrief word gebruikt. Meerdere templates scheiden met een komma.';
-	$_lang['setting_newsletter_admin_groups']						= 'Admin gebruikersgroepen';
-	$_lang['setting_newsletter_admin_groups_desc']					= 'De gebruikersgroepen die toegang hebben tot de admin gedeelte van de nieuwsbrieven. Meerdere gebruikersgroepen scheiden met een komma.';
+	$_lang['setting_newsletter.cronjob']							= 'Cronjob herinnering';
+	$_lang['setting_newsletter.cronjob_desc']						= 'Zet deze instelling op "Ja" als je een cronjob hebt ingesteld voor de nieuwsbrief, door deze instelling op "Ja" te zetten word de cronjob waarschuwing niet meer getoond in de nieuwsbrieven component.';
+	$_lang['setting_newsletter.token']								= 'Cronjob token';
+	$_lang['setting_newsletter.token_desc']							= 'Deze token dient met de cronjob mee gestuurd te worden zodat de nieuwsbrief niet zomaar verstuurd kan worden door willekeurige personen. Zonder deze token werkt het automatisch versturen van de nieuwsbrieven niet.';
+	$_lang['setting_newsletter.email']								= 'Nieuwsbrief afzender';
+	$_lang['setting_newsletter.email_desc']							= 'Het e-mail adres waarmee de nieuwsbrief verstuurd wordt.';
+	$_lang['setting_newsletter.name']								= 'Nieuwsbrief afzender naam';
+	$_lang['setting_newsletter.name_desc']							= 'De naam waarmee de nieuwsbrief verstuurd wordt.';
+	$_lang['setting_newsletter.template']							= 'Nieuwsbrief template';
+	$_lang['setting_newsletter.template_desc']						= 'De ID van de template die als nieuwsbrief word gebruikt. Meerdere templates scheiden met een komma.';
+	$_lang['setting_newsletter.admin_groups']						= 'Admin gebruikersgroepen';
+	$_lang['setting_newsletter.admin_groups_desc']					= 'De gebruikersgroepen die toegang hebben tot de admin gedeelte van de nieuwsbrieven. Meerdere gebruikersgroepen scheiden met een komma.';
 	
 	$_lang['newslettersubscribe_snippet_param_desc']				= 'De URL parameter voor de bevestiging. Standaard is "token".';
 	$_lang['newslettersubscribe_snippet_confirm_desc']				= 'Indien "Ja" zal er een bevestigingsmail gestuurd worden die de inschrijver dient te bevestigen.';

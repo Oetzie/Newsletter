@@ -1,6 +1,5 @@
 <?php
-	
-	/**
+/**
 	 * Newsletter
 	 *
 	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
@@ -24,14 +23,14 @@
 
 	switch($modx->event->name) {
 		case 'OnLoadWebDocument':
-			$newsletter = $modx->getService('newsletter', 'Newsletter', $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
+			if ($modx->loadClass('Newsletter', $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'model/newsletter/', true, true)) {
+                $newsletter = new Newsletter($modx);
 
-			if (!$newsletter instanceof Newsletter) {
-				return;
-			}
-
-			if (in_array($modx->resource->template, $modx->getOption('template', $newsletter->config, array()))) {
-				$modx->setPlaceholders($modx->request->getParameters());
+        	    if ($newsletter instanceOf Newsletter) {
+			        if (in_array($modx->resource->template, $modx->getOption('template', $newsletter->config, array()))) {
+			        	$modx->setPlaceholders($modx->request->getParameters());
+			        }
+        	    }
 			}
 
 			break;

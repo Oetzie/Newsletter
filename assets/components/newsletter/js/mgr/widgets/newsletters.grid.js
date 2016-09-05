@@ -103,7 +103,8 @@ Newsletter.grid.Newsletters = function(config) {
             sortable	: true,
             editable	: false,
             fixed		: true,
-			width		: 200
+			width		: 200,
+			renderer	: this.renderDate
         }, {
             header		: _('newsletter.label_context'),
             dataIndex	: 'context_name',
@@ -322,6 +323,13 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
     	c.css = 0 == parseInt(d) || !d ? 'red' : (2 == parseInt(d) ? 'orange' : 'green');
     	
     	return 0 == parseInt(d) || !d ? _('newsletter.newsletter_status_notsend') : (2 == parseInt(d) ? _('newsletter.newsletter_status_pending') : _('newsletter.newsletter_status_send')) + ' <em>(' + e.json.send_date_format + ')</em>';
+    },
+	renderDate: function(a) {
+        if (Ext.isEmpty(a)) {
+            return '—';
+        }
+
+        return a;
     }
 });
 

@@ -27,18 +27,18 @@
 	
 	$_lang['area_newsletter']										= 'Newsletter';
 	
-	$_lang['setting_newsletter_cronjob']							= 'Cronjob reminder';
-	$_lang['setting_newsletter_cronjob_desc']						= 'Set to "Yes" if you have set up for the newsletter, by setting this to "Yes" the cronjob notification is no longer displayed in the component newsletters.';
-	$_lang['setting_newsletter_token']								= 'Cronjob token';
-	$_lang['setting_newsletter_token_desc']							= 'This token needs to be send along with the cronjob so that the newsletter can not be send by random people. Without this token automatically send newsletters is not working.';
-	$_lang['setting_newsletter_email']								= 'Newsletter sender';
-	$_lang['setting_newsletter_email_desc']							= 'The e-mail address where the newsletter is send from.';
-	$_lang['setting_newsletter_name']								= 'Newsletter sender name';
-	$_lang['setting_newsletter_name_desc']							= 'The name where the newsletter is send from.';
-	$_lang['setting_newsletter_template']							= 'Newsletter template';
-	$_lang['setting_newsletter_template_desc']						= 'The ID of the template that get used as a newsletter, to separate templates use a comma.';
-	$_lang['setting_newsletter_admin_groups']						= 'Admin usergroups';
-	$_lang['setting_newsletter_admin_groups_desc']					= 'The usergroups that has access to the admin part of the newsletters, to separate usergroups use a comma.';
+	$_lang['setting_newsletter.cronjob']							= 'Cronjob reminder';
+	$_lang['setting_newsletter.cronjob_desc']						= 'Set to "Yes" if you have set up for the newsletter, by setting this to "Yes" the cronjob notification is no longer displayed in the component newsletters.';
+	$_lang['setting_newsletter.token']								= 'Cronjob token';
+	$_lang['setting_newsletter.token_desc']							= 'This token needs to be send along with the cronjob so that the newsletter can not be send by random people. Without this token automatically send newsletters is not working.';
+	$_lang['setting_newsletter.email']								= 'Newsletter sender';
+	$_lang['setting_newsletter.email_desc']							= 'The e-mail address where the newsletter is send from.';
+	$_lang['setting_newsletter.name']								= 'Newsletter sender name';
+	$_lang['setting_newsletter.name_desc']							= 'The name where the newsletter is send from.';
+	$_lang['setting_newsletter.template']							= 'Newsletter template';
+	$_lang['setting_newsletter.template_desc']						= 'The ID of the template that get used as a newsletter, to separate templates use a comma.';
+	$_lang['setting_newsletter.admin_groups']						= 'Admin usergroups';
+	$_lang['setting_newsletter.admin_groups_desc']					= 'The usergroups that has access to the admin part of the newsletters, to separate usergroups use a comma.';
 	
 	$_lang['newslettersubscribe_snippet_param_desc']				= 'The URL parameter for the confirmation. Default is "token".';
 	$_lang['newslettersubscribe_snippet_confirm_desc']				= 'If "Yes" there will be sent a confirmation email which must confirm the subscription.';

@@ -22,40 +22,46 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	$newsletter = $modx->getService('newsletter', 'Newsletter', $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
-
-	$unsubscribe = false; 
-
-	switch($prefix) {
-		case 'Before':
-			$properties = array(
-				'type'			=> 'complete',
-				'values'		=> $modx->request->getParameters(),
-				'resource'		=> $modx->getOption('newsletterRedirect', $form->extensionScriptProperties, false),
-				'param'			=> $modx->getOption('param', $scriptProperties)
-			);
-
-			if (false === ($unsubscribe = $newsletter->unsubscribe($properties))) {
-				$form->getValidator()->setBulkError('extension_newsletter_unsubscribe_confirm');
-			}
-			break;
-		case 'After':
-			if ($form->isValid()) {
-				$properties = array(
-					'type'			=> 'unsubscribe',
-					'values'		=> $form->getValues(),
-					'lists'			=> $modx->getOption('newsletterLists', $form->extensionScriptProperties),
-					'param'			=> $modx->getOption('param', $scriptProperties)
-				);
-
-				if (false === ($unsubscribe = $newsletter->unsubscribe($properties))) {
-					$form->getValidator()->setBulkError('extension_newsletter_unsubscribe');
-				}
-			}
-
-			break;
-	}
-
-	return $unsubscribe;
+    if ($modx->loadClass('Newsletter', $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'model/newsletter/', true, true)) {
+        $newsletter = new Newsletter($modx);    
 	
+	    if ($newsletter instanceOf Newsletter) {
+        	$unsubscribe = false; 
+        
+        	switch($prefix) {
+        		case 'Before':
+        			$properties = array(
+        				'type'			=> 'complete',
+        				'values'		=> $modx->request->getParameters(),
+        				'resource'		=> $modx->getOption('newsletterRedirect', $form->properties, false),
+        				'param'			=> $modx->getOption('param', $scriptProperties)
+        			);
+        
+        			if (false === ($unsubscribe = $newsletter->unsubscribe($properties))) {
+        				$form->getValidator()->setBulkOutput('newsletter_unsubscribe_confirm');
+        			}
+        			break;
+        		case 'After':
+        			if ($form->getValidator()->isValid()) {
+        				$properties = array(
+        					'type'			=> 'unsubscribe',
+        					'values'		=> $form->getValues(),
+        					'lists'			=> $modx->getOption('newsletterLists', $form->properties),
+        					'param'			=> $modx->getOption('param', $scriptProperties)
+        				);
+        
+        				if (false === ($unsubscribe = $newsletter->unsubscribe($properties))) {
+        					$form->getValidator()->setBulkOutput('newsletter_unsubscribe');
+        				}
+        			}
+        
+        			break;
+        	}
+        
+        	return $unsubscribe;
+	    }
+    }
+    
+    return false;
+    
 ?>

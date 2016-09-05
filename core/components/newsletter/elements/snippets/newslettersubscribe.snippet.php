@@ -1,6 +1,6 @@
 <?php
-	
-	/**
+
+    /**
 	 * Newsletter
 	 *
 	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
@@ -22,44 +22,50 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	$newsletter = $modx->getService('newsletter', 'Newsletter', $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
-
-	$subscribe = false; 
-
-	switch($prefix) {
-		case 'Before':
-			$properties = array(
-				'type'			=> 'complete',
-				'values'		=> $modx->request->getParameters(),
-				'resource'		=> $modx->getOption('newsletterRedirect', $form->extensionScriptProperties, false),
-				'param'			=> $modx->getOption('param', $scriptProperties)
-			);
-
-			if (false === ($subscribe = $newsletter->subscribe($properties))) {
-				$form->getValidator()->setBulkError('extension_newsletter_subscribe_confirm');
-			}
-
-			break;
-		case 'After':
-			if ($form->isValid()) {
-				$properties = array(
-					'type'			=> 'subscribe',
-					'values'		=> $form->getValues(),
-					'lists'			=> $modx->getOption('newsletterLists', $form->extensionScriptProperties),
-					'info'          => $modx->getOption('newsletterInfo', $form->extensionScriptProperties, ''),
-					'resource'		=> $modx->getOption('newsletterRedirect', $form->extensionScriptProperties, false),
-					'confirm'		=> $modx->getOption('newsletterConfirm', $form->extensionScriptProperties, $modx->getOption('confirm', $scriptProperties)),
-					'param'			=> $modx->getOption('param', $scriptProperties)
-				);
-
-				if (false === ($subscribe = $newsletter->subscribe($properties))) {
-					$form->getValidator()->setBulkError('extension_newsletter_subscribe');
-				}
-			}
-
-			break;
-	}
-
-	return $subscribe;
+    if ($modx->loadClass('Newsletter', $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'model/newsletter/', true, true)) {
+        $newsletter = new Newsletter($modx);    
 	
+	    if ($newsletter instanceOf Newsletter) {
+        	$subscribe = false;
+        	
+        	switch($prefix) {
+        	    case 'Before':
+        			$properties = array(
+        				'type'			=> 'complete',
+        				'values'		=> $modx->request->getParameters(),
+        				'resource'		=> $modx->getOption('newsletterRedirect', $form->properties, false),
+        				'param'			=> $modx->getOption('param', $scriptProperties)
+        			);
+        
+        			if (false === ($subscribe = $newsletter->subscribe($properties))) {
+        				$form->getValidator()->setBulkOutput('newsletter_subscribe_confirm');
+        			}
+        
+        			break;
+        	    case 'After':
+        	        if ($form->getValidator()->isValid()) {
+        	            $properties = array(
+        					'type'			=> 'subscribe',
+        					'values'		=> $form->getValues(),
+        					'lists'			=> $modx->getOption('newsletterLists', $form->properties),
+        					'info'          => $modx->getOption('newsletterInfo', $form->properties, ''),
+        					'resource'		=> $modx->getOption('newsletterRedirect', $form->properties, false),
+        					'confirm'		=> $modx->getOption('newsletterConfirm', $form->properties, $modx->getOption('confirm', $scriptProperties)),
+        					'param'			=> $modx->getOption('param', $scriptProperties)
+        				);
+        				
+        				if (false === ($subscribe = $newsletter->subscribe($properties))) {
+        					$form->getValidator()->setBulkOutput('newsletter_subscribe');
+        				}
+        	        }
+        	        
+        	        break;
+        	}
+
+	        return $subscribe;
+	    }
+    }
+    
+    return false;
+    
 ?>

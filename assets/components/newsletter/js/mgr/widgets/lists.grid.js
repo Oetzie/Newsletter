@@ -104,7 +104,8 @@ Newsletter.grid.Lists = function(config) {
             sortable	: true,
             editable	: false,
             fixed		: true,
-			width		: 200
+			width		: 200,
+			renderer	: this.renderDate
         }]
     });
     
@@ -329,6 +330,13 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
     	c.css = 1 == parseInt(d) || d ? 'green' : 'red';
     	
     	return 1 == parseInt(d) || d ? _('yes') : _('no');
+    },
+	renderDate: function(a) {
+        if (Ext.isEmpty(a)) {
+            return '—';
+        }
+
+        return a;
     }
 });
 

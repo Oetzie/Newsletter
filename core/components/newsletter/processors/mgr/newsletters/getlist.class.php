@@ -67,7 +67,8 @@
 			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 			
 			$this->setDefaultProperties(array(
-				'dateFormat' => '%b %d, %Y %H:%M',
+				'dateFormat' => $this->modx->getOption('manager_date_format') .', '. $this->modx->getOption('manager_time_format'),
+				'hidden'	 => false
 			));
 			
 			return parent::initialize();
@@ -153,10 +154,10 @@
 			
 			$array['send_date_format'] = date($this->modx->getOption('manager_date_format', 'Y-m-d'), strtotime($array['send_date']));
 			
-			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', '0000-00-00', null))) {
+			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
 				$array['editedon'] = '';
 			} else {
-				$array['editedon'] = strftime($this->getProperty('dateFormat'), strtotime($array['editedon']));
+				$array['editedon'] = date($this->getProperty('dateFormat'), strtotime($array['editedon']));
 			}
 			
 			if ($this->newsletter->hasPermission() || 0 == $array['hidden'] || (bool) $this->getProperty('hidden')) {

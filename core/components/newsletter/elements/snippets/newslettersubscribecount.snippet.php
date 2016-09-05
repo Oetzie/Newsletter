@@ -22,27 +22,32 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	$newsletter = $modx->getService('newsletter', 'Newsletter', $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
-
-	if (false !== ($tpl = $modx->getOption('tpl', $scriptProperties, false))) {
-		$counts = $newsletter->getCount($modx->getOption('lists', $scriptProperties));
-
-		$output = array();
+	if ($modx->loadClass('Newsletter', $modx->getOption('newsletter.core_path', null, $modx->getOption('core_path').'components/newsletter/').'model/newsletter/', true, true)) {
+        $newsletter = new Newsletter($modx);    
+	
+	    if ($newsletter instanceOf Newsletter) {
+		   	if (false !== ($tpl = $modx->getOption('tpl', $scriptProperties, false))) {
+				$counts = $newsletter->getCount($modx->getOption('lists', $scriptProperties));
 		
-		foreach ($counts as $count) {
-			$output[] = $modx->getChunk($tpl, $count);
-		}
-
-		if (!empty($output)) {
-			if (false !== ($tplWrapper = $modx->getOption('tplWrapper', $scriptProperties, false))) {
-				return $modx->getChunk($tplWrapper, array(
-					'output' => implode(PHP_EOL, $output)
-				));
-			} else {
-				return implode(PHP_EOL, $output);
+				$output = array();
+				
+				foreach ($counts as $count) {
+					$output[] = $modx->getChunk($tpl, $count);
+				}
+		
+				if (!empty($output)) {
+					if (false !== ($tplWrapper = $modx->getOption('tplWrapper', $scriptProperties, false))) {
+						return $modx->getChunk($tplWrapper, array(
+							'output' => implode(PHP_EOL, $output)
+						));
+					} else {
+						return implode(PHP_EOL, $output);
+					}
+				}		
 			}
-		}		
+		}
 	}
 	
-	return;
+	return ' ';
 	
+?>

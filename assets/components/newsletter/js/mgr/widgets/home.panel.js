@@ -28,8 +28,8 @@ Newsletter.panel.Home = function(config) {
 					html			: '<p>'+_('newsletter.newsletters_desc')+'</p>',
 					bodyCssClass	: 'panel-desc'
 				}, {
-		            html			: Newsletter.config.admin && 0 == parseInt(MODx.config.newsletter_cronjob) ? '<p>' + _('newsletter.newsletter_cronjob_desc') + '</p>' : '',
-					bodyCssClass	: Newsletter.config.admin && 0 == parseInt(MODx.config.newsletter_cronjob) ? 'modx-config-error' : ''
+		            html			: Newsletter.config.admin && 0 == parseInt(MODx.config['newsletter.cronjob']) ? '<p>' + _('newsletter.newsletter_cronjob_desc') + '</p>' : '',
+					bodyCssClass	: Newsletter.config.admin && 0 == parseInt(MODx.config['newsletter.cronjob']) ? 'modx-config-error' : ''
 	            }, {
 					xtype			: 'newsletter-grid-newsletters',
 					cls				: 'main-wrapper',

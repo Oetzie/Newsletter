@@ -66,11 +66,11 @@
 				'css_url' 				=> $assetsUrl.'css/',
 				'assets_url' 			=> $assetsUrl,
 				'connector_url'			=> $assetsUrl.'connector.php',
-				'template'				=> explode(',', $this->modx->getOption('newsletter_template', null, '')),
-				'sender_name'			=> $this->modx->getOption('newsletter_name', null, $this->modx->getOption('site_name')),
-				'sender_email'			=> $this->modx->getOption('newsletter_email', null, $this->modx->getOption('emailsender')),
-				'token'					=> $this->modx->getOption('newsletter_token', null, md5(time())),
-				'context'				=> 2 == $this->modx->getCount('modContext') ? 0 : 1
+				'template'				=> explode(',', $this->modx->getOption('newsletter.template', null, '')),
+				'sender_name'			=> $this->modx->getOption('newsletter.name', null, $this->modx->getOption('site_name')),
+				'sender_email'			=> $this->modx->getOption('newsletter.email', null, $this->modx->getOption('emailsender')),
+				'token'					=> $this->modx->getOption('newsletter.token', null, md5(time())),
+				'context'				=> $this->getContexts()
 			), $config);
 		
 			$this->modx->addPackage('newsletter', $this->config['model_path']);
@@ -85,11 +85,27 @@
 		}
 		
 		/**
+		 * @acces private.
+		 * @return Boolean.
+		 */
+		private function getContexts() {
+			$context = array();
+			
+			foreach ($this->modx->getCollection('modContext') as $value) {
+				if ('mgr' != $value->key) {
+					$context[] = $value->toArray();
+				}
+			}
+			
+			return 1 == count($context) ? 0 : 1;
+		}
+		
+		/**
 		 * @acces public.
 		 * @return Boolean.
 		 */
 		public function hasPermission() {
-			$usergroups = $this->modx->getOption('newsletter_admin_groups', null, 'Administrator');
+			$usergroups = $this->modx->getOption('newsletter.admin_groups', null, 'Administrator');
 			
 			$isMember = $this->modx->user->isMember(explode(',', $usergroups), false);
 			
