@@ -188,4 +188,9 @@
 	$_lang['newsletter.info_key_error_character']					= 'Inschrijving info sleutel bevat niet toegestane tekens. Definieer een andere sleutelnaam.';
 	$_lang['newsletter.info_key_error_exists']						= 'Inschrijving info met deze sleutel bestaat reeds. Definieer een andere sleutelnaam';
 
+	$_lang['newsletter.subscribe_error']							= 'Er is een fout opgetreden tijdens het inschrijven, probeer het nog een keer.';
+	$_lang['newsletter.subscribe_error_confirm']					= 'Er is een fout opgetreden tijdens het inschrijven, probeer het nog een keer.';
+	$_lang['newsletter.unsubscribe_error']							= 'Er is een fout opgetreden tijdens het uitschrijven, probeer het nog een keer.';
+	$_lang['newsletter.unsubscribe_error_confirm']					= 'Er is een fout opgetreden tijdens het uitschrijven, probeer het nog een keer.';
+	
 ?>

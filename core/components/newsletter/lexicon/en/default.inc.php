@@ -188,4 +188,9 @@
 	$_lang['clientsettings.setting_error_character']				= 'Subscription info contains forbidden characters. Please specify another keyname.';
 	$_lang['clientsettings.setting_error_exists']					= 'Subscription info with that key already exists. Please specify another keyname.';
 
+	$_lang['newsletter.subscribe_error']							= 'An error occurred during registration, please try again.';
+	$_lang['newsletter.subscribe_error_confirm']					= 'An error occurred during registration, please try again..';
+	$_lang['newsletter.unsubscribe_error']							= 'An error occurred during registration, please try again.';
+	$_lang['newsletter.unsubscribe_error_confirm']					= 'An error occurred during registration, please try again.';
+	
 ?>

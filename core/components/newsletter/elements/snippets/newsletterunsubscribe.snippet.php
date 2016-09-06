@@ -38,7 +38,7 @@
         			);
         
         			if (false === ($unsubscribe = $newsletter->unsubscribe($properties))) {
-        				$form->getValidator()->setBulkOutput('newsletter_unsubscribe_confirm');
+        				$form->getValidator()->setBulkOutput($modx->lexicon('newsletter.unsubscribe_error_confirm'));
         			}
         			break;
         		case 'After':
@@ -51,7 +51,7 @@
         				);
         
         				if (false === ($unsubscribe = $newsletter->unsubscribe($properties))) {
-        					$form->getValidator()->setBulkOutput('newsletter_unsubscribe');
+        					$form->getValidator()->setBulkOutput($modx->lexicon('newsletter.unsubscribe_error'));
         				}
         			}
         

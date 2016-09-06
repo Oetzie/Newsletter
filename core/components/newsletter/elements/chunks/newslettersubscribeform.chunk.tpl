@@ -1,7 +1,7 @@
 [[!Form?
-    &redirect=`20`
+    &redirect=`REDIRECT`
     
-	&extensions=`newsletterSubscribe,respondEmail`
+	&extensions=`NewsletterSubscribe,RespondEmail`
 	&validate=`{"name": ["required"], "email":["email", "required"]}`
 
 	&respondEmailTo=`{"form.email": "form.name"}`
@@ -9,7 +9,7 @@
     &respondEmailSubject=`Nieuwsbrief inschrijving [[++site_name]]`
     &respondEmailTpl=`newsletterSubscribeFormEmailTpl`
 
-	&newsletterRedirect=`10`
+	&newsletterRedirect=`REDIRECT`
 
 	&tpl=`newsletterSubscribeFormTpl`
 ]]

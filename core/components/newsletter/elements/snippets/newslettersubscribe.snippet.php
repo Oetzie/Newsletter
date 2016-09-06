@@ -1,6 +1,6 @@
 <?php
 
-    /**
+	/**
 	 * Newsletter
 	 *
 	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
@@ -38,7 +38,7 @@
         			);
         
         			if (false === ($subscribe = $newsletter->subscribe($properties))) {
-        				$form->getValidator()->setBulkOutput('newsletter_subscribe_confirm');
+        				$form->getValidator()->setBulkOutput($modx->lexicon('newsletter.subscribe_error_confirm'));
         			}
         
         			break;
@@ -55,7 +55,7 @@
         				);
         				
         				if (false === ($subscribe = $newsletter->subscribe($properties))) {
-        					$form->getValidator()->setBulkOutput('newsletter_subscribe');
+        					$form->getValidator()->setBulkOutput($modx->lexicon('newsletter.subscribe_error'));
         				}
         	        }
         	        
