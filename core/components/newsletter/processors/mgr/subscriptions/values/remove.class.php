@@ -22,12 +22,12 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 	 
-	class SubscriptionsInfoRemoveProcessor extends modObjectRemoveProcessor {
+	class NewsletterSubscriptionsValuesRemoveProcessor extends modObjectRemoveProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'NewsletterSubscriptionsInfo';
+		public $classKey = 'NewsletterSubscriptionsValues';
 		
 		/**
 		 * @acces public.
@@ -39,7 +39,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $objectType = 'newsletter.subscriptionsinfo';
+		public $objectType = 'newsletter.subscriptionsvalues';
 		
 		/**
 		 * @acces public.
@@ -59,5 +59,5 @@
 	}
 	
 	
-	return 'SubscriptionsInfoRemoveProcessor';
+	return 'NewsletterSubscriptionsValuesRemoveProcessor';
 ?>

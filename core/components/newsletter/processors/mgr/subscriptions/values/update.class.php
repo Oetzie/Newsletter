@@ -22,12 +22,12 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class SubscriptionsInfoUpdateProcessor extends modObjectUpdateProcessor {
+	class NewsletterSubscriptionsValuesUpdateProcessor extends modObjectUpdateProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'NewsletterSubscriptionsInfo';
+		public $classKey = 'NewsletterSubscriptionsValues';
 		
 		/**
 		 * @acces public.
@@ -39,7 +39,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $objectType = 'newsletter.subscriptionsinfo';
+		public $objectType = 'newsletter.subscriptionsvalues';
 		
 		/**
 		 * @acces public.
@@ -54,6 +54,10 @@
 		public function initialize() {
 			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 
+			if (null !== ($key = $this->getProperty('key'))) {
+				$this->setProperty('key', strtolower(str_replace(array(' ', '-'), '_', $key)));	
+			}
+			
 			return parent::initialize();
 		}
 
@@ -62,24 +66,22 @@
 		 * @return Mixed.
 		 */
 		public function beforeSave() {
-			$key = $this->getProperty('key');
-			
 			$criterea = array(
 				'id:!=' 			=> $this->getProperty('id'),
 				'subscription_id' 	=> $this->getProperty('subscription_id'),
-				'key' 				=> $key
+				'key' 				=> $this->getProperty('key')
 			);
 			
-			if (!preg_match('/^([a-zA-Z0-9\_\-]+)$/si', $key)) {
-				$this->addFieldError('key', $this->modx->lexicon('newsletter.info_key_error_character'));
+			if (!preg_match('/^([a-zA-Z0-9\_\-]+)$/si', $this->getProperty('key'))) {
+				$this->addFieldError('key', $this->modx->lexicon('newsletter.subscription_value_key_error_character'));
 			} else if ($this->doesAlreadyExist($criterea)) {
-				$this->addFieldError('key', $this->modx->lexicon('newsletter.info_key_error_exists'));
+				$this->addFieldError('key', $this->modx->lexicon('newsletter.subscription_value_key_error_exists'));
 			}
 			
 			return parent::beforeSave();
 		}
 	}
 	
-	return 'SubscriptionsInfoUpdateProcessor';
+	return 'NewsletterSubscriptionsValuesUpdateProcessor';
 	
 ?>

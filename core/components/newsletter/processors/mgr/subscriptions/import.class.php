@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class NewsletterListsImportProcessor extends modObjectProcessor {
+	class NewsletterSubscriptionsImportProcessor extends modObjectProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
@@ -64,10 +64,6 @@
 				$this->setProperty('headers', 0);
 			}
 			
-			if (null === $this->getProperty('reset')) {
-				$this->setProperty('reset', 0);
-			}
-			
 			return parent::initialize();
 		}
 		
@@ -90,14 +86,6 @@
 				if ('csv' == strtolower($extension)) {
 					if (move_uploaded_file($_FILES['file']['tmp_name'], $this->getProperty('directory').$newFilename)) {
 						if (false !== ($fopen = fopen($this->getProperty('directory').$newFilename, 'r'))) {
-							$reset = $this->getProperty('reset');
-							
-							if (!empty($reset)) {
-								$this->modx->removeCollection('NewsletterListsSubscriptions', array(
-									'list_id' => $this->getProperty('id')
-								));
-							}
-							
 							$current = 0;
 							$columns = array('email', 'name', 'active', 'context', 'token');
 							
@@ -131,15 +119,7 @@
 										}
 										
 										$subscription->fromArray($data);
-										
-										if (null !== ($list = $this->modx->newObject('NewsletterListsSubscriptions'))) {
-											$list->fromArray(array(
-												'list_id' => $this->getProperty('id')
-											));
-										}
-										
-										$subscription->addMany($list);
-										
+											
 										$subscription->save();
 									}
 								}
@@ -163,6 +143,6 @@
 		}
 	}
 	
-	return 'NewsletterListsImportProcessor';
+	return 'NewsletterSubscriptionsImportProcessor';
 	
 ?>

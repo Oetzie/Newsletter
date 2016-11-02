@@ -33,7 +33,7 @@
 
 			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/newsletters.grid.js');
 			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/subscriptions.grid.js');
-			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/subscriptions-info.grid.js');
+			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/subscriptions.values.grid.js');
 			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/lists.grid.js');
 			
 			$this->addLastJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/sections/home.js');

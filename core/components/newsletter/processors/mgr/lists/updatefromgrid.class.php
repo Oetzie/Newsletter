@@ -24,7 +24,7 @@
 	
 	require_once dirname(__FILE__).'/update.class.php';
 	
-	class ListstUpdateFromGridProcessor extends ListsUpdateProcessor {
+	class NewsletterListstUpdateFromGridProcessor extends NewsletterListsUpdateProcessor {
 		/**
 		 * @acces public.
 		 * @return Mixed.
@@ -49,6 +49,6 @@
 		}
 	}
 	
-	return 'ListstUpdateFromGridProcessor';
+	return 'NewsletterListstUpdateFromGridProcessor';
 	
 ?>

@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class NewslettersSendProcessor extends modObjectUpdateProcessor {
+	class NewsletterNewslettersSendProcessor extends modObjectUpdateProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
@@ -54,10 +54,12 @@
 		public function initialize() {
 			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 
-			if ('immediately' == $this->getProperty('send_at') || empty($this->getProperty('lists'))) {
+			if (1 == $this->getProperty('newsletter_type')) {
+				$this->setProperty('send_status', 1);
+			} else if (2 == $this->getProperty('newsletter_type')) {
+				$this->setProperty('send_status', 1);
+			} else if (3 == $this->getProperty('newsletter_type')) {
 				$this->setProperty('send_status', 0);
-			} else {
-				$this->setProperty('send_status', 2);
 			}
 			
 			return parent::initialize();
@@ -68,88 +70,41 @@
 		 * @return Mixed.
 		 */
 	    public function beforeSave() {
-		    $this->modx->removeCollection('NewsletterListsNewsletters', array(
-		    	'newsletter_id' => $this->getProperty('id')
-		    ));
-		    
-			if (null !== ($lists = $this->getProperty('lists'))) {
-				foreach ($lists as $id) {
-					if (null !== ($list = $this->modx->newObject('NewsletterListsNewsletters', array('list_id' => $id)))) {
-						$this->object->addMany($list);
-					}
-				}
-			}
-			
-			$this->object->save();
-			
-			if ('immediately' == $this->getProperty('send_at')) {
-				if (null !== ($mail = $this->modx->getService('mail', 'mail.modPHPMailer'))) {
-					if (false !== ($newsletter = $this->newsletter->getNewsletter($this->getProperty('id'), true))) {
-						if (in_array($newsletter->resource->template, $this->modx->getOption('template', $this->newsletter->config, array()))) {
-							$subscriptions = $this->newsletter->getSubscriptions($newsletter);
-							
-							$newsletterCurl = curl_init();
+		    if (1 == $this->modx->getOption('site_status')) {
+			    if (null !== ($resource = $this->object->getNewsletterResource())) {
+				    if (in_array($resource->template, $this->modx->getOption('template', $this->newsletter->config, array()))) {
+					    $resource->fromArray(array(
+						    'published'		=> 1,
+							'cacheable'		=> 0
+						));
 									
-							curl_setopt($newsletterCurl, CURLOPT_HEADER, false);
-							curl_setopt($newsletterCurl, CURLOPT_RETURNTRANSFER, true);
-							
-							$newsletterTitle = $newsletter->resource->pagetitle;
-								
-							if (!empty($newsletter->resource->longtitle)) {
-								$newsletterTitle = $newsletter->resource->longtitle;
-							}
-							
-					    	$newsletterTitleChunk = $this->modx->newObject('modChunk', array(
-					    		'name' => sprintf('newsletter-title-%s', uniqid())
-					    	));
-					    	$newsletterTitleChunk->setCacheable(false);
-							
-							foreach ($subscriptions as $subscription) {
-								$placeholdes = array();
-									
-								foreach ($subscription as $key => $value) {
-									$placeholders['subscribe_'.$key] = $value;	
-								}
-
-								$placeholders['newsletter_url'] = $this->modx->makeUrl($newsletter->resource->id, null, $placeholders, 'full');
-									
-								curl_setopt($newsletterCurl, CURLOPT_URL, str_replace('&amp;', '&', $this->modx->makeUrl($newsletter->resource->id, null, $placeholders, 'full')));
-  
-					    		$mail->setHTML(true);
-					    		$mail->set(modMail::MAIL_FROM, 		$this->modx->getOption('sender_email', $this->newsletter->config));
-								$mail->set(modMail::MAIL_FROM_NAME, $this->modx->getOption('sender_name', $this->newsletter->config));
-								$mail->set(modMail::MAIL_BODY, 		curl_exec($newsletterCurl));
-								$mail->set(modMail::MAIL_SUBJECT, 	$newsletterTitleChunk->process($placeholders, $newsletterTitle));
-								
-								$mail->address('to', $subscription['email']);
-								
-								if (!$mail->send()) {
-									$this->modx->log(modX::LOG_LEVEL_ERROR, '[Newsletter] An error occurred while trying to send newsletter (#'.$newsletter->id.') to '.$subscription['email'].' : '.$mail->mailer->ErrorInfo);
-								} else {
-									$succes[] = $subscription['email'];
-								}
+						$resource->save();
 						
-								$mail->reset();
-				    		}
-				    		
-				    		curl_close($newsletterCurl);
-						} else {
-							$this->failure($this->modx->lexicon('newsletter.newsletter_send_failed_template_desc'));
+						$this->modx->removeCollection('NewsletterListsNewsletters', array(
+					    	'newsletter_id' => $this->getProperty('id')
+					    ));
+					    
+						if (null !== ($lists = $this->getProperty('lists'))) {
+							foreach ($lists as $id) {
+								if (null !== ($list = $this->modx->newObject('NewsletterListsNewsletters', array('list_id' => $id)))) {
+									$this->object->addMany($list);
+								}
+							}
 						}
 					} else {
-						$this->failure($this->modx->lexicon('newsletter.newsletter_send_failed_resource_desc'));
+						$this->addFieldError('newsletter_type', $this->modx->lexicon('newsletter.newsletter_send_error_template_desc'));
 					}
-				} else {
-					$this->modx->log(modX::LOG_LEVEL_ERROR, '[Newsletter] An error occurred while trying to send newsletters, modPHPMailer could not be loaded.');
-					
-					$this->failure($this->modx->lexicon('newsletter.newsletter_send_failed_desc'));
-				}
+			    } else {
+				    $this->addFieldError('newsletter_type', $this->modx->lexicon('newsletter.newsletter_send_error_resource_desc'));
+			    }
+			} else {
+				$this->failure($this->modx->lexicon('newsletter.newsletter_send_error_site_status_desc'));
 			}
-					
+			
 			return parent::beforeSave();
 		}
 	}
 	
-	return 'NewslettersSendProcessor';
+	return 'NewsletterNewslettersSendProcessor';
 	
 ?>

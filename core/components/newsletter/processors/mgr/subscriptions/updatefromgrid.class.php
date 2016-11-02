@@ -24,7 +24,7 @@
 	
 	require_once dirname(__FILE__).'/update.class.php';
 	
-	class SubscriptionsUpdateFromGridProcessor extends SubscriptionsUpdateProcessor {
+	class NewsletterSubscriptionsUpdateFromGridProcessor extends NewsletterSubscriptionsUpdateProcessor {
 		/**
 		 * @acces public.
 		 * @return Mixed.
@@ -49,6 +49,6 @@
 		}
 	}
 	
-	return 'SubscriptionsUpdateFromGridProcessor';
+	return 'NewsletterSubscriptionsUpdateFromGridProcessor';
 	
 ?>

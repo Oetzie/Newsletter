@@ -104,9 +104,9 @@
 				'owner' 		=> 'local',
 				'cardinality' 	=> 'many'
 			),
-			'NewsletterSubscriptionsInfo' => array(
+			'NewsletterSubscriptionsValues' => array(
 				'local' 		=> 'id',
-				'class' 		=> 'NewsletterSubscriptionsInfo',
+				'class' 		=> 'NewsletterSubscriptionsValues',
 				'foreign'		=> 'subscription_id',
 				'owner' 		=> 'local',
 				'cardinality' 	=> 'many'

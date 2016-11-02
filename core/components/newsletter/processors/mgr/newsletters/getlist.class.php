@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class NewslettersGetListProcessor extends modObjectGetListProcessor {
+	class NewslettersNewslettersGetListProcessor extends modObjectGetListProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
@@ -45,7 +45,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $defaultSortDirection = 'ASC';
+		public $defaultSortDirection = 'DESC';
 		
 		/**
 		 * @acces public.
@@ -83,13 +83,14 @@
 			$c->innerjoin('modResource', 'modResource', array('modResource.id = NewsletterNewsletters.resource_id'));
 			$c->innerjoin('modContext', 'modContext', array('modResource.context_key = modContext.key'));
 			$c->select($this->modx->getSelectColumns('NewsletterNewsletters', 'NewsletterNewsletters'));
-			$c->select($this->modx->getSelectColumns('modResource', 'modResource', 'resource_', array('pagetitle', 'longtitle', 'context_key', 'published')));
 			$c->select($this->modx->getSelectColumns('modContext', 'modContext', 'context_', array('key', 'name')));
 			
 			$context = $this->getProperty('context');
 			
 			if (!empty($context)) {
-				$c->where(array('modResource.context_key' => $context));
+				$c->where(array(
+					'modResource.context_key' => $context
+				));
 			}
 			
 			$query = $this->getProperty('query');
@@ -112,38 +113,39 @@
 		 */
 		public function prepareRow(xPDOObject $object) {
 			$lists = array();
-	
-			foreach ($object->getMany('NewsletterListsNewsletters') as $list) {
-				if (null !== ($list = $list->getOne('NewsletterLists'))) {
-					$lists[$list->id] = $list->name;
-				}
+			
+			foreach ($object->getLists() as $list) {
+				$lists[$list->id] = $list->name;
 			}
+			
+			$resource = $object->getNewsletterResource();
 
 			$array = array_merge($object->toArray(), array(
-				'resource_url'			=> $this->modx->makeUrl($object->resource_id, null, array(
+				'resource_url'			=> $this->modx->makeUrl($resource->id, null, array(
 					'subscribe_name' 	=> $this->modx->getOption('sender_name', $this->newsletter->config, 'test'),
 					'subscribe_email'	=> $this->modx->getOption('sender_email', $this->newsletter->config, 'test@test.com')
 				), 'full'),
-				'resource_name' 		=> empty($object->resource_longtitle) ? $object->resource_pagetitle : $object->resource_longtitle,
-				'resource_name_alias' 	=> (empty($object->resource_longtitle) ? $object->resource_pagetitle : $object->resource_longtitle).' ('.$object->resource_id.')',
+				'resource_name' 		=> $resource->pagetitle,
+				'resource_name_alias' 	=> $resource->pagetitle.' ('.$resource->id.')',
+				'resource_published'	=> $resource->published,
 				'lists'					=> array_keys($lists),
 				'lists_names' 			=> implode(', ', $lists),
-				'send_at'				=> 2 == $object->send_status ? 'timestamp' : 'immediately',
+				'newsletter_type'		=> 1,
 				'send_details'			=> array()
 			));
 			
-			$current = 0;
-			
-			foreach (array_reverse($object->getMany('NewsletterNewslettersInfo')) as $sendDetail) {
-				if ($current < 10) {
-					$array['send_details'][] = array_merge($sendDetail->toArray(), array(
-						'timestamp' => date($this->modx->getOption('manager_date_format', 'Y-m-d').', '.$this->modx->getOption('manager_time_format', 'H:i'), strtotime($sendDetail->timestamp))
-					));
-					
-					$current++;
-				} else {
-					break;
+			foreach ($object->getSendDetails(true) as $detail) {
+				$lists = array();
+				
+				foreach ($detail->getLists($this->modx) as $list) {
+					$lists[] = $list->name;	
 				}
+				
+				$array['send_details'][] = array_merge($detail->toArray(), array(
+					'lists'			=> implode(', ', $lists),
+					'emails_total'	=> count(explode(',', $detail->emails)), 
+					'timestamp' 	=> date($this->modx->getOption('manager_date_format', 'Y-m-d').', '.$this->modx->getOption('manager_time_format', 'H:i'), strtotime($detail->timestamp))
+				));
 			}
 			
 			if (in_array($array['send_date'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', '0000-00-00', null))) {
@@ -166,6 +168,6 @@
 		}
 	}
 
-	return 'NewslettersGetListProcessor';
+	return 'NewslettersNewslettersGetListProcessor';
 	
 ?>

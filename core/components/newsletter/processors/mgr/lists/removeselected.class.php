@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class ListsRemoveSelectedProcessor extends modProcessor {
+	class NewsletterListsRemoveSelectedProcessor extends modProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
@@ -63,11 +63,16 @@
 		 */
 		public function process() {
 			foreach (explode(',', $this->getProperty('ids')) as $key => $value) {
-				if (false !== ($object = $this->modx->getObject($this->classKey, array('id' => $value)))) {
+				$criterea = array(
+					'id' => $value
+				);
+				
+				if (false !== ($object = $this->modx->getObject($this->classKey, $criterea))) {
 					if (1 != $object->primairy) {
 						$this->modx->removeCollection('NewsletterListsNewsletters', array(
 							'list_id' => $object->id
 						));
+						
 						$this->modx->removeCollection('NewsletterListsSubscriptions', array(
 							'list_id' => $object->id
 						));
@@ -81,6 +86,6 @@
 		}
 	}
 
-	return 'ListsRemoveSelectedProcessor';
+	return 'NewsletterListsRemoveSelectedProcessor';
 
 ?>

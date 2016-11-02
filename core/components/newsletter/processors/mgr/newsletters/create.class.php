@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class NewslettersCreateProcessor extends modObjectCreateProcessor {
+	class NewsletterNewslettersCreateProcessor extends modObjectCreateProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
@@ -76,10 +76,10 @@
 			);
 			
 			if (null === ($resource = $this->modx->getObject('modResource', $criterea))) {
-				$this->addFieldError('resource', $this->modx->lexicon('newsletter.resource_does_not_exists'));
+				$this->addFieldError('resource', $this->modx->lexicon('newsletter.newsletter_error_resource_id'));
 			} else {
 				if (!in_array($resource->template, $this->modx->getOption('template', $this->newsletter->config, array()))) {
-					$this->addFieldError('resource', $this->modx->lexicon('newsletter.resource_template'));
+					$this->addFieldError('resource', $this->modx->lexicon('newsletter.newsletter_error_resource_template'));
 				} else {
 					$resource->fromArray(array(
 						'cacheable'	=> 0
@@ -88,12 +88,10 @@
 					$resource->save();
 				}
 			}
-			
-			
-			
+
 			return parent::beforeSave();
 		}
 	}
 	
-	return 'NewslettersCreateProcessor';
+	return 'NewsletterNewslettersCreateProcessor';
 ?>

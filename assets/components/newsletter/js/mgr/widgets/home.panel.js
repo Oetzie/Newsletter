@@ -28,8 +28,11 @@ Newsletter.panel.Home = function(config) {
 					html			: '<p>'+_('newsletter.newsletters_desc')+'</p>',
 					bodyCssClass	: 'panel-desc'
 				}, {
-		            html			: Newsletter.config.admin && 0 == parseInt(MODx.config['newsletter.cronjob']) ? '<p>' + _('newsletter.newsletter_cronjob_desc') + '</p>' : '',
+		            html			: Newsletter.config.admin && 0 == parseInt(MODx.config['newsletter.cronjob']) ? '<p>' + _('newsletter.newsletter_cronjob_notice_desc') + '</p>' : '',
 					bodyCssClass	: Newsletter.config.admin && 0 == parseInt(MODx.config['newsletter.cronjob']) ? 'modx-config-error' : ''
+	            }, {
+		            html			: 0 == parseInt(MODx.config.site_status) ? '<p>' + _('newsletter.newsletter_site_status_notice_desc') + '</p>' : '',
+					bodyCssClass	: 0 == parseInt(MODx.config.site_status) ? 'modx-config-error' : ''
 	            }, {
 					xtype			: 'newsletter-grid-newsletters',
 					cls				: 'main-wrapper',
@@ -49,6 +52,7 @@ Newsletter.panel.Home = function(config) {
 				}, {
 					xtype			: 'newsletter-grid-subscriptions',
 					cls				: 'main-wrapper',
+					refreshCmp		: 'newsletter-grid-lists',
 					preventRender	: true
 				}]
 			}, {
@@ -65,6 +69,7 @@ Newsletter.panel.Home = function(config) {
 				}, {
 					xtype			: 'newsletter-grid-lists',
 					cls				: 'main-wrapper',
+					refreshCmp 		: 'newsletter-grid-subscriptions',
 					preventRender	: true
 				}]
 			}]

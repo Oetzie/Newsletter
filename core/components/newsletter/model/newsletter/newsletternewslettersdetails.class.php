@@ -1,5 +1,5 @@
 <?php
-
+	
 	/**
 	 * Newsletter
 	 *
@@ -21,34 +21,23 @@
 	 * Newsletter; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
-	
-	require_once dirname(__FILE__).'/update.class.php';
-	
-	class SubscriptionsInfoUpdateFromGridProcessor extends SubscriptionsInfoUpdateProcessor {
-		/**
-		 * @acces public.
-		 * @return Mixed.
-		 */
-		public function initialize() {
-			$data = $this->getProperty('data');
+	 
+	class NewsletterNewslettersDetails extends xPDOSimpleObject {
+		public function getLists($modx) {
+			$lists = array();
 			
-			if (empty($data)) {
-				return $this->modx->lexicon('invalid_data');
+			foreach (explode(',', $this->lists) as $list) {
+				$criterea = array(
+					'id'	=> trim($list)	
+				);
+				
+				if (null !== ($list = $modx->getObject('NewsletterLists', $criterea))) {
+					$lists[] = $list;
+				}
 			}
 			
-			$data = $this->modx->fromJSON($data);
-			
-			if (empty($data)) {
-				return $this->modx->lexicon('invalid_data');
-			}
-			
-			$this->setProperties($data);
-			$this->unsetProperty('data');
-			
-			return parent::initialize();
+			return $lists;
 		}
 	}
-	
-	return 'SubscriptionsInfoUpdateFromGridProcessor';
 	
 ?>

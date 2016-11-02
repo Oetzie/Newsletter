@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class SubscriptionsUpdateProcessor extends modObjectUpdateProcessor {
+	class NewsletterSubscriptionsUpdateProcessor extends modObjectUpdateProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
@@ -82,6 +82,6 @@
 		}
 	}
 	
-	return 'SubscriptionsUpdateProcessor';
+	return 'NewsletterSubscriptionsUpdateProcessor';
 	
 ?>

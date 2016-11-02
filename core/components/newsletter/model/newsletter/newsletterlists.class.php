@@ -22,6 +22,65 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 	 
-	class NewsletterLists extends xPDOSimpleObject {}
+	class NewsletterLists extends xPDOSimpleObject {
+		/**
+		 * @acces public.
+		 * @return Array.
+		 */
+		public function getSubscriptions($context) {
+			$output = array();
+			
+			foreach ($this->getMany('NewsletterListsSubscriptions') as $list) {
+				$criterea = array(
+					'id' 		=> $list->subscription_id,
+					'context' 	=> $context,
+					'active'	=> 1
+				);
+				
+				if (null !== ($subscription = $list->getOne('NewsletterSubscriptions', $criterea))) {
+					$key = trim($subscription->email);
+					
+					$output[$key] = array(
+						'name'	=> trim($subscription->name),
+						'email'	=> trim($subscription->email)
+					);
+					
+					foreach ($subscription->getMany('NewsletterSubscriptionsValues') as $value) {
+						$output[$key][$value->key] = $value->content;
+					}
+				}
+			}
+			
+			return $output;
+		}
+		
+		/**
+		 * @acces public.
+		 * @param String $context.
+		 * @return Integer.
+		 */
+		public function getSubscriptionsCount($context = null) {
+			$output = 0;
+			
+			foreach ($this->getMany('NewsletterListsSubscriptions') as $list) {
+				if (null === $context) {
+					if (null !== ($subscription = $list->getOne('NewsletterSubscriptions'))) {
+						$output++;	
+					}
+				} else {
+					$criterea = array(
+						'id'		=> $list->subscription_id,
+						'context' 	=> $context
+					);
+
+					if (null !== ($subscription = $list->getOne('NewsletterSubscriptions', $criterea))) {
+						$output++;	
+					}
+				}
+			}
+			
+			return $output;
+		}
+	}
 	
 ?>

@@ -61,6 +61,18 @@
 
 			return parent::initialize();
 		}
+		
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+	    public function beforeSave() {
+		    $this->modx->removeCollection('NewsletterListsNewsletters', array(
+		    	'newsletter_id' => $this->getProperty('id')
+		    ));
+		    
+		    return parent::beforeSave();
+		}
 	}
 	
 	return 'NewslettersCancelProcessor';

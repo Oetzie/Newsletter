@@ -74,10 +74,10 @@
 			);
 			
 			if (null === ($resource = $this->modx->getObject('modResource', $criterea))) {
-				$this->addFieldError('resource', $this->modx->lexicon('newsletter.resource_does_not_exists'));
+				$this->addFieldError('resource', $this->modx->lexicon('newsletter.newsletter_error_resource_id'));
 			} else {
 				if (!in_array($resource->template, $this->modx->getOption('template', $this->newsletter->config, array()))) {
-					$this->addFieldError('resource', $this->modx->lexicon('newsletter.resource_template'));
+					$this->addFieldError('resource', $this->modx->lexicon('newsletter.newsletter_error_resource_template'));
 				} else {
 					$resource->fromArray(array(
 						'cacheable'	=> 0

@@ -22,6 +22,6 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 	 
-	class NewsletterSubscriptionsInfo extends xPDOSimpleObject {}
+	class NewsletterSubscriptionsValues extends xPDOSimpleObject {}
 	
 ?>

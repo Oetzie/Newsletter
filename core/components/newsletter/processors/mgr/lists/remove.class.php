@@ -3,7 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2014 by Oene Tjeerd de Bruin <info@oetzie.nl>
+	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * This file is part of Newsletter, a real estate property listings component
 	 * for MODX Revolution.
@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 	 
-	class ListsRemoveProcessor extends modObjectRemoveProcessor {
+	class NewsletterListsRemoveProcessor extends modObjectRemoveProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
@@ -78,6 +78,7 @@
 				$this->modx->removeCollection('NewsletterListsNewsletter', array(
 					'list_id' => $this->getProperty('id')
 				));
+				
 				$this->modx->removeCollection('NewsletterListsSubscriptions', array(
 					'list_id' => $this->getProperty('id')
 				));
@@ -88,5 +89,5 @@
 	}
 	
 	
-	return 'ListsRemoveProcessor';
+	return 'NewsletterListsRemoveProcessor';
 ?>

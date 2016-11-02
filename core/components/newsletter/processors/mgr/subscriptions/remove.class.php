@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 	 
-	class SubscriptionsRemoveProcessor extends modObjectRemoveProcessor {
+	class NewsletterSubscriptionsRemoveProcessor extends modObjectRemoveProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
@@ -65,7 +65,8 @@
 			$this->modx->removeCollection('NewsletterListsSubscriptions', array(
 				'subscription_id' => $this->getProperty('id')
 			));
-			$this->modx->removeCollection('NewsletterSubscriptionsInfo', array(
+			
+			$this->modx->removeCollection('NewsletterSubscriptionsValues', array(
 				'subscription_id' => $this->getProperty('id')
 			));
 
@@ -74,5 +75,5 @@
 	}
 	
 	
-	return 'SubscriptionsRemoveProcessor';
+	return 'NewsletterSubscriptionsRemoveProcessor';
 ?>

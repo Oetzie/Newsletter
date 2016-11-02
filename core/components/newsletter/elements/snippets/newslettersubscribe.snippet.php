@@ -51,6 +51,7 @@
         					'info'          => $modx->getOption('newsletterInfo', $form->properties, ''),
         					'resource'		=> $modx->getOption('newsletterRedirect', $form->properties, false),
         					'confirm'		=> $modx->getOption('newsletterConfirm', $form->properties, $modx->getOption('confirm', $scriptProperties)),
+        					'customValues'  => $modx->getOption('newsletterCustomValues', $form->properties, ''),
         					'param'			=> $modx->getOption('param', $scriptProperties)
         				);
         				

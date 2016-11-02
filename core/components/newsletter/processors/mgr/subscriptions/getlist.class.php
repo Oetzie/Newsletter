@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class SubscriptionsGetListProcessor extends modObjectGetListProcessor {
+	class NewsletterSubscriptionsGetListProcessor extends modObjectGetListProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
@@ -82,9 +82,10 @@
 			$c->innerjoin('modContext', 'modContext', array('NewsletterSubscriptions.context = modContext.key'));
 			$c->select($this->modx->getSelectColumns('NewsletterSubscriptions', 'NewsletterSubscriptions'));
 			$c->select($this->modx->getSelectColumns('modContext', 'modContext', 'context_', array('key', 'name')));
+		
+			$confirm = $this->getProperty('confirm');
 			
-			
-			if ('' != ($confirm = $this->getProperty('confirm'))) {
+			if ('' != $confirm) {
 				$c->where(array(
 					'NewsletterSubscriptions.active' => $confirm
 				));
@@ -109,21 +110,16 @@
 		 */
 		public function prepareRow(xPDOObject $object) {
 			$lists = array();
-			$listsNames = array();
-	
-			foreach ($object->getMany('NewsletterListsSubscriptions') as $list) {
-				if (null !== ($list = $list->getOne('NewsletterLists'))) {
+			
+			foreach ($object->getLists() as $list) {
+				//if ($this->newsletter->hasPermission() || 0 == $list->hidden) {
 					$lists[$list->id] = $list->name;
-					
-					//if ($this->newsletter->hasPermission() || 0 == $list->hidden) {
-						$listsNames[$list->id] = $list->name;
-					//}
-				}
+				//}
 			}
 			
 			$array = array_merge($object->toArray(), array(
 				'lists'			=> array_keys($lists),
-				'lists_names' 	=> implode(', ', $listsNames)
+				'lists_names' 	=> implode(', ', $lists)
 			));
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
@@ -136,6 +132,6 @@
 		}
 	}
 
-	return 'SubscriptionsGetListProcessor';
+	return 'NewsletterSubscriptionsGetListProcessor';
 	
 ?>

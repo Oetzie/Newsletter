@@ -22,12 +22,12 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class SubscriptionsActivateSelectedProcessor extends modProcessor {
+	class NewsletterSubscriptionsValuesGetListProcessor extends modObjectGetListProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'NewsletterSubscriptions';
+		public $classKey = 'NewsletterSubscriptionsValues';
 		
 		/**
 		 * @acces public.
@@ -39,7 +39,19 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $objectType = 'newsletter.subscriptions';
+		public $defaultSortField = 'key';
+		
+		/**
+		 * @acces public.
+		 * @var String.
+		 */
+		public $defaultSortDirection = 'ASC';
+		
+		/**
+		 * @acces public.
+		 * @var String.
+		 */
+		public $objectType = 'newsletter.subscriptionsvalues';
 		
 		/**
 		 * @acces public.
@@ -54,29 +66,44 @@
 		public function initialize() {
 			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 
+			$this->setDefaultProperties(array(
+				'dateFormat' => $this->modx->getOption('manager_date_format') .', '. $this->modx->getOption('manager_time_format')
+			));
+			
 			return parent::initialize();
 		}
 		
 		/**
 		 * @acces public.
-		 * @return Mixed.
+		 * @param Object $c.
+		 * @return Object.
 		 */
-		public function process() {
-			foreach (explode(',', $this->getProperty('ids')) as $key => $value) {
-				$criteria = array('id' => $value);
-				
-				if (false !== ($object = $this->modx->getObject($this->classKey, $criteria))) {
-					$object->fromArray(array(
-						'active' => 'activate' == $this->getProperty('type') ? 1 : 0
-					));
-					$object->save();
-				}
+		public function prepareQueryBeforeCount(xPDOQuery $c) {
+			$c->where(array(
+				'subscription_id' => $this->getProperty('id')
+			));
+			
+			return $c;
+		}
+		
+		/**
+		 * @acces public.
+		 * @param Object $query.
+		 * @return Array.
+		 */
+		public function prepareRow(xPDOObject $object) {
+			$array = $object->toArray();
+
+			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
+				$array['editedon'] = '';
+			} else {
+				$array['editedon'] = date($this->getProperty('dateFormat'), strtotime($array['editedon']));
 			}
 			
-			return $this->outputArray(array());
+			return $array;	
 		}
 	}
 
-	return 'SubscriptionsActivateSelectedProcessor';
-
+	return 'NewsletterSubscriptionsValuesGetListProcessor';
+	
 ?>

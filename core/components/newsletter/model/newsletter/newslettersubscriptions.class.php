@@ -22,6 +22,22 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 	 
-	class NewsletterSubscriptions extends xPDOSimpleObject {}
+	class NewsletterSubscriptions extends xPDOSimpleObject {
+		/**
+		 * @acces public.
+		 * @return Array.
+		 */
+		public function getLists() {
+			$output = array();
+		
+			foreach ($this->getMany('NewsletterListsSubscriptions') as $list) {
+				if (null !== ($list = $list->getOne('NewsletterLists'))) {
+					$output[] = $list;
+				}
+			}
+
+			return $output;
+		}
+	}
 	
 ?>

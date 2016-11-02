@@ -22,17 +22,17 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	$xpdo_meta_map['NewsletterSubscriptionsInfo']= array(
+	$xpdo_meta_map['NewsletterNewslettersDetails']= array(
 		'package' 	=> 'newsletter',
 		'version' 	=> '1.0',
-		'table' 	=> 'newsletter_subscriptions_info',
+		'table' 	=> 'newsletter_newsletters_details',
 		'extends' 	=> 'xPDOSimpleObject',
 		'fields' 	=> array(
 			'id'				=> null,
-			'subscription_id'	=> null,
-			'key'				=> null,
-			'content'			=> null,
-			'editedon' 			=> null
+			'newsletter_id'		=> null,
+			'lists'				=> null,
+			'emails'			=> null,
+			'timestamp'			=> null
 		),	
 		'fieldMeta'	=> array(
 			'id' 		=> array(
@@ -43,29 +43,28 @@
 				'index' 	=> 'pk',
 				'generated'	=> 'native'
 			),
-			'subscription_id' => array(
+			'newsletter_id' => array(
 				'dbtype' 	=> 'int',
 				'precision' => '11',
 				'phptype' 	=> 'integer',
 				'null' 		=> false
 			),
-			'key' => array(
+			'lists' => array(
 				'dbtype' 	=> 'varchar',
-				'precision' => '255',
-				'phptype' 	=> 'string',
+				'precision' => 'string',
+				'phptype' 	=> '255',
 				'null' 		=> false
 			),
-			'content' => array(
+			'emails' 	=> array(
 				'dbtype' 	=> 'text',
 				'phptype' 	=> 'string',
-				'precision' => '2048',
 				'null' 		=> false
 			),
-			'editedon' 	=> array(
+			'timestamp' => array(
 				'dbtype' 	=> 'timestamp',
 				'phptype' 	=> 'timestamp',
-				'attributes' => 'ON UPDATE CURRENT_TIMESTAMP',
-				'null' 		=> false
+				'null' 		=> false,
+				'default'	=> '0000-00-00 00:00:00'
 			)
 		),
 		'indexes'	=> array(
@@ -82,9 +81,9 @@
 			)
 		),
 		'aggregates' => array(
-			'NewsletterSubscriptionsInfo' => array(
-				'local' 		=> 'subscription_id',
-				'class' 		=> 'NewsletterSubscriptions',
+			'NewsletterNewsletters' => array(
+				'local' 		=> 'newsletter_id',
+				'class' 		=> 'NewsletterNewsletters',
 				'foreign' 		=> 'id',
 				'owner' 		=> 'foreign',
 				'cardinality' 	=> 'one'

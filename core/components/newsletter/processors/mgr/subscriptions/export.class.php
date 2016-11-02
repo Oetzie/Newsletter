@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class NewsletterListsExportProcessor extends modObjectGetListProcessor {
+	class NewsletterSubscriptionsExportProcessor extends modObjectGetListProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
@@ -90,7 +90,7 @@
 		public function process() {
 			if (!is_dir($this->getProperty('directory'))) {
 				if (!mkdir($this->getProperty('directory'), 0777, true)) {
-					return $this->failure($this->modx->getLexion('newsletter.lists_export_dir_failed'));
+					return $this->failure($this->modx->getLexion('newsletter.export_dir_failed'));
 				}
 			}
 			
@@ -118,13 +118,9 @@
 				} else {
 					$rows = array();
 				}
-	
-				if (null !== ($object = $this->modx->getObject('NewsletterLists', $this->getProperty('id')))) {
-					foreach ($object->getMany('NewsletterListsSubscriptions') as $list) {
-						if (null !== ($subscription = $list->getOne('NewsletterSubscriptions'))) {
-							$rows[$subscription->id] = $subscription->toArray();
-						}
-					}
+				
+				foreach ($this->modx->getCollection($this->classKey) as $subscription) {
+					$rows[$subscription->id] = $subscription->toArray();
 				}
 
 				foreach ($rows as $key => $value) {
@@ -147,7 +143,7 @@
 				return $this->success($this->modx->lexicon('success'));
 			}
 			
-			return $this->failure($this->modx->lexicon('newsletter.lists_export_failed'));
+			return $this->failure($this->modx->lexicon('newsletter.export_failed'));
 		}
 		
 		/**
@@ -166,10 +162,10 @@
 		 		return $fileContents;
 			}
 			
-			return $this->failure($this->modx->lexicon('newsletter.lists_export_failed'));
+			return $this->failure($this->modx->lexicon('newsletter.export_failed'));
 		}
 	}
 
-	return 'NewsletterListsExportProcessor';
+	return 'NewsletterSubscriptionsExportProcessor';
 	
 ?>

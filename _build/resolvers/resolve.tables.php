@@ -11,10 +11,10 @@
 				$manager->createObjectContainer('NewsletterNewsletters');
 	            $manager->createObjectContainer('NewsletterSubscriptions');
 	            $manager->createObjectContainer('NewsletterLists');
-	            $manager->createObjectContainer('NewsletterListsSubscriptions');
 	            $manager->createObjectContainer('NewsletterListsNewsletters');
-	            $manager->createObjectContainer('NewsletterNewslettersInfo');
-	            $manager->createObjectContainer('NewsletterSubscriptionsInfo');
+	            $manager->createObjectContainer('NewsletterListsSubscriptions');
+	            $manager->createObjectContainer('NewsletterNewslettersDetails');
+	            $manager->createObjectContainer('NewsletterSubscriptionsValues');
 	
 	            break;
 	        case xPDOTransport::ACTION_UPGRADE:

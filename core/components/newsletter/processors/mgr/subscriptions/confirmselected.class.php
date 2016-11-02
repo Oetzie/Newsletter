@@ -22,12 +22,12 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class SubscriptionsInfoGetListProcessor extends modObjectGetListProcessor {
+	class NewsletterSubscriptionsConfirmSelectedProcessor extends modProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'NewsletterSubscriptionsInfo';
+		public $classKey = 'NewsletterSubscriptions';
 		
 		/**
 		 * @acces public.
@@ -39,19 +39,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $defaultSortField = 'key';
-		
-		/**
-		 * @acces public.
-		 * @var String.
-		 */
-		public $defaultSortDirection = 'ASC';
-		
-		/**
-		 * @acces public.
-		 * @var String.
-		 */
-		public $objectType = 'newsletter.subscriptionsinfo';
+		public $objectType = 'newsletter.subscriptions';
 		
 		/**
 		 * @acces public.
@@ -66,44 +54,29 @@
 		public function initialize() {
 			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 
-			$this->setDefaultProperties(array(
-				'dateFormat' => '%b %d, %Y %H:%M',
-			));
-			
 			return parent::initialize();
 		}
 		
 		/**
 		 * @acces public.
-		 * @param Object $c.
-		 * @return Object.
+		 * @return Mixed.
 		 */
-		public function prepareQueryBeforeCount(xPDOQuery $c) {
-			$c->where(array(
-				'subscription_id' => $this->getProperty('id')
-			));
-			
-			return $c;
-		}
-		
-		/**
-		 * @acces public.
-		 * @param Object $query.
-		 * @return Array.
-		 */
-		public function prepareRow(xPDOObject $object) {
-			$array = $object->toArray();
-
-			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', '0000-00-00'))) {
-				$array['editedon'] = '';
-			} else {
-				$array['editedon'] = strftime($this->getProperty('dateFormat'), strtotime($array['editedon']));
+		public function process() {
+			foreach (explode(',', $this->getProperty('ids')) as $key => $value) {
+				$criteria = array('id' => $value);
+				
+				if (false !== ($object = $this->modx->getObject($this->classKey, $criteria))) {
+					$object->fromArray(array(
+						'active' => $this->getProperty('type')
+					));
+					$object->save();
+				}
 			}
 			
-			return $array;	
+			return $this->outputArray(array());
 		}
 	}
 
-	return 'SubscriptionsInfoGetListProcessor';
-	
+	return 'NewsletterSubscriptionsConfirmSelectedProcessor';
+
 ?>

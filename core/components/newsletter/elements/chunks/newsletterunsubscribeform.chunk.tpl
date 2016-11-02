@@ -2,7 +2,7 @@
     &redirect=`REDIRECT`
 
 	&extensions=`NewsletterUnSubscribe`
-	&validate=`{"email":["email", "required"]}`
+	&validate=`{"email": ["email", "required"]}`
 
 	&newsletterRedirect=`REDIRECT`
 	

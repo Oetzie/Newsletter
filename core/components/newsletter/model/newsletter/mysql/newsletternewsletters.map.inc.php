@@ -75,9 +75,10 @@
 				'default'	=> 7
 			),
 			'send_date' => array(
-				'dbtype' 	=> 'date',
+				'dbtype' 	=> 'timestamp',
 				'phptype' 	=> 'timestamp',
-				'null' 		=> false
+				'null' 		=> false,
+				'default'	=> '0000-00-00 00:00:00'
 			),
 			'send_emails' => array(
 				'dbtype' 	=> 'text',
@@ -127,9 +128,9 @@
 				'owner' 		=> 'local',
 				'cardinality' 	=> 'many'
 			),
-			'NewsletterNewslettersInfo' => array(
+			'NewsletterNewslettersDetails' => array(
 				'local' 		=> 'id',
-				'class' 		=> 'NewsletterNewslettersInfo',
+				'class' 		=> 'NewsletterNewslettersDetails',
 				'foreign'		=> 'newsletter_id',
 				'owner' 		=> 'local',
 				'cardinality' 	=> 'many'
