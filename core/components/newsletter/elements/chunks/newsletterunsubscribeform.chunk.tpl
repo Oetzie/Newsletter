@@ -1,10 +1,11 @@
 [[!Form?
-    &redirect=`REDIRECT`
+    &submit=`unsubscribe`
+	&success=`21`
 
 	&extensions=`NewsletterUnSubscribe`
-	&validate=`{"email": ["email", "required"]}`
+	&validate=`{"email":["email", "required"]}`
 
-	&newsletterRedirect=`REDIRECT`
+	&newsletterSuccess=`21`
 	
 	&tpl=`newsletterUnSubscribeFormTpl`
 ]]

@@ -66,7 +66,7 @@
 				'subscription_id' => $this->getProperty('id')
 			));
 			
-			$this->modx->removeCollection('NewsletterSubscriptionsValues', array(
+			$this->modx->removeCollection('NewsletterSubscriptionsExtras', array(
 				'subscription_id' => $this->getProperty('id')
 			));
 

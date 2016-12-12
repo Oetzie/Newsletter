@@ -285,7 +285,7 @@
 									}
 									
 									$placeholders = array_merge(array(
-										'newsletter_url'	=> 	str_replace('&amp;', '&', $this->modx->makeUrl($resource->id, $resource->context_key, $placeholders, 'full'))
+										'newsletter_url'	=> 	$this->modx->makeUrl($resource->id, $resource->context_key, $placeholders, 'full')
 									), $placeholders);
 									
 									$mail->setHTML(true);

@@ -34,6 +34,7 @@
 			'email'			=> null,
 			'token'			=> null,
 			'active'		=> null,
+			'edited'		=> null,
 			'editedon' 		=> null
 		),
 		'fieldMeta'	=> array(
@@ -76,6 +77,12 @@
 				'null' 		=> false,
 				'default'	=> 1
 			),
+			'edited' 	=> array(
+				'dbtype' 	=> 'varchar',
+				'precision' => '255',
+				'phptype' 	=> 'string',
+				'null' 		=> false
+			),
 			'editedon' 	=> array(
 				'dbtype' 	=> 'timestamp',
 				'phptype' 	=> 'timestamp',
@@ -97,6 +104,13 @@
 			)
 		),
 		'aggregates' => array(
+			'modContext' => array(
+				'local'			=> 'context',
+				'class'			=> 'modContext',
+				'foreign'		=> 'key',
+				'owner'			=> 'local',
+				'cardinality'	=> 'one'
+			),
 			'NewsletterListsSubscriptions' => array(
 				'local' 		=> 'id',
 				'class' 		=> 'NewsletterListsSubscriptions',
@@ -104,9 +118,9 @@
 				'owner' 		=> 'local',
 				'cardinality' 	=> 'many'
 			),
-			'NewsletterSubscriptionsValues' => array(
+			'NewsletterSubscriptionsExtras' => array(
 				'local' 		=> 'id',
-				'class' 		=> 'NewsletterSubscriptionsValues',
+				'class' 		=> 'NewsletterSubscriptionsExtras',
 				'foreign'		=> 'subscription_id',
 				'owner' 		=> 'local',
 				'cardinality' 	=> 'many'

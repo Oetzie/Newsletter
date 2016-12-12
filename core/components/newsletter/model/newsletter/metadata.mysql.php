@@ -30,7 +30,7 @@
 	    	4 => 'NewsletterListsNewsletters',
 	    	5 => 'NewsletterListsSubscriptions',
 	    	5 => 'NewsletterNewslettersDetails',
-	    	6 => 'NewsletterSubscriptionsValues'
+	    	6 => 'NewsletterSubscriptionsExtras'
 	    )
 	);
 	

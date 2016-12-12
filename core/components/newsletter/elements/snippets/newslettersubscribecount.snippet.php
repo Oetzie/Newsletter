@@ -1,5 +1,5 @@
 <?php
-	
+
 	/**
 	 * Newsletter
 	 *
@@ -27,17 +27,17 @@
 	
 	    if ($newsletter instanceOf Newsletter) {
 		   	if (false !== ($tpl = $modx->getOption('tpl', $scriptProperties, false))) {
-				$counts = $newsletter->getCount($modx->getOption('lists', $scriptProperties));
+		   	    $lists = $modx->getOption('lists', $scriptProperties);
 		
 				$output = array();
 				
-				foreach ($counts as $count) {
-					$output[] = $modx->getChunk($tpl, $count);
+				foreach ($newsletter->getCount($lists) as $list) {
+					$output[] = $newsletter->getTemplate($tpl, $list);
 				}
 		
-				if (!empty($output)) {
+				if (0 < count($output)) {
 					if (false !== ($tplWrapper = $modx->getOption('tplWrapper', $scriptProperties, false))) {
-						return $modx->getChunk($tplWrapper, array(
+						return $newsletter->getTemplate($tplWrapper, array(
 							'output' => implode(PHP_EOL, $output)
 						));
 					} else {

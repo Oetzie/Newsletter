@@ -1,5 +1,5 @@
 <?php
-
+	
 	/**
 	 * Newsletter
 	 *
@@ -21,13 +21,13 @@
 	 * Newsletter; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
-	 
-	class NewsletterSubscriptionsValuesRemoveProcessor extends modObjectRemoveProcessor {
+
+	class NewsletterSubscriptionsExtrasCreateProcessor extends modObjectCreateProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'NewsletterSubscriptionsValues';
+		public $classKey = 'NewsletterSubscriptionsExtras';
 		
 		/**
 		 * @acces public.
@@ -39,7 +39,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $objectType = 'newsletter.subscriptionsvalues';
+		public $objectType = 'newsletter.subscriptionsextras';
 		
 		/**
 		 * @acces public.
@@ -54,10 +54,49 @@
 		public function initialize() {
 			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 
+			if (null !== ($key = $this->getProperty('key'))) {
+				$this->setProperty('key', strtolower(str_replace(array(' ', '-'), '_', $key)));	
+			}
+			
 			return parent::initialize();
+		}
+
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+		public function beforeSave() {
+			$criterea = array(
+				'subscription_id' 	=> $this->getProperty('subscription_id'),
+				'key' 				=> $this->getProperty('key')
+			);
+			
+			if (!preg_match('/^([a-zA-Z0-9\_]+)$/si', $this->getProperty('key'))) {
+				$this->addFieldError('key', $this->modx->lexicon('newsletter.subscription_extra_error_character'));
+			} else if ($this->doesAlreadyExist($criterea)) {
+				$this->addFieldError('key', $this->modx->lexicon('newsletter.subscription_extra_error_exists'));
+			}
+
+			return parent::beforeSave();
+		}
+		
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+		public function afterSave() {
+			if (null !== ($subscription = $this->object->getOne('NewsletterSubscriptions'))) {
+				$subscription->fromArray(array(
+					'edited' => uniqid()
+				));
+				
+				$subscription->save();
+			}
+			
+			return parent::afterSave();
 		}
 	}
 	
+	return 'NewsletterSubscriptionsExtrasCreateProcessor';
 	
-	return 'NewsletterSubscriptionsValuesRemoveProcessor';
 ?>

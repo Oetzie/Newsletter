@@ -31,32 +31,30 @@
         	switch($prefix) {
         	    case 'Before':
         			$properties = array(
-        				'type'			=> 'complete',
+        				'type'			=> 'confirm',
         				'values'		=> $modx->request->getParameters(),
-        				'resource'		=> $modx->getOption('newsletterRedirect', $form->properties, false),
-        				'param'			=> $modx->getOption('param', $scriptProperties)
+        				'confirmParam'	=> $modx->getOption('newsletterConfirmParam', $form->properties, $modx->getOption('param', $scriptProperties)),
+        				'success'		=> $modx->getOption('newsletterSuccess', $form->properties, false)
         			);
         
         			if (false === ($subscribe = $newsletter->subscribe($properties))) {
-        				$form->getValidator()->setBulkOutput($modx->lexicon('newsletter.subscribe_error_confirm'));
+        				$form->getValidator()->setBulkOutput($modx->lexicon('newsletter.form_subscribe_error_confirm'));
         			}
         
         			break;
         	    case 'After':
         	        if ($form->getValidator()->isValid()) {
         	            $properties = array(
-        					'type'			=> 'subscribe',
         					'values'		=> $form->getValues(),
-        					'lists'			=> $modx->getOption('newsletterLists', $form->properties),
-        					'info'          => $modx->getOption('newsletterInfo', $form->properties, ''),
-        					'resource'		=> $modx->getOption('newsletterRedirect', $form->properties, false),
-        					'confirm'		=> $modx->getOption('newsletterConfirm', $form->properties, $modx->getOption('confirm', $scriptProperties)),
         					'customValues'  => $modx->getOption('newsletterCustomValues', $form->properties, ''),
-        					'param'			=> $modx->getOption('param', $scriptProperties)
+        					'lists'			=> $modx->getOption('newsletterLists', $form->properties),
+        					'confirm'   	=> $modx->getOption('newsletterConfirmEmail', $form->properties, $modx->getOption('confirm', $scriptProperties)),
+        					'confirmParam'	=> $modx->getOption('newsletterConfirmParam', $form->properties, $modx->getOption('param', $scriptProperties)),
+        					'success'		=> $modx->getOption('newsletterSuccess', $form->properties, false)
         				);
         				
         				if (false === ($subscribe = $newsletter->subscribe($properties))) {
-        					$form->getValidator()->setBulkOutput($modx->lexicon('newsletter.subscribe_error'));
+        					$form->getValidator()->setBulkOutput($modx->lexicon('newsletter.form_subscribe_error'));
         				}
         	        }
         	        
@@ -69,4 +67,4 @@
     
     return false;
     
-?>
+   ?>

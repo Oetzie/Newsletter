@@ -51,8 +51,8 @@
 			),
 			'lists' => array(
 				'dbtype' 	=> 'varchar',
-				'precision' => 'string',
-				'phptype' 	=> '255',
+				'precision' => '255',
+				'phptype' 	=> 'string',
 				'null' 		=> false
 			),
 			'emails' 	=> array(

@@ -26,6 +26,7 @@
 	$_lang['newsletter.desc'] 										= 'Wijzig of maak nieuwsbrieven.';
 	
 	$_lang['area_newsletter']										= 'Nieuwsbrief';
+	$_lang['area_default']											= 'Standaard';
 	
 	$_lang['setting_newsletter.cronjob']							= 'Cronjob herinnering';
 	$_lang['setting_newsletter.cronjob_desc']						= 'Zet deze instelling op "Ja" als je een cronjob hebt ingesteld voor de nieuwsbrief, door deze instelling op "Ja" te zetten word de cronjob waarschuwing niet meer getoond in de nieuwsbrieven component.';
@@ -39,6 +40,11 @@
 	$_lang['setting_newsletter.template_desc']						= 'De ID van de template die als nieuwsbrief word gebruikt. Meerdere templates scheiden met een komma.';
 	$_lang['setting_newsletter.admin_groups']						= 'Admin gebruikersgroepen';
 	$_lang['setting_newsletter.admin_groups_desc']					= 'De gebruikersgroepen die toegang hebben tot de admin gedeelte van de nieuwsbrieven. Meerdere gebruikersgroepen scheiden met een komma.';
+	
+	$_lang['setting_page.newsletter_subscribe']						= 'Pagina "nieuwsbrief inschrijven"';
+	$_lang['setting_page.newsletter_subscribe_desc']				= 'De ID van de pagina die als "nieuwsbrief inschrijven" pagina dient.';
+	$_lang['setting_page.newsletter_unsubscribe']					= 'Pagina "nieuwsbrief uitschrijven"';
+	$_lang['setting_page.newsletter_unsubscribe_desc']				= 'De ID van de pagina die als "nieuwsbrief uitschrijven" pagina dient.';
 	
 	$_lang['newslettersubscribe_snippet_param_desc']				= 'De URL parameter voor de bevestiging. Standaard is "token".';
 	$_lang['newslettersubscribe_snippet_confirm_desc']				= 'Indien "Ja" zal er een bevestigingsmail gestuurd worden die de inschrijver dient te bevestigen.';
@@ -80,12 +86,10 @@
 	$_lang['newsletter.subscriptions_import_desc']					= 'Selecteer een CSV bestand om inschrijvingen te importeren. Het moet een geldig CSV formaat zijn.';
 	$_lang['newsletter.subscriptions_export']						= 'Inschrijvingen exporteren';
 	
-	$_lang['newsletter.subscription_values']						= 'Inschrijving details';
-	$_lang['newsletter.subscription_values_desc']					= 'Hier kun je de inschrijving details wijzigen, inschrijving details zijn extra waardes die aan een inschrijving gekoppeld zijn die gebruikt kunnen worden in de nieuwsbrieven.';
-	$_lang['newsletter.subscription_value_create']					= 'Nieuwe inschrijving detail';
-	$_lang['newsletter.subscription_value_update']					= 'Inschrijving detail wijzigen';
-	$_lang['newsletter.subscription_value_remove']					= 'Inschrijving detail verwijderen';
-	$_lang['newsletter.subscription_value_remove_confirm']			= 'Weet je zeker dat je deze inschrijving detail wilt verwijderen?';
+	$_lang['newsletter.subscription_extra_create']					= 'Nieuw extra veld';
+	$_lang['newsletter.subscription_extra_update']					= 'Extra veld wijzigen';
+	$_lang['newsletter.subscription_extra_remove']					= 'Extra veld verwijderen';
+	$_lang['newsletter.subscription_extra_remove_confirm']			= 'Weet je zeker dat je dit extra veld wilt verwijderen?';
 	
 	$_lang['newsletter.list']										= 'Mailinglijst';
 	$_lang['newsletter.lists']										= 'Mailinglijsten';
@@ -128,6 +132,7 @@
 	$_lang['newsletter.label_newsletter_stats_lists_desc']			= '';
 	$_lang['newsletter.label_newsletter_stats_emails']				= 'E-mailadressen (totaal: [[+total]])';
 	$_lang['newsletter.label_newsletter_stats_emails_desc']			= '';
+	
 	$_lang['newsletter.label_subscription_email']					= 'E-mailadres';
 	$_lang['newsletter.label_subscription_email_desc']				= 'Het e-mailadres van de inschrijving.';
 	$_lang['newsletter.label_subscription_name']					= 'Naam';
@@ -142,14 +147,16 @@
 	$_lang['newsletter.label_subscriptions_lists_desc']				= 'De mailinglijst(en) van de inschrijving(en).';
 	$_lang['newsletter.label_subscription_move']					= 'Verplaatsingstype';
 	$_lang['newsletter.label_subscription_move_desc']				= 'De type van de verplaatsing, dit kan "toevoegen" of "verwijderen" zijn.';
-	$_lang['newsletter.label_subscription_value_key']				= 'Sleutel';
-	$_lang['newsletter.label_subscription_value_key_desc']			= 'De sleutel voor de inschrijving detail. De inschrijving detail zal beschikbaar zijn via de [[+subscribe_sleutel]] tags.';
-	$_lang['newsletter.label_subscription_value_content']			= 'Waarde';
-	$_lang['newsletter.label_subscription_value_content_desc']		= 'De waarde voor de inschrijving detail.';
+
+	$_lang['newsletter.label_extra_key']							= 'Sleutel';
+	$_lang['newsletter.label_extra_key_desc']						= 'De sleutel van het extra veld. Het extra veld zal beschikbaar zijn via de [[+subscription.sleutel]] tags.';
+	$_lang['newsletter.label_extra_content']						= 'Waarde';
+	$_lang['newsletter.label_extra_content_desc']					= 'De waarde van het extra veld.';
+	
 	$_lang['newsletter.label_list_name']							= 'Naam';
-	$_lang['newsletter.label_list_name_desc']						= 'De naam van de mailinglijst.';
+	$_lang['newsletter.label_list_name_desc']						= 'De naam van de mailinglijst, dit kan een lexicon sleutel zijn.';
 	$_lang['newsletter.label_list_description']						= 'Beschrijving';
-	$_lang['newsletter.label_list_description_desc']				= 'Een korte beschrijving van de mailinglijst.';
+	$_lang['newsletter.label_list_description_desc']				= 'Een korte beschrijving van de mailinglijst, dit kan een lexicon sleutel zijn.';
 	$_lang['newsletter.label_list_primary']							= 'Primaire mailinglijst';
 	$_lang['newsletter.label_list_primary_desc']					= 'Primaire mailinglijst, in deze mailinglijst worden standaard alle inschrijvingen in geplaatst.';
 	$_lang['newsletter.label_list_hidden']							= 'Verborgen mailinglijst';
@@ -158,6 +165,7 @@
 	$_lang['newsletter.label_list_active_desc']						= '';
 	$_lang['newsletter.label_list_subscriptions']					= 'Inschrijvingen';
 	$_lang['newsletter.label_list_subscriptions_desc']				= '';
+	
 	$_lang['newsletter.label_import_file']							= 'Bestand';
 	$_lang['newsletter.label_import_file_desc']						= 'Selecteer een geldig CSV bestand.';
 	$_lang['newsletter.label_import_delimiter']						= 'Scheidingsteken';
@@ -202,13 +210,17 @@
 	$_lang['newsletter.newsletter_send_error_date_desc']			= 'De nieuwsbrief kon niet verstuurd worden, omdat de verstuurdatum nog niet aangebroken is.';
 	$_lang['newsletter.newsletter_send_error_repeat_desc']			= 'De nieuwsbrief kon niet verstuurd worden, omdat de de nieuwsbrief al de toegestane keren verstuurd is.';
 	$_lang['newsletter.newsletter_send_feedback']					= 'Nieuwsbrief "[[+pagetitle]]" verstuurd naar [[+total]] e-mailadressen.';
+	$_lang['newsletter.subscription_general']						= 'Algemeen';
+	$_lang['newsletter.subscription_general_desc']					= 'Hier kun je de algemene gegevens van de inschrijving in zien.';
+	$_lang['newsletter.subscription_extra']							= 'Extra velden';
+	$_lang['newsletter.subscription_extra_desc']					= 'Hier kun je de extra velden van de inschrijving in zien.';
 	$_lang['newsletter.subscription_confirmed']						= 'Bevestigd';
 	$_lang['newsletter.subscription_not_confirmed']					= 'Niet bevestigd';
 	$_lang['newsletter.subscription_unsubscribed']					= 'Uitgeschreven';
 	$_lang['newsletter.subscription_add_list']						= 'Toevoegen aan de mailinglijst(en)';
 	$_lang['newsletter.subscription_remove_list']					= 'Verwijderen uit de mailinglijst(en)';
-	$_lang['newsletter.subscription_value_key_error_character']		= 'Inschrijving detail sleutel bevat niet toegestane tekens. Definieer een andere sleutelnaam.';
-	$_lang['newsletter.subscription_value_key_error_exists']		= 'Inschrijving detail met deze sleutel bestaat reeds. Definieer een andere sleutelnaam.';
+	$_lang['newsletter.subscription_extra_key_error_character']		= 'De sleutel bevat niet toegestane tekens. Definieer een andere sleutelnaam.';
+	$_lang['newsletter.subscription_extra_key_error_exists']		= 'Een extra veld met deze sleutel bestaat reeds. Definieer een andere sleutelnaam.';
 	$_lang['newsletter.lists_remove_primary_list']					= 'Dit is de primaire mailinglijst en kan niet verwijderd worden';
 	$_lang['newsletter.import_dir_failed']							= 'Er is een fout opgetreden tijdens het importeren van de inschrijvingen, de import folder kon niet aangemaakt worden.';
 	$_lang['newsletter.import_valid_failed']						= 'Selecteer een geldig CSV bestand.';
@@ -216,10 +228,5 @@
 	$_lang['newsletter.import_read_failed']							= 'Er is een fout opgetreden tijdens het importeren van de inschrijvingen, het CSV bestand kon niet gelezen worden.';
 	$_lang['newsletter.export_failed']								= 'Het exporteren van de inschrijvingen is mislukt, probeer het nog eens.';
 	$_lang['newsletter.export_dir_failed']							= 'Er is een fout opgetreden tijdens het exporteren van de inschrijvingen, de export folder kon niet aangemaakt worden.';
-
-	$_lang['newsletter.subscribe_error']							= 'Er is een fout opgetreden tijdens het inschrijven, probeer het nog een keer.';
-	$_lang['newsletter.subscribe_error_confirm']					= 'Er is een fout opgetreden tijdens het inschrijven, probeer het nog een keer.';
-	$_lang['newsletter.unsubscribe_error']							= 'Er is een fout opgetreden tijdens het uitschrijven, probeer het nog een keer.';
-	$_lang['newsletter.unsubscribe_error_confirm']					= 'Er is een fout opgetreden tijdens het uitschrijven, probeer het nog een keer.';
 	
 ?>

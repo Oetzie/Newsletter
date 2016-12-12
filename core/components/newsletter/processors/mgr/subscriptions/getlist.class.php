@@ -33,7 +33,7 @@
 		 * @acces public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default');
+		public $languageTopics = array('newsletter:default', 'newsletter:lists');
 		
 		/**
 		 * @acces public.
@@ -79,10 +79,10 @@
 		 * @return Object.
 		 */
 		public function prepareQueryBeforeCount(xPDOQuery $c) {
-			$c->innerjoin('modContext', 'modContext', array('NewsletterSubscriptions.context = modContext.key'));
-			$c->select($this->modx->getSelectColumns('NewsletterSubscriptions', 'NewsletterSubscriptions'));
-			$c->select($this->modx->getSelectColumns('modContext', 'modContext', 'context_', array('key', 'name')));
-		
+			$c->where(array(
+				'context' => $this->getProperty('context')
+			));
+			
 			$confirm = $this->getProperty('confirm');
 			
 			if ('' != $confirm) {
@@ -109,18 +109,22 @@
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
-			$lists = array();
+			$array = array_merge($object->toArray(), array(
+				'context_name'		=> '',
+				'lists'				=> array(),
+				'lists_formatted' 	=> array()
+			));
 			
-			foreach ($object->getLists() as $list) {
-				//if ($this->newsletter->hasPermission() || 0 == $list->hidden) {
-					$lists[$list->id] = $list->name;
-				//}
+			if (null !== ($context = $object->getOne('modContext'))) {
+				$array['context_name'] = $context->name;
 			}
 			
-			$array = array_merge($object->toArray(), array(
-				'lists'			=> array_keys($lists),
-				'lists_names' 	=> implode(', ', $lists)
-			));
+			foreach ($object->getLists() as $list) {
+				$array['lists'][] = $list->id;
+				$array['lists_formatted'][] = $this->modx->lexicon($list->name);
+			}
+			
+			$array['lists_formatted'] = implode(',', $array['lists_formatted']);
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
 				$array['editedon'] = '';

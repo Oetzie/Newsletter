@@ -68,17 +68,24 @@
 					curl_setopt_array($curl, array(
 						CURLOPT_HEADER			=> false,
 						CURLOPT_RETURNTRANSFER	=> true,
-						CURLOPT_URL				=> str_replace('&amp;', '&', $modx->makeUrl($resource->id, $resource->context_key, $placeholders, 'full'))
+						CURLOPT_URL				=> $modx->makeUrl($resource->id, $resource->context_key, $placeholders, 'full')
 					));
 					
 					$output = curl_exec($curl);
 					
 					curl_close($curl);
 				} else if ('title' == $type) {
+					foreach ($placeholders as $key => $value) {
+						unset($placeholders[$key]);
+						
+						$placeholders[str_replace('_', '.', $key)] = $value;
+					}
+					
 					if (null !== ($title = $modx->newObject('modChunk'))) {
 						$title->fromArray(array(
 						    'name' => sprintf('newsletter-title-%s', uniqid())
 						));
+						
 						$title->setCacheable(false);
 						
 						$output = $title->process($placeholders, $resource->pagetitle);

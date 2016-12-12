@@ -33,7 +33,7 @@
 		 * @acces public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default');
+		public $languageTopics = array('newsletter:default', 'newsletter:lists');
 		
 		/**
 		 * @acces public.
@@ -88,7 +88,7 @@
 								$this->modx->log(modX::LOG_LEVEL_INFO, $this->modx->lexicon('newsletter.newsletter_send_to_emails'));
 							} else {
 								$this->modx->log(modX::LOG_LEVEL_INFO, $this->modx->lexicon('newsletter.newsletter_send_to_list', array(
-									'name'	=> $list
+									'name'	=> $this->modx->lexicon($list)
 								)));
 							}
 							
@@ -101,9 +101,9 @@
 									foreach ($subscription as $key => $value) {
 										$placeholders['subscribe_'.$key] = $value;	
 									}
-									
+
 									$placeholders = array_merge(array(
-										'newsletter_url'	=> 	str_replace('&amp;', '&', $this->modx->makeUrl($resource->id, $resource->context_key, $placeholders, 'full'))
+										'newsletter_url'	=> 	$this->modx->makeUrl($resource->id, $resource->context_key, $placeholders, 'full')
 									), $placeholders);
 									
 									$mail->setHTML(true);

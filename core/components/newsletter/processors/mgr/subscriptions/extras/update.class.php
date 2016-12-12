@@ -22,12 +22,12 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class NewsletterSubscriptionsValuesUpdateProcessor extends modObjectUpdateProcessor {
+	class NewsletterSubscriptionsExtrasUpdateProcessor extends modObjectUpdateProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'NewsletterSubscriptionsValues';
+		public $classKey = 'NewsletterSubscriptionsExtras';
 		
 		/**
 		 * @acces public.
@@ -39,7 +39,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $objectType = 'newsletter.subscriptionsvalues';
+		public $objectType = 'newsletter.subscriptionsextras';
 		
 		/**
 		 * @acces public.
@@ -60,7 +60,7 @@
 			
 			return parent::initialize();
 		}
-
+		
 		/**
 		 * @acces public.
 		 * @return Mixed.
@@ -72,16 +72,32 @@
 				'key' 				=> $this->getProperty('key')
 			);
 			
-			if (!preg_match('/^([a-zA-Z0-9\_\-]+)$/si', $this->getProperty('key'))) {
-				$this->addFieldError('key', $this->modx->lexicon('newsletter.subscription_value_key_error_character'));
+			if (!preg_match('/^([a-zA-Z0-9\_]+)$/si', $this->getProperty('key'))) {
+				$this->addFieldError('key', $this->modx->lexicon('newsletter.subscription_extra_error_character'));
 			} else if ($this->doesAlreadyExist($criterea)) {
-				$this->addFieldError('key', $this->modx->lexicon('newsletter.subscription_value_key_error_exists'));
+				$this->addFieldError('key', $this->modx->lexicon('newsletter.subscription_extra_error_exists'));
 			}
 			
 			return parent::beforeSave();
 		}
+		
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+		public function afterSave() {
+			if (null !== ($subscription = $this->object->getOne('NewsletterSubscriptions'))) {
+				$subscription->fromArray(array(
+					'edited' => uniqid()
+				));
+				
+				$subscription->save();
+			}
+			
+			return parent::afterSave();
+		}
 	}
 	
-	return 'NewsletterSubscriptionsValuesUpdateProcessor';
+	return 'NewsletterSubscriptionsExtrasUpdateProcessor';
 	
 ?>

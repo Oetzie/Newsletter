@@ -33,7 +33,7 @@
 		 * @acces public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default');
+		public $languageTopics = array('newsletter:default', 'newsletter:site');
 		
 		/**
 		 * @acces public.
@@ -98,7 +98,9 @@
 		 */
 		public function prepareRow(xPDOObject $object) {
 			$array = array_merge($object->toArray(), array(
-				'subscriptions'	=> $object->getSubscriptionsCount()
+				'subscriptions'			=> $object->getSubscriptionsCount(),
+				'name_formatted'		=> $this->modx->lexicon($object->name),
+				'description_formatted'	=> $this->modx->lexicon($object->description)
 			));
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {

@@ -22,10 +22,10 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	$xpdo_meta_map['NewsletterSubscriptionsValues']= array(
+	$xpdo_meta_map['NewsletterSubscriptionsExtras']= array(
 		'package' 	=> 'newsletter',
 		'version' 	=> '1.0',
-		'table' 	=> 'newsletter_subscriptions_values',
+		'table' 	=> 'newsletter_subscriptions_extras',
 		'extends' 	=> 'xPDOSimpleObject',
 		'fields' 	=> array(
 			'id'				=> null,
@@ -82,7 +82,7 @@
 			)
 		),
 		'aggregates' => array(
-			'NewsletterSubscriptionsValues' => array(
+			'NewsletterSubscriptions' => array(
 				'local' 		=> 'subscription_id',
 				'class' 		=> 'NewsletterSubscriptions',
 				'foreign' 		=> 'id',

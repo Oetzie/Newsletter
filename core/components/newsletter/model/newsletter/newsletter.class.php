@@ -50,7 +50,7 @@
 			$this->config = array_merge(array(
 				'namespace'				=> $this->modx->getOption('namespace', $config, 'newsletter'),
 				'helpurl'				=> $this->modx->getOption('namespace', $config, 'newsletter'),
-				'language'				=> 'newsletter:default',
+				'lexicons'				=> array('newsletter:default', 'newsletter:site'),
 				'base_path'				=> $corePath,
 				'core_path' 			=> $corePath,
 				'model_path' 			=> $corePath.'model/',
@@ -74,6 +74,14 @@
 			), $config);
 		
 			$this->modx->addPackage('newsletter', $this->config['model_path']);
+			
+			if (is_array($this->config['lexicons'])) {
+				foreach ($this->config['lexicons'] as $lexicon) {
+					$this->modx->lexicon->load($lexicon);
+				}
+			} else {
+				$this->modx->lexicon->load($this->config['lexicons']);
+			}
 		}
 		
 		/**
@@ -89,15 +97,9 @@
 		 * @return Boolean.
 		 */
 		private function getContexts() {
-			$context = array();
-			
-			foreach ($this->modx->getCollection('modContext') as $value) {
-				if ('mgr' != $value->key) {
-					$context[] = $value->toArray();
-				}
-			}
-			
-			return 1 == count($context) ? 0 : 1;
+			return 1 == $this->modx->getCount('modContext', array(
+				'key:!=' => 'mgr'
+			));
 		}
 		
 		/**
@@ -122,131 +124,195 @@
 		
 		/**
 		 * @acces public.
+		 * @param String $tpl.
+		 * @param Array $properties.
+		 * @param String $type.
+		 * @return String.
+		 */
+		public function getTemplate($template, $properties = array(), $type = 'CHUNK') {
+			if (0 === strpos($template, '@')) {
+				$type 		= substr($template, 1, strpos($template, ':') - 1);
+				$template	= substr($template, strpos($template, ':') + 1, strlen($template));
+			}
+			
+			switch (strtoupper($type)) {
+				case 'INLINE':
+					$chunk = $this->modx->newObject('modChunk', array(
+						'name' => $this->config['namespace'].uniqid()
+					));
+				
+					$chunk->setCacheable(false);
+				
+					$output = $chunk->process($properties, ltrim($template));
+				
+					break;
+				case 'CHUNK':
+					$output = $this->modx->getChunk(ltrim($template), $properties);
+				
+					break;
+			}
+			
+			return $output;
+		}
+		
+		/**
+		 * @acces public.
 		 * @param Array $properties.
 		 * @return Boolean.
 		 */
 		public function subscribe($properties = array()) {
-			if (false !== ($values = $this->modx->getOption('values', $properties, false))) {
-				switch($this->modx->getOption('type', $properties, 'subscribe')) {
-					case 'complete':
-						if (false !== ($token = $this->modx->getOption($this->modx->getOption('param', $properties), $values, false))) {
-							$criterea = array(
-								'context' 	=> $this->modx->context->key,
-								'token' 	=> $token
-							);
+			$properties = array_merge(array(
+				'type'			=> null,
+				'values'		=> array(),
+				'customValues'	=> array(),
+				'lists'			=> array(),
+				'confirm'		=> true,
+				'confirmParam'	=> null,
+				'success'		=> false
+			), $properties);
+			
+			$values = $properties['values'];
 
-							if ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea)) {
-								$subscription->fromArray(array(
-									'active'	=> 1
-								));
-							
-								if ($subscription->save()) {
-									if (false !== ($resource = $this->modx->getOption('resource', $properties, false))) {
-										$this->modx->sendRedirect($this->modx->makeUrl($resource, null, null, 'full'));
-									}
-									
-									return true;	
-								}
-							}
-						}
-						
-						return null;
-						
-						break;
-					default:
-						if (!empty($email = $this->modx->getOption('email', $values, ''))) {
-							$token = md5(time());
-							
-							$criterea = array(
-								'context' 	=> $this->modx->context->key,
-								'email' 	=> $email
-							);
-									
-							if (null === ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
-								$subscription = $this->modx->newObject('NewsletterSubscriptions');
-							}
+			if ('confirm' == $properties['type']) {
+				if (isset($values[$properties['confirmParam']])) {
+					$criterea = array(
+						'context' 	=> $this->modx->context->key,
+						'token' 	=> $values[$properties['confirmParam']]
+					);
 
-							$subscription->fromArray(array_merge($values, $criterea, array(
-								'active'	=> (bool) $this->modx->getOption('confirm', $properties) ? 0 : 1,
-								'token'		=> $token
-							)));
-
-							if ($subscription->save()) {
-								$lists = $this->modx->getOption('lists', $values, '');
-								$defaultLists = $this->modx->getOption('lists', $properties, '');
-								
-								if (!is_array($lists)) {
-									$lists = explode(',', $lists);
-								}
-								
-								if (!is_array($defaultLists)) {
-									$defaultLists = explode(',', $defaultLists);
-								}
-							
-								if (empty(array_filter($defaultLists))) {
-									foreach ($this->modx->getCollection('NewsletterLists', array('primary' => 1)) as $list) {
-										$defaultLists[] = $list->id;
-									}
-								}
-
-								foreach (array_filter(array_merge($defaultLists, $lists)) as $id) {
-									if (null !== ($list = $this->modx->getObject('NewsletterLists', array('id' => $id)))) {
-										$criterea = array(
-											'list_id'			=> $list->id,
-											'subscription_id' 	=> $subscription->id
-										);
+					if ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea)) {
+						$subscription->fromArray(array(
+							'active'	=> 1
+						));
 					
-										if (null === $list->getOne('NewsletterListsSubscriptions', $criterea)) {
-											if (null !== ($list = $this->modx->newObject('NewsletterListsSubscriptions', array('list_id' => $id)))) {
-												$subscription->addMany($list);
-											}
-										}
-									}
-								}
-								
-								$customValues = $this->modx->getOption('customValues', $properties, '');
-								
-								if (is_string($customValues)) {
-									$customValues = array_filter(explode(',', $customValues));
-								}
+						if ($subscription->save()) {
+							if ($properties['success']) {
+								$this->modx->sendRedirect($this->modx->makeUrl($properties['success'], null, null, 'full'));
+							}
+						
+							return true;	
+						}
+					}
+				}
+				
+				return null;
+			} else {
+				if (isset($values['email'])) {
+					$token = md5(time());
+					
+					$criterea = array(
+						'context' 	=> $this->modx->context->key,
+						'email' 	=> $values['email']
+					);
+							
+					if (null === ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
+						$subscription = $this->modx->newObject('NewsletterSubscriptions');
+					}
 
-								foreach ($customValues as $value) {
-									if (isset($values[$value])) {
-										$criterea = array(
-											'subscription_id' 	=> $subscription->id,
-											'key' 				=> $value
-										);
-										
-										$this->modx->removeCollection('NewsletterSubscriptionsValues', $criterea);
-										
-										if (null !== ($subscriptionValue = $this->modx->newObject('NewsletterSubscriptionsValues'))) {
-											$subscriptionValue->fromArray(array_merge($criterea, array(
-												'content' => is_array($values[$value]) ? implode(',', $values[$value]) : $values[$value]
-											)));
-												
-											$subscription->addMany($subscriptionValue);
-										}
+					$subscription->fromArray(array_merge($values, array(
+						'context'	=> $this->modx->context->key,
+						'active'	=> (bool) $properties['confirm'] ? 0 : 1,
+						'token'		=> $token
+					)));
+
+					if ($subscription->save()) {
+						$lists = $properties['lists'];
+						
+						if (!is_array($lists)) {
+							$lists = explode(',', $lists);
+						}
+						
+						if (isset($values['lists'])) {
+							if (!is_array($values['lists'])) {
+								$lists = $lists + explode(',', $values['lists']);
+							} else {
+								$lists = $lists + $values['lists'];
+							}
+						}
+						
+						$criterea = array(
+							'primary' => 1
+						);
+						
+						foreach ($this->modx->getCollection('NewsletterLists', $criterea) as $list) {
+							$lists[] = $list->id;
+						}
+
+						foreach (array_filter(array_unique($lists)) as $list) {
+							$criterea = array(
+								'id' => $list
+							);
+							
+							if (null !== ($list = $this->modx->getObject('NewsletterLists', $criterea))) {
+								$criterea = array(
+									'list_id'			=> $list->id,
+									'subscription_id' 	=> $subscription->id
+								);
+
+								if (null === $list->getOne('NewsletterListsSubscriptions', $criterea)) {
+									$criterea = array(
+										'list_id' => $list->id
+									);
+
+									if (null !== ($list = $this->modx->newObject('NewsletterListsSubscriptions', $criterea))) {
+										$subscription->addMany($list);
 									}
-								}
-								
-								if ($subscription->save()) {
-									$this->modx->setPlaceholders(array(
-										'newsletter_token'		=> $token,
-										'newsletter_last_id'	=> $subscription->id
-									));
-									
-									if (!(bool) $this->modx->getOption('confirm', $properties)) {
-										if (false !== ($resource = $this->modx->getOption('resource', $properties, false))) {
-											$this->modx->sendRedirect($this->modx->makeUrl($resource, null, null, 'full'));
-										}
-									}
-	
-									return true;
 								}
 							}
 						}
+
+						$customValues = $properties['customValues'];
+						
+						if (is_string($customValues)) {
+							$customValues = explode(',', $customValues);
+						}
+						
+						foreach (array_filter($customValues) as $key) {
+							if (isset($values[$key])) {
+								$value = $values[$key];
+								
+								if (!is_string($value)) {
+									$value = implode(',', $value);
+								}
+								
+								$criterea = array(
+									'subscription_id' 	=> $subscription->id,
+									'key' 				=> $key
+								);
+
+								if (null === ($extra = $this->modx->getObject('NewsletterSubscriptionsExtras', $criterea))) {
+									$extra = $this->modx->newObject('NewsletterSubscriptionsExtras');
+								}
+
+								$extra->fromArray(array_merge($criterea, array(
+									'subscription_id'	=> $subscription->id,
+									'key'				=> $key,
+									'content' 			=> $value
+								)));
+									
+								$subscription->addMany($extra);
+
+							}
+						}
+						
+						if ($subscription->save()) {
+							$this->modx->setPlaceholders(array(
+								'newsletter_token'			=> $token,
+								'newsletter_last_id'		=> $subscription->id,
+								'newsletter_confirm_url'	=> $this->modx->makeUrl($this->modx->getOption('page.newsletter_subscribe'), '', array(
+									'token'	=> $token
+								), 'full')
+							));
 							
-						break;
+							if (!(bool) $properties['confirm']) {
+								if ($properties['success']) {
+									$this->modx->sendRedirect($this->modx->makeUrl($properties['success'], null, null, 'full'));
+								}
+							}
+
+							return true;
+						}
+					}
 				}
 			}
 			
@@ -259,57 +325,123 @@
 		 * @return Boolean.
 		 */
 		public function unsubscribe($properties = array()) {
-			if (false !== ($values = $this->modx->getOption('values', $properties, false))) {
-				switch($this->modx->getOption('type', $properties, 'unsubscribe')) {
-					case 'complete':
-						if (false !== ($email = $this->modx->getOption($this->modx->getOption('param', $properties), $values, false))) {
-							$criterea = array(
-								'context' 	=> $this->modx->context->key,
-								'email' 	=> $email
-							);
+			$properties = array_merge(array(
+				'type'			=> null,
+				'values'		=> array(),
+				'lists'			=> array(),
+				'confirmParam'	=> null,
+				'success'		=> false
+			), $properties);
+			
+			$values = $properties['values'];
 
-							if (null !== ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
-								$subscription->fromArray(array(
-									'active'	=> 0	
-								));
-								
-								if ($subscription->save()) {
-									if (false !== ($resource = $this->modx->getOption('resource', $properties, false))) {
-										$this->modx->sendRedirect($this->modx->makeUrl($resource, null, null, 'full'));
-									}
-									
-									return true;
-								}
+			if ('confirm' == $properties['type']) {
+				if (isset($values[$properties['confirmParam']])) {
+					$criterea = array(
+						'context' 	=> $this->modx->context->key,
+						'email' 	=> $values[$properties['confirmParam']]
+					);
+
+					if (null !== ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
+						$lists = $properties['lists'];
+						
+						if (!is_array($lists)) {
+							$lists = explode(',', $lists);
+						}
+						
+						if (isset($values['lists'])) {
+							if (!is_array($values['lists'])) {
+								$lists = $lists + explode(',', $values['lists']);
+							} else {
+								$lists = $lists + $values['lists'];
 							}
 						}
 						
-						return null;
+						$criterea = array(
+							'primary' => 1
+						);
 						
-						break;
-					default:
-						if (false !== ($email = $this->modx->getOption('email', $values, false))) {
-							$criterea = array(
-								'context' 	=> $this->modx->context->key,
-								'email' 	=> $email
-							);
-							
-							
-							if (null !== ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
-								$subscription->fromArray(array(
-									'active'	=> 2	
-								));
-								
-								if ($subscription->save()) {
-									if (false !== ($resource = $this->modx->getOption('resource', $properties, false))) {
-										$this->modx->sendRedirect($this->modx->makeUrl($resource, null, null, 'full'));
-									}
-									
-									return true;
-								}
+						foreach ($this->modx->getCollection('NewsletterLists', $criterea) as $list) {
+							$lists[] = $list->id;
+						}
+						
+						$active = 2;
+						
+						foreach ($subscription->getMany('NewsletterListsSubscriptions') as $list) {
+							if (in_array($list->list_id, $lists)) {
+								$list->remove();
+							} else {
+								$active = $subscription->active;
 							}
 						}
 						
-						break;
+						$subscription->fromArray(array(
+							'active' => $active	
+						));
+
+						if ($subscription->save()) {
+							if ($properties['success']) {
+								$this->modx->sendRedirect($this->modx->makeUrl($properties['success'], null, null, 'full'));
+							}
+							
+							return true;
+						}
+					}
+				}
+				
+				return null;
+			} else {
+				if (isset($values['email'])) {
+					$criterea = array(
+						'context' 	=> $this->modx->context->key,
+						'email' 	=> $values['email']
+					);
+					
+					if (null !== ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
+						$lists = $properties['lists'];
+						
+						if (!is_array($lists)) {
+							$lists = explode(',', $lists);
+						}
+						
+						if (isset($values['lists'])) {
+							if (!is_array($values['lists'])) {
+								$lists = $lists + explode(',', $values['lists']);
+							} else {
+								$lists = $lists + $values['lists'];
+							}
+						}
+						
+						$criterea = array(
+							'primary' => 1
+						);
+						
+						foreach ($this->modx->getCollection('NewsletterLists', $criterea) as $list) {
+							$lists[] = $list->id;
+						}
+						
+						$active = 2;
+						
+						foreach ($subscription->getMany('NewsletterListsSubscriptions') as $list) {
+							if (in_array($list->list_id, $lists)) {
+								$list->remove();
+							} else {
+								$active = $subscription->active;
+							}
+						}
+						
+						$subscription->fromArray(array(
+							'active' => $active	
+						));
+
+						if ($subscription->save()) {
+							if ($properties['success']) {
+								$this->modx->sendRedirect($this->modx->makeUrl($properties['success'], null, null, 'full'));
+							}
+							
+							return true;
+						}
+					}
 				}
 			}
 			

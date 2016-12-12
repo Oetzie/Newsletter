@@ -1,5 +1,6 @@
 <?php
-/**
+
+	/**
 	 * Newsletter
 	 *
 	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
@@ -28,7 +29,13 @@
 
         	    if ($newsletter instanceOf Newsletter) {
 			        if (in_array($modx->resource->template, $modx->getOption('template', $newsletter->config, array()))) {
-			        	$modx->setPlaceholders($modx->request->getParameters());
+			            foreach ($modx->request->getParameters() as $key => $value) {
+			                if (false !== strstr($key, 'subscribe_')) {
+			                    $modx->setPlaceholder(str_replace('_', '.', $key), $value);
+			                } else if (false !== strstr($key, 'newsletter_')) {
+			                    $modx->setPlaceholder(str_replace('_', '.', $key), $value);
+			                }
+			            }
 			        }
         	    }
 			}

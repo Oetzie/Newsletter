@@ -45,7 +45,7 @@
 						'email'	=> trim($subscription->email)
 					);
 					
-					foreach ($subscription->getMany('NewsletterSubscriptionsValues') as $value) {
+					foreach ($subscription->getMany('NewsletterSubscriptionsExtras') as $value) {
 						$output[$key][$value->key] = $value->content;
 					}
 				}

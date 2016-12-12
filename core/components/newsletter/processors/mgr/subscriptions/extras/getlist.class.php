@@ -22,12 +22,12 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class NewsletterSubscriptionsValuesGetListProcessor extends modObjectGetListProcessor {
+	class NewsletterSubscriptionsExtrasGetListProcessor extends modObjectGetListProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'NewsletterSubscriptionsValues';
+		public $classKey = 'NewsletterSubscriptionsExtras';
 		
 		/**
 		 * @acces public.
@@ -51,7 +51,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $objectType = 'newsletter.subscriptionsvalues';
+		public $objectType = 'newsletter.subscriptionsextras';
 		
 		/**
 		 * @acces public.
@@ -83,6 +83,14 @@
 				'subscription_id' => $this->getProperty('id')
 			));
 			
+			$query = $this->getProperty('query');
+			
+			if (!empty($query)) {
+				$c->where(array(
+					'key:LIKE'	=> '%'.$query.'%'
+				));
+			}
+			
 			return $c;
 		}
 		
@@ -104,6 +112,6 @@
 		}
 	}
 
-	return 'NewsletterSubscriptionsValuesGetListProcessor';
+	return 'NewsletterSubscriptionsExtrasGetListProcessor';
 	
 ?>

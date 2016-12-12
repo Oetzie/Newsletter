@@ -31,27 +31,27 @@
         	switch($prefix) {
         		case 'Before':
         			$properties = array(
-        				'type'			=> 'complete',
+        				'type'			=> 'confirm',
         				'values'		=> $modx->request->getParameters(),
-        				'resource'		=> $modx->getOption('newsletterRedirect', $form->properties, false),
-        				'param'			=> $modx->getOption('param', $scriptProperties)
+        				'confirmParam'	=> $modx->getOption('newsletterConfirmParam', $form->properties, $modx->getOption('param', $scriptProperties)),
+        				'success'       => $modx->getOption('newsletterSuccess', $form->properties, false)
         			);
         
         			if (false === ($unsubscribe = $newsletter->unsubscribe($properties))) {
-        				$form->getValidator()->setBulkOutput($modx->lexicon('newsletter.unsubscribe_error_confirm'));
+        				$form->getValidator()->setBulkOutput($modx->lexicon('newsletter.form_unsubscribe_error_confirm'));
         			}
         			break;
         		case 'After':
         			if ($form->getValidator()->isValid()) {
         				$properties = array(
-        					'type'			=> 'unsubscribe',
         					'values'		=> $form->getValues(),
         					'lists'			=> $modx->getOption('newsletterLists', $form->properties),
-        					'param'			=> $modx->getOption('param', $scriptProperties)
+        					'confirmParam'	=> $modx->getOption('newsletterConfirmParam', $form->properties, $modx->getOption('param', $scriptProperties)),
+        					'success'       => $modx->getOption('newsletterSuccess', $form->properties, false)
         				);
         
         				if (false === ($unsubscribe = $newsletter->unsubscribe($properties))) {
-        					$form->getValidator()->setBulkOutput($modx->lexicon('newsletter.unsubscribe_error'));
+        					$form->getValidator()->setBulkOutput($modx->lexicon('newsletter.form_unsubscribe_error'));
         				}
         			}
         

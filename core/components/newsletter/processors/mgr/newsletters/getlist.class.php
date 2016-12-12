@@ -33,7 +33,7 @@
 		 * @acces public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default');
+		public $languageTopics = array('newsletter:default', 'newsletter:lists');
 		
 		/**
 		 * @acces public.
@@ -85,13 +85,9 @@
 			$c->select($this->modx->getSelectColumns('NewsletterNewsletters', 'NewsletterNewsletters'));
 			$c->select($this->modx->getSelectColumns('modContext', 'modContext', 'context_', array('key', 'name')));
 			
-			$context = $this->getProperty('context');
-			
-			if (!empty($context)) {
-				$c->where(array(
-					'modResource.context_key' => $context
-				));
-			}
+			$c->where(array(
+				'modResource.context_key' => $this->getProperty('context')
+			));
 			
 			$query = $this->getProperty('query');
 			
@@ -112,39 +108,40 @@
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
-			$lists = array();
-			
-			foreach ($object->getLists() as $list) {
-				$lists[$list->id] = $list->name;
-			}
-			
 			$resource = $object->getNewsletterResource();
 
 			$array = array_merge($object->toArray(), array(
-				'resource_url'			=> $this->modx->makeUrl($resource->id, null, array(
+				'url'				=> $this->modx->makeUrl($resource->id, null, array(
 					'subscribe_name' 	=> $this->modx->getOption('sender_name', $this->newsletter->config, 'test'),
 					'subscribe_email'	=> $this->modx->getOption('sender_email', $this->newsletter->config, 'test@test.com')
 				), 'full'),
-				'resource_name' 		=> $resource->pagetitle,
-				'resource_name_alias' 	=> $resource->pagetitle.' ('.$resource->id.')',
-				'resource_published'	=> $resource->published,
-				'lists'					=> array_keys($lists),
-				'lists_names' 			=> implode(', ', $lists),
-				'newsletter_type'		=> 1,
-				'send_details'			=> array()
+				'pagetitle' 		=> $resource->pagetitle.($this->modx->hasPermission('tree_show_resource_ids') ? ' ('.$resource->id.')' : ''),
+				'published'			=> $resource->published,
+				'lists'				=> array(),
+				'lists_formatted' 	=> array(),
+				'newsletter_type'	=> 1,
+				'send_details'		=> array()
 			));
+			
+			foreach ($object->getLists() as $list) {
+				$array['lists'][] = $list->id;
+				$array['lists_formatted'][] = $this->modx->lexicon($list->name);
+			}
+			
+			$array['lists_formatted'] = implode(',', $array['lists_formatted']);
 			
 			foreach ($object->getSendDetails(true) as $detail) {
 				$lists = array();
 				
 				foreach ($detail->getLists($this->modx) as $list) {
-					$lists[] = $list->name;	
+					$lists[$list->id] = $this->modx->lexicon($list->name);	
 				}
 				
 				$array['send_details'][] = array_merge($detail->toArray(), array(
-					'lists'			=> implode(', ', $lists),
-					'emails_total'	=> count(explode(',', $detail->emails)), 
-					'timestamp' 	=> date($this->modx->getOption('manager_date_format', 'Y-m-d').', '.$this->modx->getOption('manager_time_format', 'H:i'), strtotime($detail->timestamp))
+					'lists'				=> array_keys($lists),
+					'lists_formatted'	=> implode(', ', $lists),
+					'emails_total'		=> count(explode(',', $detail->emails)), 
+					'timestamp' 		=> date($this->modx->getOption('manager_date_format', 'Y-m-d').', '.$this->modx->getOption('manager_time_format', 'H:i'), strtotime($detail->timestamp))
 				));
 			}
 			

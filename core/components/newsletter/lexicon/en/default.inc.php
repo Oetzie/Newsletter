@@ -26,6 +26,7 @@
 	$_lang['newsletter.desc'] 										= 'Change or create site-wide newsletters.';
 	
 	$_lang['area_newsletter']										= 'Newsletter';
+	$_lang['area_default']											= 'Default';
 	
 	$_lang['setting_newsletter.cronjob']							= 'Cronjob reminder';
 	$_lang['setting_newsletter.cronjob_desc']						= 'Set to "Yes" if you have set up for the newsletter, by setting this to "Yes" the cronjob notification is no longer displayed in the component newsletters.';
@@ -39,6 +40,11 @@
 	$_lang['setting_newsletter.template_desc']						= 'The ID of the template that get used as a newsletter, to separate templates use a comma.';
 	$_lang['setting_newsletter.admin_groups']						= 'Admin usergroups';
 	$_lang['setting_newsletter.admin_groups_desc']					= 'The usergroups that has access to the admin part of the newsletters, to separate usergroups use a comma.';
+	
+	$_lang['setting_page.newsletter_subscribe']						= 'Page "newsletter subscribe"';
+	$_lang['setting_page.newsletter_subscribe_desc']				= 'The ID of the page that is the "newsletter subscribe" page.';
+	$_lang['setting_page.newsletter_unsubscribe']					= 'Page "newsletter unsubscribe"';
+	$_lang['setting_page.newsletter_unsubscribe_desc']				= 'The ID of the page that is the "newsletter unsubscribe" page.';
 	
 	$_lang['newslettersubscribe_snippet_param_desc']				= 'The URL parameter for the confirmation. Default is "token".';
 	$_lang['newslettersubscribe_snippet_confirm_desc']				= 'If "Yes" there will be sent a confirmation email which must confirm the subscription.';
@@ -80,12 +86,10 @@
 	$_lang['newsletter.subscriptions_import_desc']					= 'Select a CSV file to import subscriptions. It must be a valid CSV format';
 	$_lang['newsletter.subscriptions_export']						= 'Import subscriptions';
 	
-	$_lang['newsletter.subscription_values']						= 'Subscription info';
-	$_lang['newsletter.subscription_values_desc']					= 'Here you can manage all the subscription info, subscription info are extra values that you can assign to a subscription and can be used in a newsletter.';
-	$_lang['newsletter.subscription_value_create']					= 'Create subscription info';
-	$_lang['newsletter.subscription_value_update']					= 'Update subscription info';
-	$_lang['newsletter.subscription_value_remove']					= 'Delete subscription info';
-	$_lang['newsletter.subscription_value_remove_confirm']			= 'Are you sure you want to delete this subscription info?';
+	$_lang['newsletter.subscription_extra_create']					= 'Create extra field';
+	$_lang['newsletter.subscription_extra_update']					= 'Update extra field';
+	$_lang['newsletter.subscription_extra_remove']					= 'Delete extra field';
+	$_lang['newsletter.subscription_extra_remove_confirm']			= 'Are you sure you want to delete this extra field?';
 	
 	$_lang['newsletter.list']										= 'List';
 	$_lang['newsletter.lists']										= 'Lists';
@@ -128,6 +132,7 @@
 	$_lang['newsletter.label_newsletter_stats_lists_desc']			= '';
 	$_lang['newsletter.label_newsletter_stats_emails']				= 'E-mail address (total: [[+total]])';
 	$_lang['newsletter.label_newsletter_stats_emails_desc']			= '';
+	
 	$_lang['newsletter.label_subscription_email']					= 'E-mail address';
 	$_lang['newsletter.label_subscription_email_desc']				= 'The e-mail address of the subscription.';
 	$_lang['newsletter.label_subscription_name']					= 'Name';
@@ -142,14 +147,16 @@
 	$_lang['newsletter.label_subscriptions_lists_desc']				= 'The list(en) of the subscription(s).';
 	$_lang['newsletter.label_subscription_move']					= 'Movingstype';
 	$_lang['newsletter.label_subscription_move_desc']				= 'The type of the movement, this can be "add" or "remove".';
-	$_lang['newsletter.label_subscription_value_key']				= 'key';
-	$_lang['newsletter.label_subscription_value_key_desc']			= 'The key of the subscription info. The subscription info will available by the [+subscribe_sleutel]] tags.';
-	$_lang['newsletter.label_subscription_value_content']			= 'Value';
-	$_lang['newsletter.label_subscription_value_content_desc']		= 'The value of the subscription info.';
+	
+	$_lang['newsletter.label_extra_key']							= 'Key';
+	$_lang['newsletter.label_extra_desc']							= 'The key of the extra field. The subscription info will available by the [+subscribe.key]] tags.';
+	$_lang['newsletter.label_extra_content']						= 'Value';
+	$_lang['newsletter.label_extra_content_desc']					= 'The value of the extra field.';
+	
 	$_lang['newsletter.label_list_name']							= 'Name';
-	$_lang['newsletter.label_list_name_desc']						= 'The name of the list.';
+	$_lang['newsletter.label_list_name_desc']						= 'The name of the list, this can be a lexicon key.';
 	$_lang['newsletter.label_list_description']						= 'Description';
-	$_lang['newsletter.label_list_description_desc']				= 'A short description of the list.';
+	$_lang['newsletter.label_list_description_desc']				= 'A short description of the list, this can be a lexicon key.';
 	$_lang['newsletter.label_list_primary']							= 'Primary list';
 	$_lang['newsletter.label_list_primary_desc']					= 'Primary list, in this list the subscriptions will be placed in by default.';
 	$_lang['newsletter.label_list_hidden']							= 'Hidden list';
@@ -158,6 +165,7 @@
 	$_lang['newsletter.label_list_active_desc']						= '';
 	$_lang['newsletter.label_list_subscriptions']					= 'Subscriptions';
 	$_lang['newsletter.label_list_subscriptions_desc']				= '';
+	
 	$_lang['newsletter.label_import_file']							= 'File';
 	$_lang['newsletter.label_import_file_desc']						= 'Select a valid CSV file.';
 	$_lang['newsletter.label_import_delimiter']						= 'Delimiter';
@@ -202,13 +210,17 @@
 	$_lang['newsletter.newsletter_send_error_date_desc']			= 'The newsletter could not be sent, because the send date has not arrived yet.';
 	$_lang['newsletter.newsletter_send_error_repeat_desc']			= 'The newsletter could not be sent, because the newsletter has been sent to the permitted times.';
 	$_lang['newsletter.newsletter_send_feedback']					= 'Newsletter "[[+pagetitle]]" sent to [[+total]] e-mail addresses.';
+	$_lang['newsletter.subscription_general']						= 'General';
+	$_lang['newsletter.subscription_general_desc']					= 'Here you can manage the subscription.';
+	$_lang['newsletter.subscription_extra']							= 'Extra fields';
+	$_lang['newsletter.subscription_extra_desc']					= 'Here you can manage the extra fields of the subscription.';
 	$_lang['newsletter.subscription_confirmed']						= 'Confirmed';
 	$_lang['newsletter.subscription_not_confirmed']					= 'Not confirmed';
 	$_lang['newsletter.subscription_unsubscribed']					= 'Unsubscribed';
 	$_lang['newsletter.subscription_add_list']						= 'Add to list(s)';
 	$_lang['newsletter.subscription_remove_list']					= 'Delete from list(s)';
-	$_lang['newsletter.subscription_value_key_error_character']		= 'Entry detail key contains illegal characters. Define another key name.';
-	$_lang['newsletter.subscription_value_key_error_exists']		= 'Entry detail with this key already exists. Define another key name.';
+	$_lang['newsletter.subscription_extra_key_error_character']		= 'Entry detail key contains illegal characters. Define another key name.';
+	$_lang['newsletter.subscription_extra_key_error_exists']		= 'Entry detail with this key already exists. Define another key name.';
 	$_lang['newsletter.lists_remove_primary_list']					= 'This is a primary list and can\'t be deleted.';
 	$_lang['newsletter.import_dir_failed']							= 'An error occurred while importing the subscriptions, the import folder could not be created.';
 	$_lang['newsletter.import_valid_failed']						= 'Select a valid CSV file.';
@@ -216,10 +228,5 @@
 	$_lang['newsletter.import_read_failed']							= 'An error occurred while importing the subscriptions, the CSV file could not be read.';
 	$_lang['newsletter.export_failed']								= 'An error occurred while exporting the subscriptions, try again.';
 	$_lang['newsletter.export_dir_failed']							= 'An error occurred while exporting the subscriptions, the export folder could not be created.';
-
-	$_lang['newsletter.subscribe_error']							= 'An error occurred while subscribing, try again.';
-	$_lang['newsletter.subscribe_error_confirm']					= 'An error occurred while subscribing, try again.';
-	$_lang['newsletter.unsubscribe_error']							= 'An error occurred while unsubscribing, try again.';
-	$_lang['newsletter.unsubscribe_error_confirm']					= 'An error occurred while unsubscribing, try again.';
 	
 ?>

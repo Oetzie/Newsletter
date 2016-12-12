@@ -76,6 +76,8 @@
 						$this->object->addMany($list);
 					}
 				}
+				
+				$this->object->edited = uniqid();
 			}
 			
 			return parent::beforeSave();
