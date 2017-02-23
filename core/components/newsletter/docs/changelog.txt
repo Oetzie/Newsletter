@@ -3,6 +3,14 @@ Newsletter
 ----------------------
 
 ----------------------
+Version: 1.5.0-pl
+Released: 2017-02-23
+----------------------
+- Some bugfixes
+- Code fixes
+- new database structure
+
+----------------------
 Version: 1.4.0-pl
 Released: 2016-11-02
 ----------------------

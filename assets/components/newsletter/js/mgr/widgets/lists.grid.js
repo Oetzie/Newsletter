@@ -82,7 +82,7 @@ Newsletter.grid.Lists = function(config) {
 
     columns = new Ext.grid.ColumnModel({
         columns: [expander, sm, {
-            header		: _('newsletter.label_name'),
+            header		: _('newsletter.label_list_name'),
             dataIndex	: 'name_formatted',
             sortable	: true,
             editable	: true,
@@ -700,55 +700,66 @@ Ext.reg('newsletter-combo-lists', Newsletter.combo.NewsletterLists);
 Newsletter.combo.NewsletterListsCheckbox = function(config) {
     config = config || {}; 
     
-    MODx.Ajax.request({
-	    url 		: Newsletter.config.connector_url,
-	    params 		: { 	
-	        action 		: 'mgr/lists/getlist',
-	        hidden 		: true
-	    },
-	    listeners	: {
-			'success'	: {
-				fn			: function(data) { 
-					this.setData(data.results);
-	    		},
-				scope	: this
-			}
-		}
-	});
-    
     Ext.applyIf(config, {
-	    xtype		: 'container',
-		name		: 'lists',
 		value		: '',
-		columns		: 2
+		columns		: 2,
+		id			: 'checkboxgroup-fixed',
+		cls			: 'checkboxgroup-fixed',
+		store		: new Ext.data.JsonStore({
+            url				: Newsletter.config.connector_url,
+            baseParams	: {
+	            action		: 'mgr/lists/getlist'
+	        },
+            root			: 'results',
+            totalProperty	: 'total',
+            fields			: ['id', 'name', 'name_formatted', 'description', 'description_formatted', 'subscriptions', 'hidden'],
+            errorReader		: MODx.util.JSONReader,
+            remoteSort		: false,
+            autoDestroy		: true,
+            autoLoad		: true,
+            listeners		: {
+	            'load'			: {
+					fn 				: this.setData,
+					scope 			: this  
+	            },
+                'loadexception'	: {
+	                fn				: function(o, trans, resp) {
+                    	var status = _('code') + ': ' + resp.status + ' ' + resp.statusText + '<br/>';
+                    	
+						MODx.msg.alert(_('error'), status + resp.responseText);
+                	}
+                }
+            }
+        })
 	});  
     
 	Newsletter.combo.NewsletterListsCheckbox.superclass.constructor.call(this,config);
 };
 
 Ext.extend(Newsletter.combo.NewsletterListsCheckbox, Ext.Panel, {
-    setData: function(data) {
+    setData: function(store, data) {
 	    var items = [];
 
 		Ext.each(data, function(record) {
 			items.push({
 				xtype		: 'checkbox',
-			    boxLabel	: record.name_formatted,
-			    description	: MODx.expandHelp ? '' : record.description,
-			    name		: this.name + '[]',
-			    inputValue	: record.id,
-			    checked		: -1 != this.value.indexOf(record.id) ? true : false,
-			    hidden 		: Newsletter.config.admin || !record.hidden ? false : true
+			    boxLabel	: record.data.name_formatted,
+			    description	: MODx.expandHelp ? '' : record.data.description,
+			    name		: 'lists[]',
+			    inputValue	: record.data.id,
+			    checked		: -1 != this.value.indexOf(record.data.id) ? true : false,
+			    hidden 		: Newsletter.config.admin || !record.data.hidden ? false : true
 			});
 		}, this);
 
 		this.add({
 		    xtype		: 'checkboxgroup',
-		    columns		: this.columns,
-		    items		: items
-		});
-		        
-		this.doLayout();
+		    hideLabel	: true,
+			columns		: this.columns,
+        	items		: items
+	    });
+	    
+	    this.doLayout();
     }
 });
 

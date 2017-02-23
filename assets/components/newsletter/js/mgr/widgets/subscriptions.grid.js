@@ -58,23 +58,6 @@ Newsletter.grid.Subscriptions = function(config) {
 		    }
 		}
     }, '-', {
-    	xtype		: 'modx-combo-context',
-    	hidden		: Newsletter.config.context,
-    	name		: 'newsletter-filter-context-subscriptions',
-        id			: 'newsletter-filter-context-subscriptions',
-        value 		: MODx.config.default_context,
-        emptyText	: _('newsletter.filter_context'),
-        listeners	: {
-        	'select'	: {
-            	fn			: this.filterContext,
-            	scope		: this   
-		    }
-		},
-		baseParams	: {
-			action		: 'context/getlist',
-			exclude		: 'mgr'
-		}
-    }, {
         xtype		: 'textfield',
         name 		: 'newsletter-filter-search-subscriptions',
         id			: 'newsletter-filter-search-subscriptions',
@@ -172,7 +155,7 @@ Newsletter.grid.Subscriptions = function(config) {
         url			: Newsletter.config.connector_url,
         baseParams	: {
         	action		: 'mgr/subscriptions/getlist',
-        	context 	: MODx.config.default_context
+        	context 	: MODx.request.context || MODx.config.default_context
         },
         autosave	: true,
         save_action	: 'mgr/subscriptions/updatefromgrid',
@@ -216,11 +199,6 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         
         this.getBottomToolbar().changePage(1);
     },
-    filterContext: function(tf, nv, ov) {
-        this.getStore().baseParams.context = tf.getValue();
-        
-        this.getBottomToolbar().changePage(1);
-    },
     filterSearch: function(tf, nv, ov) {
         this.getStore().baseParams.query = tf.getValue();
         
@@ -228,11 +206,9 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
     },
     clearFilter: function() {
 	    this.getStore().baseParams.confirm = '';
-	    this.getStore().baseParams.context = MODx.config.default_context;
 	    this.getStore().baseParams.query = '';
 	    
 	    Ext.getCmp('newsletter-filter-confirm-subscriptions').reset();
-	    Ext.getCmp('newsletter-filter-context-subscriptions').reset();
 	    Ext.getCmp('newsletter-filter-search-subscriptions').reset();
 	    
         this.getBottomToolbar().changePage(1);
@@ -539,6 +515,9 @@ Newsletter.window.CreateSubscription = function(config) {
 				title		: _('newsletter.subscription_general'),
 	            labelSeparator : '',
 				items		: [{
+	            	html		: '<p>' + _('newsletter.subscription_general_desc') + '</p>',
+	                cls			: 'panel-desc'
+	            }, {
 		        	layout		: 'column',
 		        	border		: false,
 		            defaults	: {
@@ -566,8 +545,7 @@ Newsletter.window.CreateSubscription = function(config) {
 				            fieldLabel	: _('newsletter.label_subscription_confirmed'),
 				            description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_confirmed_desc'),
 				            name		: 'active',
-				            inputValue	: 1,
-				            checked		: true
+				            inputValue	: 1
 				        }, {
 				        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
 				            html		: _('newsletter.label_subscription_confirmed_desc'),
@@ -587,28 +565,27 @@ Newsletter.window.CreateSubscription = function(config) {
 		            cls			: 'desc-under'
 		        }, {
 			    	layout		: 'form',
-			    	labelSeparator : ''	,
+			    	labelSeparator : '',
 			    	hidden		: Newsletter.config.context,
 			    	items		: [{
 			        	xtype		: 'modx-combo-context',
 			        	fieldLabel	: _('newsletter.label_subscription_context'),
-			        	description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_desc'),
+			        	description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_context_desc'),
 			        	name		: 'context',
 			        	anchor		: '100%',
 			        	allowBlank	: false,
-			        	value		: MODx.config.default_context,
 			        	baseParams	: {
 				        	action		: 'context/getlist',
 				        	exclude		: 'mgr'
 			        	}
 			        }, {
 			        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-			        	html		: _('newsletter.label_subscription_desc'),
+			        	html		: _('newsletter.label_subscription_context_desc'),
 			        	cls			: 'desc-under'
 			        }]
 			    }, {
-			    	xtype		: 'label',
-					fieldLabel	: _('newsletter.label_subscription_lists')
+			       	xtype		: 'label',
+			       	fieldLabel	: _('newsletter.label_subscription_lists')
 			    }, {
 		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
 		            html		: _('newsletter.label_subscription_lists_desc'),

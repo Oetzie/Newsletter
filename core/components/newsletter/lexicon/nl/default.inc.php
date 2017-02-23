@@ -41,18 +41,14 @@
 	$_lang['setting_newsletter.admin_groups']						= 'Admin gebruikersgroepen';
 	$_lang['setting_newsletter.admin_groups_desc']					= 'De gebruikersgroepen die toegang hebben tot de admin gedeelte van de nieuwsbrieven. Meerdere gebruikersgroepen scheiden met een komma.';
 	
-	$_lang['setting_page.newsletter_subscribe']						= 'Pagina "nieuwsbrief inschrijven"';
-	$_lang['setting_page.newsletter_subscribe_desc']				= 'De ID van de pagina die als "nieuwsbrief inschrijven" pagina dient.';
-	$_lang['setting_page.newsletter_unsubscribe']					= 'Pagina "nieuwsbrief uitschrijven"';
-	$_lang['setting_page.newsletter_unsubscribe_desc']				= 'De ID van de pagina die als "nieuwsbrief uitschrijven" pagina dient.';
-	
-	$_lang['newslettersubscribe_snippet_param_desc']				= 'De URL parameter voor de bevestiging. Standaard is "token".';
-	$_lang['newslettersubscribe_snippet_confirm_desc']				= 'Indien "Ja" zal er een bevestigingsmail gestuurd worden die de inschrijver dient te bevestigen.';
-	$_lang['newsletterunsubscribe_snippet_param_desc']				= 'De URL parameter voor de bevestiging. Standaard is "token".';
-	
+	$_lang['setting_newsletter.page_subscribe']						= 'Pagina "nieuwsbrief inschrijven"';
+	$_lang['setting_newsletter.page_subscribe_desc']				= 'De ID van de pagina die als "nieuwsbrief inschrijven" pagina dient.';
+	$_lang['setting_newsletter.page_unsubscribe']					= 'Pagina "nieuwsbrief uitschrijven"';
+	$_lang['setting_newsletter.page_unsubscribe_desc']				= 'De ID van de pagina die als "nieuwsbrief uitschrijven" pagina dient.';
+
 	$_lang['newsletter.newsletter']									= 'Nieuwsbrief';
 	$_lang['newsletter.newsletters']								= 'Nieuwsbrieven';
-	$_lang['newsletter.newsletters_desc']							= 'Hier kun je alle nieuwsbrief beheren, een nieuwsbrief is eigenlijk een pagina die verstuurd word via de e-mail naar alle ingeschreven personen. <strong>Let op:</strong> Controleer de nieuwsbrief goed voordat je hem verstuurd, na het versturen kun je hem niet meer wijzigen en verschijnt hij bij alle ingeschreven personen in de e-mail inbox met eventuele fouten. Nieuwsbrieven worden iedere nacht om 01:00 automatisch verstuurd in verband met het zware proces voor de server van het versturen van meerdere e-mails.';
+	$_lang['newsletter.newsletters_desc']							= 'Hier kun je alle nieuwsbrief beheren, een nieuwsbrief een pagina die verstuurd word via de e-mail naar alle ingeschreven personen. Nieuwsbrieven kunnen elk willekeurig uur automatisch verstuurd worden, maar in verband met het zware proces voor de server van het versturen van meerdere e-mails word het aangeraden om nieuwsbrieven \'s nachts te versturen.<br /><br /><strong>Let op:</strong> Controleer de nieuwsbrief goed voordat je hem verstuurd, na het versturen kun je hem niet meer wijzigen en verschijnt hij bij alle ingeschreven personen in de e-mail inbox met eventuele fouten.';
 	$_lang['newsletter.newsletter_cronjob_notice_desc']				= '<strong>Melding:</strong> Om nieuwsbrieven automatisch te kunnen versturen dien je gebruik maken van een cronjob, indien je een cronjob voor de nieuwsbrieven hebt ingesteld kun je deze melding uitzetten via systeeminstellingen.';
 	$_lang['newsletter.newsletter_site_status_notice_desc']			= '<strong>Melding:</strong> De website status staat op "offline", je kunt hierdoor geen nieuwsbrieven versturen. Je kunt de website status op "online" zetten via systeeminstellingen.';
 	$_lang['newsletter.newsletter_create']							= 'Nieuwe nieuwsbrief';
@@ -63,7 +59,8 @@
 	$_lang['newsletter.newsletter_preview']							= 'Nieuwsbrief voorbeeld';
 	$_lang['newsletter.newsletter_stats']							= 'Nieuwsbrief statistieken';
 	$_lang['newsletter.newsletter_stats_desc']						= 'De nieuwsbrief is in totaal [[+total]] keer verstuurd.';
-	$_lang['newsletter.newsletter_send']							= 'Nieuwsbrief versturen';
+	$_lang['newsletter.newsletter_send_live']						= 'Nieuwsbrief versturen';
+	$_lang['newsletter.newsletter_send_test']						= 'Nieuwsbrief test versturen';
 	$_lang['newsletter.newsletter_cancel']							= 'Nieuwsbrief annuleren';
 	$_lang['newsletter.newsletter_cancel_confirm']					= 'Weet je zeker dat je deze nieuwsbrief wilt annuleren?';
 	
@@ -108,14 +105,14 @@
 	$_lang['newsletter.label_newsletter_resource_desc']				= 'Selecteer de pagina die als nieuwsbrief dient.';
 	$_lang['newsletter.label_newsletter_hidden']					= 'Verborgen nieuwsbrief';
 	$_lang['newsletter.label_newsletter_hidden_desc']				= 'Verborgen nieuwsbrief, deze nieuwsbrief verbergen voor de niet \'Admin gebruikersgroepen\'.';
-	$_lang['newsletter.label_newsletter_type']						= 'Nieuwsbrief versturen op';
-	$_lang['newsletter.label_newsletter_type_desc']					= 'Kies een moment waarop je de nieuwsbrief wilt versturen.';
-	$_lang['newsletter.label_newsletter_send_date']					= 'Verstuurdatum';
-	$_lang['newsletter.label_newsletter_send_date_desc']			= 'Selecteer een datum vanaf wanneer de nieuwsbrief verstuurd moet worden, vanaf die datum word de nieuwsbrief om 01:00 automatisch verstuurd.';
+	$_lang['newsletter.label_newsletter_send_date']					= 'Datum';
+	$_lang['newsletter.label_newsletter_send_date_desc']			= 'Selecteer een datum vanaf wanneer de nieuwsbrief verstuurd moet worden.';
+	$_lang['newsletter.label_newsletter_send_time']					= 'Tijdstip';
+	$_lang['newsletter.label_newsletter_send_time_desc']			= 'Selecteer een tijdstip wanneer de nieuwsbrief verstuurd moet worden.';
 	$_lang['newsletter.label_newsletter_send_repeat']				= 'Herhalen';
 	$_lang['newsletter.label_newsletter_send_repeat_desc']			= 'Het aantal keer dat de nieuwsbrief verstuurd moet worden, voor oneindig gebruik "-1".';
-	$_lang['newsletter.label_newsletter_send_interval']				= 'Interval';
-	$_lang['newsletter.label_newsletter_send_interval_desc']		= 'Het aantal dagen wat er tussen het versturen van de nieuwsbrief moet zitten vanaf de eerste verzend datum. 7 dagen is elke week, 14 dagen is elke twee week etc.';
+	$_lang['newsletter.label_newsletter_send_days']					= 'Dagen';
+	$_lang['newsletter.label_newsletter_send_days_desc']			= 'De dagen wanneer de nieuwsbrief verstuurd moet worden.';
 	$_lang['newsletter.label_newsletter_send_lists']				= 'Versturen naar de mailinglijst(en)';
 	$_lang['newsletter.label_newsletter_send_lists_desc']			= 'De mailinglijst(en) waar de nieuwsbrief naar gestuurd moet worden.';
 	$_lang['newsletter.label_newsletter_send_emails']				= 'Versturen naar de e-mailadres(sen)';
@@ -183,16 +180,23 @@
 	$_lang['newsletter.filter_confirm']								= 'Filter op bevestiging...';
 	$_lang['newsletter.auto_refresh_grid']							= 'Automatisch vernieuwen';
 	$_lang['newsletter.send']										= 'Versturen';
-	$_lang['newsletter.newsletter_type_1']							= 'Een moment kiezen';
-	$_lang['newsletter.newsletter_type_2']							= 'Dit moment';
-	$_lang['newsletter.newsletter_type_3']							= 'Dit moment (test)';
-	$_lang['newsletter.newsletter_type_confirm']					= 'Weet je zeker dat je de nieuwsbrief nu wilt versturen? Dit is een vrij zwaar proces, afhankelijk van het aantal inschrijvingen kan dit enkele ogenblikken duren.';
+	$_lang['newsletter.monday']										= 'Maa';
+	$_lang['newsletter.tuesday']									= 'Din';
+	$_lang['newsletter.wednesday']									= 'Woe';
+	$_lang['newsletter.thursday']									= 'Don';
+	$_lang['newsletter.friday']										= 'Vri';
+	$_lang['newsletter.saturday']									= 'Zat';
+	$_lang['newsletter.sunday']										= 'Zon';
+	$_lang['newsletter.newsletter_type_1']							= 'Test nieuwsbrief';
+	$_lang['newsletter.newsletter_type_2']							= 'Definitieve nieuwsbrief';
+	$_lang['newsletter.newsletter_type_confirm']					= 'Weet je zeker dat je de nieuwsbrief wilt versturen als test? Dit is een vrij zwaar proces, afhankelijk van het aantal inschrijvingen kan dit enkele ogenblikken duren.';
 	$_lang['newsletter.newsletter_status_0']						= 'Niet verstuurd';
 	$_lang['newsletter.newsletter_status_1']						= 'In wachtrij';
 	$_lang['newsletter.newsletter_status_2']						= 'Verstuurd';
 	$_lang['newsletter.newsletter_send_detail']						= 'Verstuurd op <strong>{timestamp}</strong>.';
 	$_lang['newsletter.newsletter_error_resource_id']				= 'De pagina die als nieuwsbrief dient bestaat niet of is verwijderd.';
 	$_lang['newsletter.newsletter_error_resource_template']			= 'De pagina die als nieuwsbrief dient heeft niet de juiste template.';
+	$_lang['newsletter.newsletter_error_date']						= 'De verstuur datum kan niet in het verleden zijn. Kies een andere datum of tijdstip.';
 	$_lang['newsletter.newsletter_send_save']						= 'Succes!';
 	$_lang['newsletter.newsletter_send_save_desc']					= 'De nieuwsbrief is in de wachtrij gezet om verstuurd te worden.';
 	$_lang['newsletter.newsletter_send_succes']						= 'Succes!';
@@ -207,7 +211,7 @@
 	$_lang['newsletter.newsletter_send_error_resource_desc']		= 'De nieuwsbrief kon niet verstuurd worden, omdat de pagina die als nieuwsbrief dient niet bestaat of verwijderd is.';
 	$_lang['newsletter.newsletter_send_error_template_desc']		= 'De nieuwsbrief kon niet verstuurd worden, omdat de pagina die als nieuwsbrief dient niet de juiste template heeft.';
 	$_lang['newsletter.newsletter_send_error_status_desc']			= 'De nieuwsbrief kon niet verstuurd worden, omdat de verstuur status niet juist is.';
-	$_lang['newsletter.newsletter_send_error_date_desc']			= 'De nieuwsbrief kon niet verstuurd worden, omdat de verstuurdatum nog niet aangebroken is.';
+	$_lang['newsletter.newsletter_send_error_date_desc']			= 'De nieuwsbrief kon niet verstuurd worden, omdat de verstuur datum nog niet aangebroken is.';
 	$_lang['newsletter.newsletter_send_error_repeat_desc']			= 'De nieuwsbrief kon niet verstuurd worden, omdat de de nieuwsbrief al de toegestane keren verstuurd is.';
 	$_lang['newsletter.newsletter_send_feedback']					= 'Nieuwsbrief "[[+pagetitle]]" verstuurd naar [[+total]] e-mailadressen.';
 	$_lang['newsletter.subscription_general']						= 'Algemeen';

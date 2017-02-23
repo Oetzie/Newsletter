@@ -237,11 +237,7 @@
 					$newsletters = array();
 					
 					if (null !== ($id = $this->getNewsletterID())) {
-						$criterea = array(
-							'id' => $id	
-						);
-						
-						if (null !== ($newsletter = $this->modx->getObject('NewsletterNewsletters', $criterea))) {
+						if (null !== ($newsletter = $this->modx->getObject('NewsletterNewsletters', array('id' => $id)))) {
 							$newsletters[] = $newsletter;
 						}
 					} else {
@@ -251,13 +247,17 @@
 							}
 						}
 					}
-					
-					$this->log(count($newsletters).' newsletter(s) ready to send.', 'info');
-					
+
+					if (1 == count($newsletters)) {
+						$this->log('1 newsletter in queue ready to send.', 'info');
+					} else {
+						$this->log(count($newsletters).' newsletters in queue ready to send.', 'info');
+					}
+		
 					foreach ($newsletters as $key => $newsletter) {
 						$resource = $newsletter->getNewsletterResource();
 						
-						$this->log('Newsletter '.($key + 1).' of '.count($newsletters).' "'.$resource->pagetitle.'" ready to send.', 'info');
+						$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" ready to send.', 'info');
 						
 						$emails = array();
 
@@ -269,9 +269,9 @@
 							}
 									
 							if ('emails' == $list) {
-								$this->log('Sending to individual email addresses', 'info');
+								$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" send to individual '.count($subscriptions).' email addresses.', 'info');
 							} else {
-								$this->log('Sending to list "'.$list.'".', 'info');
+								$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" send to list "'.$this->modx->lexicon($list).'" width '.count($subscriptions).' subscriptions.', 'info');
 							}
 							
 							$count = 0;
@@ -281,11 +281,11 @@
 									$placeholdes = array();
 											
 									foreach ($subscription as $key => $value) {
-										$placeholders['subscribe_'.$key] = $value;	
+										$placeholders['subscribe.'.$key] = $value;	
 									}
 									
 									$placeholders = array_merge(array(
-										'newsletter_url'	=> 	$this->modx->makeUrl($resource->id, $resource->context_key, $placeholders, 'full')
+										'newsletter.url' => $this->modx->makeUrl($resource->id, $resource->context_key, $placeholders, 'full')
 									), $placeholders);
 									
 									$mail->setHTML(true);
@@ -299,43 +299,56 @@
 									
 									if (!$this->getDebugMode()) {
 										if (!$mail->send()) {
-											$this->log(($count + 1).' of '.count($subscriptions).': '.$subscription['email'].', not send because an email error.', 'error');
+											$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" not sent to '.$subscription['email'].' because an email error.', 'error');
 										} else {
-											$this->log(($count + 1).' of '.count($subscriptions).': '.$subscription['email'].', send.', 'info');
+											$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" sent to '.$subscription['email'].'.', 'info');
 										}
 									} else {
-										$this->log(($count + 1).' of '.count($subscriptions).': '.$subscription['email'].', send.', 'info');
+										$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" sent to '.$subscription['email'].'.', 'info');
 									}
 							
 									$mail->reset();
 	
 									$emails[] = $subscription['email'];	
 								} else {
-									$this->log(($count + 1).' of '.count($subscriptions).': '.$subscription['email'].', not send because an email duplicate.', 'notice');
+									$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" not sent to '.$subscription['email'].' because an email duplicate.', 'notice');
 								}
 								
 								$count++;
 							}
 						}
 						
-						$this->log('Newsletter '.($key + 1).' of '.count($newsletters).' "'.$resource->pagetitle.'" send to '.count($emails).' emails.', 'info');
+						$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" sent to '.count($emails).' emails.', 'info');
 						
-						$newsletter->sent_status = 1;
-						$newsletter->send_repeat = (int) $newsletter->send_repeat - 1;
-						
-						if (0 < $newsletter->send_repeat) {
-							$newsletter->send_status = 1;
-							$newsletter->send_date = date('Y-m-d', strtotime('+'.$newsletter->send_interval.' days'));
+						if (-1 == $newsletter->send_repeat) {
+							$newsletter->fromArray(array(
+								'send_status'	=> 1,
+								'send_date'		=> date('Y-m-d', strtotime('+1 days'))
+							));
+						} else if (0 == $newsletter->send_repeat) {
+							$newsletter->fromArray(array(
+								'send_status'	=> 2,
+								'send_date'		=> date('Y-m-d')
+							));
 						} else {
-							$newsletter->send_status = 2;
-							$newsletter->send_date = date('Y-m-d');
+							$newsletter->fromArray(array(
+								'send_status'	=> 1,
+								'send_repeat'	=> (int) $newsletter->send_repeat - 1,
+								'send_date'		=> date('Y-m-d', strtotime('+1 days'))
+							));
 						}
-						
+											
 						if (!$this->getDebugMode()) {
 							$newsletter->setSendDetail($this->modx, $emails);
 							
 							$newsletter->save();
 						}
+					}
+					
+					if (1 == count($newsletters)) {
+						$this->log('1 newsletter sent.', 'info');
+					} else {
+						$this->log(count($newsletters).' newsletters sent.', 'info');
 					}
 				} else {
 					$this->log('No valid newsletter token', 'error');

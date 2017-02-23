@@ -83,7 +83,6 @@
 			$c->innerjoin('modResource', 'modResource', array('modResource.id = NewsletterNewsletters.resource_id'));
 			$c->innerjoin('modContext', 'modContext', array('modResource.context_key = modContext.key'));
 			$c->select($this->modx->getSelectColumns('NewsletterNewsletters', 'NewsletterNewsletters'));
-			$c->select($this->modx->getSelectColumns('modContext', 'modContext', 'context_', array('key', 'name')));
 			
 			$c->where(array(
 				'modResource.context_key' => $this->getProperty('context')
@@ -111,24 +110,19 @@
 			$resource = $object->getNewsletterResource();
 
 			$array = array_merge($object->toArray(), array(
-				'url'				=> $this->modx->makeUrl($resource->id, null, array(
-					'subscribe_name' 	=> $this->modx->getOption('sender_name', $this->newsletter->config, 'test'),
-					'subscribe_email'	=> $this->modx->getOption('sender_email', $this->newsletter->config, 'test@test.com')
+				'resource_url'		=> $this->modx->makeUrl($resource->id, null, array(
+					'subscribe.name' 	=> $this->modx->getOption('sender_name', $this->newsletter->config, 'test'),
+					'subscribe.email'	=> $this->modx->getOption('sender_email', $this->newsletter->config, 'test@test.com')
 				), 'full'),
-				'pagetitle' 		=> $resource->pagetitle.($this->modx->hasPermission('tree_show_resource_ids') ? ' ('.$resource->id.')' : ''),
+				'name' 				=> $resource->pagetitle.($this->modx->hasPermission('tree_show_resource_ids') ? ' ('.$resource->id.')' : ''),
 				'published'			=> $resource->published,
 				'lists'				=> array(),
-				'lists_formatted' 	=> array(),
-				'newsletter_type'	=> 1,
 				'send_details'		=> array()
 			));
 			
 			foreach ($object->getLists() as $list) {
 				$array['lists'][] = $list->id;
-				$array['lists_formatted'][] = $this->modx->lexicon($list->name);
 			}
-			
-			$array['lists_formatted'] = implode(',', $array['lists_formatted']);
 			
 			foreach ($object->getSendDetails(true) as $detail) {
 				$lists = array();
@@ -140,7 +134,7 @@
 				$array['send_details'][] = array_merge($detail->toArray(), array(
 					'lists'				=> array_keys($lists),
 					'lists_formatted'	=> implode(', ', $lists),
-					'emails_total'		=> count(explode(',', $detail->emails)), 
+					'emails'			=> explode(',', $detail->emails),
 					'timestamp' 		=> date($this->modx->getOption('manager_date_format', 'Y-m-d').', '.$this->modx->getOption('manager_time_format', 'H:i'), strtotime($detail->timestamp))
 				));
 			}
@@ -149,9 +143,12 @@
 				$array['send_date'] = '';
 			} else {
 				$array['send_date'] = date('Y-m-d', strtotime($array['send_date']));
+				
+				$array['send_date_format'] = date($this->modx->getOption('manager_date_format'), strtotime($array['send_date']));
+				$array['send_time_format'] = date($this->modx->getOption('manager_time_format'), strtotime($array['send_time']));
 			}
 			
-			$array['send_date_format'] = date($this->modx->getOption('manager_date_format', 'Y-m-d'), strtotime($array['send_date']));
+			$array['send_days'] = explode(',', $array['send_days']);
 			
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
 				$array['editedon'] = '';

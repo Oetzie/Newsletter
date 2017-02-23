@@ -7,23 +7,6 @@ Newsletter.grid.Newsletters = function(config) {
         handler	: this.createNewsletter,
         scope	: this
    }, '->', {
-    	xtype		: 'modx-combo-context',
-    	hidden		: Newsletter.config.context,
-    	name		: 'newsletter-filter-context-newsletters',
-        id			: 'newsletter-filter-context-newsletters',
-        value 		: MODx.config.default_context,
-        emptyText	: _('newsletter.filter_context'),
-        listeners	: {
-    		'select'	: {
-            	fn			: this.filterContext,
-            	scope		: this   
-		    }
-		},
-		baseParams 	: {
-			action		: 'context/getlist',
-			exclude		: 'mgr'
-		}
-    }, {
         xtype		: 'textfield',
         name 		: 'newsletter-filter-search-newsletters',
         id			: 'newsletter-filter-search-newsletters',
@@ -66,27 +49,27 @@ Newsletter.grid.Newsletters = function(config) {
     columns = new Ext.grid.ColumnModel({
         columns: [{
             header		: _('newsletter.label_newsletter_resource'),
-            dataIndex	: 'pagetitle',
+            dataIndex	: 'name',
             sortable	: true,
             editable	: false,
             width		: 150,
             renderer	: this.renderName
         }, {
-            header		: _('newsletter.label_newsletter_published'),
-            dataIndex	: 'published',
-            sortable	: true,
-            editable	: false,
-            width		: 100,
-            fixed		: true,
-			renderer	: this.renderPublished
-        }, {
             header		: _('newsletter.label_newsletter_send_status'),
             dataIndex	: 'send_status',
             sortable	: true,
             editable	: false,
-            width		: 150,
+            width		: 200,
             fixed		: true,
-			renderer	: this.renderSend
+			renderer	: this.renderStatus
+        }, {
+            header		: _('newsletter.label_newsletter_published'),
+            dataIndex	: 'published',
+            sortable	: true,
+            editable	: false,
+            width		: 125,
+            fixed		: true,
+			renderer	: this.renderPublished
         }, {
             header		: _('last_modified'),
             dataIndex	: 'editedon',
@@ -95,12 +78,6 @@ Newsletter.grid.Newsletters = function(config) {
             fixed		: true,
 			width		: 200,
 			renderer	: this.renderDate
-        }, {
-            header		: _('newsletter.label_context'),
-            dataIndex	: 'context_name',
-            sortable	: true,
-            hidden		: true,
-            editable	: false
         }]
     });
     
@@ -110,9 +87,9 @@ Newsletter.grid.Newsletters = function(config) {
         url			: Newsletter.config.connector_url,
         baseParams	: {
         	action		: 'mgr/newsletters/getlist',
-        	context 	: MODx.config.default_context
+        	context 	: MODx.request.context || MODx.config.default_context
         },
-        fields		: ['id', 'context_key', 'context_name', 'resource_id', 'url', 'pagetitle', 'published', 'lists', 'lists_names', 'newsletter_type', 'send_status', 'send_repeat', 'send_interval', 'send_date', 'send_date_format', 'send_emails', 'send_details', 'hidden', 'editedon'],
+        fields		: ['id', 'resource_id', 'resource_url', 'name', 'published', 'hidden', 'lists', 'send_status', 'send_date', 'send_time', 'send_days', 'send_repeat', 'send_date_format', 'send_time_format', 'send_emails', 'send_details', 'editedon'],
         paging		: true,
         pageSize	: MODx.config.default_per_page > 30 ? MODx.config.default_per_page : 30,
         sortBy		: 'id',
@@ -123,21 +100,14 @@ Newsletter.grid.Newsletters = function(config) {
 };
 
 Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
-	filterContext: function(tf, nv, ov) {
-        this.getStore().baseParams.context = tf.getValue();
-        
-        this.getBottomToolbar().changePage(1);
-    },
     filterSearch: function(tf, nv, ov) {
         this.getStore().baseParams.query = tf.getValue();   
         
         this.getBottomToolbar().changePage(1);
     },
     clearFilter: function() {
-    	this.getStore().baseParams.context = MODx.config.default_context;
 	    this.getStore().baseParams.query = '';
 	    
-	    Ext.getCmp('newsletter-filter-context-newsletters').reset();
 	    Ext.getCmp('newsletter-filter-search-newsletters').reset();
 	    
         this.getBottomToolbar().changePage(1);
@@ -151,23 +121,43 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
 	        text	: _('newsletter.newsletter_preview'),
 	        handler	: this.previewNewsletter,
 	        scope	: this
+	    }, {
+	        text	: _('newsletter.newsletter_send_test'),
+	        handler	: this.sendTestNewsletter,
+	        scope	: this
 	    }];
 	    
+	    if (0 == parseInt(this.menu.record.send_status)) {
+		    if (1 == parseInt(MODx.config.site_status)) {
+			    menu.push('-', {
+			        text	: _('newsletter.newsletter_send_live'),
+			        handler	: this.sendLiveNewsletter,
+			        scope	: this
+			    });
+			}
+	    } else if (1 == parseInt(this.menu.record.send_status)) {
+		    menu.push('-', {
+		        text	: _('newsletter.newsletter_cancel'),
+		        handler	: this.cancelNewsletter,
+		        scope	: this
+		    });
+	    }
+	    
 	    if (0 < parseInt(this.menu.record.send_details.length)) {
-		    menu.push({
+		    menu.push('-', {
 		        text	: _('newsletter.newsletter_stats'),
 		        handler	: this.statsNewsletter,
 		        scope	: this
 		    });
 	    }
 
-	    if ((0 == parseInt(this.menu.record.send_status) || 1 == parseInt(this.menu.record.send_status)) && 1 == parseInt(MODx.config.site_status)) {
+		/*if ((0 == parseInt(this.menu.record.send_status) || 1 == parseInt(this.menu.record.send_status)) && 1 == parseInt(MODx.config.site_status)) {
 		    menu.push({
-		        text	: _('newsletter.newsletter_send'),
-		        handler	: this.sendNewsletter,
+		        text	: _('newsletter.newsletter_send_live'),
+		        handler	: this.sendLiveNewsletter,
 		        scope	: this
 		    });
-	    } 
+	    }
 	    
 	    if (1 == parseInt(this.menu.record.send_status)) {
 		    menu.push({
@@ -175,7 +165,7 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
 		        handler	: this.cancelNewsletter,
 		        scope	: this
 		    });
-	    }
+	    }*/
 	    
 	    menu.push('-', {
 		    text	: _('newsletter.newsletter_remove'),
@@ -265,79 +255,93 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
         
         this.statsNewsletterWindow.show(e.target);
     },
-    sendNewsletter: function(btn, e) {
-        if (this.sendNewsletterWindow) {
-	        this.sendNewsletterWindow.destroy();
+    sendLiveNewsletter: function(btn, e) {
+        if (this.sendLiveNewsletterWindow) {
+	        this.sendLiveNewsletterWindow.destroy();
         }
 
-        this.sendNewsletterWindow = MODx.load({
-	        xtype		: 'newsletter-window-newsletter-send',
+        this.sendLiveNewsletterWindow = MODx.load({
+	        xtype		: 'newsletter-window-newsletter-send-live',
 	        record		: this.menu.record,
 	        closeAction	: 'close',
 	        saveBtnText	: _('newsletter.send'),
 	        listeners	: {
 		        'success'	: {
 		        	fn			: function(data) {
-			        	var newsletter_type = data.a.result.object.newsletter_type;
-			        	
-			        	if (2 == newsletter_type || 3 == newsletter_type) {
-							this.sendNewsletterConsole = MODx.load({
-								xtype		: 'modx-console',
-								register	: 'mgr',
-								topic		: '/newsletter/'
-							});
-							
-							MODx.Ajax.request({
-							    url			: Newsletter.config.connector_url,
-							    params		: {
-							        action			: 'mgr/newsletters/sendimmediately',
-							        id				: data.a.result.object.id,
-							        newsletter_type : newsletter_type,
-							        register		: 'mgr',
-							        topic			: '/newsletter/'
-							    },
-							    listeners	: {
-							        'success'	: {
-								        fn			: function() {
-									        this.sendNewsletterConsole.fireEvent('complete');
-									        
-									        MODx.msg.status({
-												title	: _('newsletter.newsletter_send_succes'),
-												message	: _('newsletter.newsletter_send_succes_desc')
-											});
-											
-											this.refresh();
-							        	},
-							        	scope		: this
-							    	},
-							    	'failure'	: {
-								    	fn 			: function(data) {
-									    	MODx.msg.alert(_('warning'), data.message, function() {
-										    	
-											}, this);
-								    	},
-								    	scope 		: this
-							    	}
-							    }
-							});
-
-							this.sendNewsletterConsole.show();
-						} else {
-				        	MODx.msg.status({
-								title	: _('newsletter.newsletter_send_save'),
-								message	: _('newsletter.newsletter_send_save_desc')
-							});
-							
-							this.refresh();
-						}
+						MODx.msg.status({
+							title	: _('newsletter.newsletter_send_save'),
+							message	: _('newsletter.newsletter_send_save_desc')
+						});
+						
+						this.refresh();
 					},
 					scope		: this
 		        }
 	         }
         });
         
-        this.sendNewsletterWindow.setValues(this.menu.record);
-        this.sendNewsletterWindow.show(e.target);
+        this.sendLiveNewsletterWindow.setValues(this.menu.record);
+        this.sendLiveNewsletterWindow.show(e.target);
+    },
+    sendTestNewsletter: function(btn, e) {
+        if (this.sendTestNewsletterWindow) {
+	        this.sendTestNewsletterWindow.destroy();
+        }
+
+        this.sendTestNewsletterWindow = MODx.load({
+	        xtype		: 'newsletter-window-newsletter-send-test',
+	        record		: this.menu.record,
+	        closeAction	: 'close',
+	        saveBtnText	: _('newsletter.send'),
+	        listeners	: {
+		        'success'	: {
+		        	fn			: function(data) {
+						this.sendTestNewsletterConsole = MODx.load({
+							xtype		: 'modx-console',
+							register	: 'mgr',
+							topic		: '/newsletter/'
+						});
+						
+						MODx.Ajax.request({
+						    url			: Newsletter.config.connector_url,
+						    params		: {
+						        action			: 'mgr/newsletters/sendtestnewsletter',
+						        id				: data.a.result.object.id,
+						        register		: 'mgr',
+						        topic			: '/newsletter/'
+						    },
+						    listeners	: {
+						        'success'	: {
+							        fn			: function() {
+								        this.sendTestNewsletterConsole.fireEvent('complete');
+								        
+								        MODx.msg.status({
+											title	: _('newsletter.newsletter_send_succes'),
+											message	: _('newsletter.newsletter_send_succes_desc')
+										});
+										
+										this.refresh();
+						        	},
+						        	scope		: this
+						    	},
+						    	'failure'	: {
+							    	fn 			: function(data) {
+								    	MODx.msg.alert(_('warning'), data.message);
+							    	},
+							    	scope 		: this
+						    	}
+						    }
+						});
+
+						this.sendTestNewsletterConsole.show();
+					},
+					scope		: this
+		        }
+	         }
+        });
+        
+        this.sendTestNewsletterWindow.setValues(this.menu.record);
+        this.sendTestNewsletterWindow.show(e.target);
     },
     cancelNewsletter: function() {
     	MODx.msg.confirm({
@@ -378,12 +382,7 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
 	    
     	return String.format('<a href="?a={0}&id={1}" title="{2}" class="x-grid-link">{3}</a>', action, e.json.resource_id, _('edit'), Ext.util.Format.htmlEncode(d));
     },
-    renderPublished: function(d, c, e) {
-    	c.css = 0 == parseInt(d) || !d ? 'red' : 'green';
-    	
-    	return 0 == parseInt(d) || !d ? _('no') : _('yes');
-    },
-    renderSend: function(d, c, e) {
+    renderStatus: function(d, c, e) {
     	if (0 == parseInt(d)) {
 	    	c.css = 'red';
 	    	
@@ -391,12 +390,17 @@ Ext.extend(Newsletter.grid.Newsletters, MODx.grid.Grid, {
     	} else if (1 == parseInt(d)) {
 	    	c.css = 'orange';
 	    	
-	    	return _('newsletter.newsletter_status_1') + ' <em>(' + e.data.send_date_format + ')</em>';
+	    	return _('newsletter.newsletter_status_1') + ' <em>(' + e.data.send_date_format + ', ' + e.data.send_time_format + ')</em>';
     	} else if (2 == parseInt(d)) {
 	    	c.css = 'green';
 	    	
-	    	return _('newsletter.newsletter_status_2') + ' <em>(' + e.data.send_date_format + ')</em>';
+	    	return _('newsletter.newsletter_status_2') + ' <em>(' + e.data.send_date_format + ', ' + e.data.send_time_format + ')</em>';
     	}
+    },
+    renderPublished: function(d, c, e) {
+    	c.css = 0 == parseInt(d) || !d ? 'red' : 'green';
+    	
+    	return 0 == parseInt(d) || !d ? _('no') : _('yes');
     },
 	renderDate: function(a) {
         if (Ext.isEmpty(a)) {
@@ -425,8 +429,13 @@ Newsletter.window.CreateNewsletter = function(config) {
         }, {
 			xtype		: 'hidden',
 			name		: 'resource_id',
-			value		: 0,
-			id			: 'modx-resource-parent-hidden'
+			id			: 'modx-resource-parent-hidden-create',
+			value 		: 0
+		}, {
+			xtype		: 'hidden',
+			name		: 'resource_context',
+			id			: 'modx-resource-context-hidden-create',
+			value 		: MODx.config.default_context
 		}, {
     		xtype		: 'modx-field-parent-change',
     		fieldLabel	: _('newsletter.label_newsletter_resource'),
@@ -435,7 +444,8 @@ Newsletter.window.CreateNewsletter = function(config) {
 			name		: 'resource',
 			allowBlank	: false,
 			formpanel	: 'newsletter-panel-home',
-			contextcmp	: null
+			parentcmp	: 'modx-resource-parent-hidden-create',
+			contextcmp	: 'modx-resource-context-hidden-create'
 		}, {
         	xtype		: MODx.expandHelp ? 'label' : 'hidden',
             html		: _('newsletter.label_newsletter_resource_desc'),
@@ -477,8 +487,13 @@ Newsletter.window.UpdateNewsletter = function(config) {
         }, {
 			xtype		: 'hidden',
 			name		: 'resource_id',
-			value		: config.record.resource_id || 0,
-			id			: 'modx-resource-parent-hidden'
+			id			: 'modx-resource-parent-hidden-update',
+			value 		: config.record.resource_id || 0
+		}, {
+			xtype		: 'hidden',
+			name		: 'resource_context',
+			id			: 'modx-resource-context-hidden-update',
+			value 		: config.record.resource_context || MODx.config.default_context
 		}, {
     		xtype		: 'modx-field-parent-change',
     		fieldLabel	: _('newsletter.label_newsletter_resource'),
@@ -486,9 +501,10 @@ Newsletter.window.UpdateNewsletter = function(config) {
 			anchor		: '100%',
 			name 		: 'resource',
 			allowBlank	: false,
-			value		: config.record.pagetitle,
+			value		: config.record.name,
 			formpanel	: 'newsletter-panel-home',
-			contextcmp	: null
+			parentcmp	: 'modx-resource-parent-hidden-update',
+			contextcmp	: 'modx-resource-context-hidden-update'
 		}, {
         	xtype		: MODx.expandHelp ? 'label' : 'hidden',
             html		: _('newsletter.label_newsletter_resource_desc'),
@@ -517,7 +533,7 @@ Newsletter.window.PreviewNewsletter = function(config) {
     Ext.applyIf(config, {
 	    width		: 850,
         height		: 550,
-        title 		: _('newsletter.newsletter_preview') + ': ' + config.record.pagetitle,
+        title 		: _('newsletter.newsletter_preview'),
         layout		: 'fit',
 		autoHeight	: false,
 		bodyStyle 	: 'padding: 0;',
@@ -532,7 +548,7 @@ Newsletter.window.PreviewNewsletter = function(config) {
 			items		:[{
 				autoEl 		: {
 	                tag 		: 'iframe',
-	                src			: config.record.url,
+	                src			: config.record.resource_url,
 	                width		: '100%',
 					height		: '100%',
 					frameBorder	: 0
@@ -554,7 +570,7 @@ Newsletter.window.StatsNewsletter = function(config) {
     Ext.applyIf(config, {
     	width		: 600,
     	height		: 400,
-        title 		: _('newsletter.newsletter_stats') + ': ' + config.record.pagetitle,
+        title 		: _('newsletter.newsletter_stats'),
         fields		: this.getStats(config.record.send_details)
     });
     
@@ -613,10 +629,10 @@ Ext.extend(Newsletter.window.StatsNewsletter, MODx.Window, {
 					}, {
 			        	xtype		: 'textarea',
 			        	fieldLabel	: _('newsletter.label_newsletter_stats_emails', {
-				        	total		: item.emails_total
+				        	total		: item.emails.length
 				        }),
 			        	anchor		: '100%',
-			        	value 		: item.emails,
+			        	value 		: item.emails.join(', '),
 			        	readOnly	: true,
 			        	cls 		: 'x-static-text-field x-item-disabled',
 			        }]
@@ -630,16 +646,16 @@ Ext.extend(Newsletter.window.StatsNewsletter, MODx.Window, {
 
 Ext.reg('newsletter-window-newsletter-stats', Newsletter.window.StatsNewsletter);
 
-Newsletter.window.SendNewsletter = function(config) {
+Newsletter.window.SendLiveNewsletter = function(config) {
     config = config || {};
-    
+
     Ext.applyIf(config, {
     	autoHeight	: true,
     	width		: 600,
-        title 		: _('newsletter.newsletter_send'),
+        title 		: _('newsletter.newsletter_send_live'),
         url			: Newsletter.config.connector_url,
         baseParams	: {
-            action		: 'mgr/newsletters/send'
+            action		: 'mgr/newsletters/sendlive'
         },
         fields		: [{
             xtype		: 'hidden',
@@ -648,160 +664,212 @@ Newsletter.window.SendNewsletter = function(config) {
             xtype		: 'hidden',
             name		: 'resource_id'
         }, {
-	    	xtype 		: 'newsletter-combo-newsletter-type',
-	    	fieldLabel 	: _('newsletter.label_newsletter_type'),
-	    	description	: MODx.expandHelp ? '' : _('newsletter.label_newsletter_type_desc'),
-	    	name 		: 'newsletter_type',
-	    	anchor 		: '100%',
-        	listeners	: {
-	        	'change'	: {
-		        	fn 			: this.setNewsletterType,
-		        	scope		: this
-	        	}
-        	}
-	    }, {
-        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-            html		: _('newsletter.label_newsletter_type_desc'),
-            cls			: 'desc-under'
-	    }, {
-	    	layout		: 'form',
-	    	style 		: 'padding-top: 15px;',
-	    	id			: 'newsletter-type-1',
-	    	hidden 		: false,
-	    	defaults	: {
-                labelSeparator : ''
-            },
-			items		: [{
-	        	xtype		: 'datefield',
-	        	fieldLabel	: _('newsletter.label_newsletter_send_date'),
-	        	description	: MODx.expandHelp ? '' : _('newsletter.label_newsletter_send_date_desc'),
-	        	name		: 'send_date',
-	        	anchor		: '100%',
-	        	allowBlank	: false,
-	        	format		: MODx.config.manager_date_format,
-	        	startDay	: parseInt(MODx.config.manager_week_start),
-	        	minValue 	: this.getFirstDate().format(MODx.config.manager_date_format),
-	        	listeners 	: {
-					'afterrender' : {
-						fn			: function(tf) {
-							if ('' == tf.getValue()) {
-								tf.setValue(this.getFirstDate());
-							}
-						},
-						scope 		: this
-        			}
-				}
-	        }, {
-	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-	            html		: _('newsletter.label_newsletter_send_date_desc'),
-	            cls			: 'desc-under'
-	        }, {
-		        layout		: 'column',
-		        style 		: 'padding-top: 15px;',
-	            defaults	: {
-	                layout		: 'form',
-	                labelSeparator : ''
-	            },
-	            items: [{
-	            	columnWidth	: .4,
-	                items		: [{
-			        	xtype		: 'textfield',
-			        	fieldLabel	: _('newsletter.label_newsletter_send_repeat'),
-			        	description	: MODx.expandHelp ? '' : _('newsletter.label_newsletter_send_repeat_desc'),
-			        	name		: 'send_repeat',
-			        	anchor		: '100%',
-			        	value 		: '1'
-			        }, {
-			        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-			            html		: _('newsletter.label_newsletter_send_repeat_desc'),
-			            cls			: 'desc-under'
-			        }]        
-		        }, {
-					columnWidth	: .6,
-					style		: 'margin-right: 0;',
-					items		: [{
-			        	xtype		: 'textfield',
-			        	fieldLabel	: _('newsletter.label_newsletter_send_interval'),
-			        	description	: MODx.expandHelp ? '' : _('newsletter.label_newsletter_send_interval_desc'),
-			        	name		: 'send_interval',
-			        	anchor		: '100%',
-			        	value 		: '7'
-			        }, {
-			        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-			            html		: _('newsletter.label_newsletter_send_interval_desc'),
-			            cls			: 'desc-under'
-			        }]
-				}]
-		    }],
-	    }, {
 	        layout		: 'column',
-	        style 		: 'padding-top: 15px;',
             defaults	: {
                 layout		: 'form',
-                labelSeparator : '',
+                labelSeparator : ''
             },
             items: [{
-            	columnWidth	: .4,
+            	columnWidth	: .5,
                 items		: [{
-			       	xtype		: 'label',
-			       	fieldLabel	: _('newsletter.label_newsletter_send_lists')
-			    }, {
+		        	xtype		: 'datefield',
+		        	fieldLabel	: _('newsletter.label_newsletter_send_date'),
+		        	description	: MODx.expandHelp ? '' : _('newsletter.label_newsletter_send_date_desc'),
+		        	name		: 'send_date',
+		        	anchor		: '100%',
+		        	allowBlank	: false,
+		        	format		: MODx.config.manager_date_format,
+		        	startDay	: parseInt(MODx.config.manager_week_start),
+		        	listeners 	: {
+						'afterrender' : {
+							fn			: function(tf) {
+								if (Ext.isEmpty(tf.getValue()) || tf.getValue() < new Date('2010/01/01 00:00:00')) {
+									tf.setValue(this.getFirstDate());
+								}
+							},
+							scope 		: this
+	        			}
+					}
+		        }, {
 		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-		            html		: _('newsletter.label_newsletter_send_lists_desc'),
+		            html		: _('newsletter.label_newsletter_send_date_desc'),
 		            cls			: 'desc-under'
 		        }, {
-			       xtype		: 'newsletter-checkbox-lists',
-			       value		: config.record.lists
+					xtype 		: 'checkboxgroup',
+					columns		: 4,
+					fieldLabel	: _('newsletter.label_newsletter_send_days'),
+					items		: [{
+						name 		: 'send_days[]',
+						boxLabel	: _('newsletter.monday'),
+						inputValue	: '1',
+						checked 	: -1 == config.record.send_days.indexOf('1') ? false : true
+					}, {
+						name 		: 'send_days[]',
+						boxLabel	: _('newsletter.tuesday'),
+						inputValue 	: '2',
+						checked 	: -1 == config.record.send_days.indexOf('2') ? false : true
+					}, {
+						name 		: 'send_days[]',
+						boxLabel	: _('newsletter.wednesday'),
+						inputValue	: '3',
+						checked 	: -1 == config.record.send_days.indexOf('3') ? false : true
+					}, {
+						name 		: 'send_days[]',
+						boxLabel	: _('newsletter.thursday'),
+						inputValue	: '4',
+						checked 	: -1 == config.record.send_days.indexOf('4') ? false : true
+					}, {
+						name 		: 'send_days[]',
+						boxLabel	: _('newsletter.friday'),
+						inputValue	: '5',
+						checked 	: -1 == config.record.send_days.indexOf('5') ? false : true
+					}, {
+						name 		: 'send_days[]',
+						boxLabel	: _('newsletter.saturday'),
+						inputValue	: '6',
+						checked 	: -1 == config.record.send_days.indexOf('6') ? false : true
+					}, {
+						name 		: 'send_days[]',
+						boxLabel	: _('newsletter.sunday'),
+						inputValue	: '7',
+						checked 	: -1 == config.record.send_days.indexOf('7') ? false : true
+					}] 
+				}, {
+		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+		            cls			: 'desc-under'
 			    }]
-			}, {
-				columnWidth	: .6,
+            }, {
+				columnWidth	: .5,
 				style		: 'margin-right: 0;',
 				items		: [{
-		        	xtype		: 'textfield',
-		        	fieldLabel	: _('newsletter.label_newsletter_send_emails'),
-		        	description	: MODx.expandHelp ? '' : _('newsletter.label_newsletter_send_emails_desc'),
-		        	name		: 'send_emails',
-		        	anchor		: '100%'
+		        	xtype		: 'timefield',
+		        	fieldLabel	: _('newsletter.label_newsletter_send_time'),
+		        	description	: MODx.expandHelp ? '' : _('newsletter.label_newsletter_send_time_desc'),
+		        	name		: 'send_time',
+		        	anchor		: '100%',
+		        	allowBlank	: false,
+		        	format		: MODx.config.manager_time_format,
+		        	increment	: 60,
+		        	editable	: false,
+		        	listeners 	: {
+						'afterrender' : {
+							fn			: function(tf) {
+								if (Ext.isEmpty(tf.getValue())) {
+									tf.setValue(this.getFirstDate());
+								}
+							},
+							scope 		: this
+	        			}
+					}
 		        }, {
 		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-		            html		: _('newsletter.label_newsletter_send_emails_desc'),
+		            html		: _('newsletter.label_newsletter_send_time_desc'),
+		            cls			: 'desc-under'
+		        }, {
+		        	xtype		: 'textfield',
+		        	fieldLabel	: _('newsletter.label_newsletter_send_repeat'),
+		        	description	: MODx.expandHelp ? '' : _('newsletter.label_newsletter_send_repeat_desc'),
+		        	name		: 'send_repeat',
+		        	anchor		: '100%',
+		        	value 		: '1'
+		        }, {
+		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+		            html		: _('newsletter.label_newsletter_send_repeat_desc'),
 		            cls			: 'desc-under'
 		        }]
 			}]
-		}]
+        }, {
+        	xtype		: 'textfield',
+        	fieldLabel	: _('newsletter.label_newsletter_send_emails'),
+        	description	: MODx.expandHelp ? '' : _('newsletter.label_newsletter_send_emails_desc'),
+        	name		: 'send_emails',
+        	anchor		: '100%'
+        }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_newsletter_send_emails_desc'),
+            cls			: 'desc-under'
+        }, {
+	    	xtype		: 'label',
+			fieldLabel	: _('newsletter.label_newsletter_send_lists')
+	    }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_newsletter_send_lists_desc'),
+            cls			: 'desc-under'
+        }, {
+	       xtype		: 'newsletter-checkbox-lists',
+	       columns		: 3,
+	       value		: config.record.lists
+	    }]
     });
     
-    Newsletter.window.SendNewsletter.superclass.constructor.call(this, config);
+    Newsletter.window.SendLiveNewsletter.superclass.constructor.call(this, config);
 };
 
-Ext.extend(Newsletter.window.SendNewsletter, MODx.Window, {
-	setNewsletterType: function(tf, nv) {
-		var scope = this;
-		
-		if (1 == tf.getValue()) {
-			Ext.getCmp('newsletter-type-1').show();
-		} else {
-			Ext.MessageBox.confirm(_('warning'), _('newsletter.newsletter_type_confirm'), function(btn) {
-				if ('no' == btn) {
-					scope.fp.getForm().findField('newsletter_type').setValue(1);
-				} else {
-					scope.fp.getForm().findField('send_date').setValue(scope.getFirstDate());
-					
-					Ext.getCmp('newsletter-type-1').hide();
-				}
-			});
-		}
-	},
+Ext.extend(Newsletter.window.SendLiveNewsletter, MODx.Window, {
 	getFirstDate: function() {
 		var date = new Date();
     
+		date.setHours(1);
+		date.setMinutes(0);
+		date.setSeconds(0);
 		date.setDate(date.getDate() + 1);
 		
 		return date;
+	},
+	getCurrentDate: function() {
+		return new Date();
 	}
 });
 
-Ext.reg('newsletter-window-newsletter-send', Newsletter.window.SendNewsletter);
+Ext.reg('newsletter-window-newsletter-send-live', Newsletter.window.SendLiveNewsletter);
+
+Newsletter.window.SendTestNewsletter = function(config) {
+    config = config || {};
+
+    Ext.applyIf(config, {
+    	autoHeight	: true,
+    	width		: 600,
+        title 		: _('newsletter.newsletter_send_test'),
+        url			: Newsletter.config.connector_url,
+        baseParams	: {
+            action		: 'mgr/newsletters/sendtest'
+        },
+        fields		: [{
+            xtype		: 'hidden',
+            name		: 'id'
+        }, {
+            xtype		: 'hidden',
+            name		: 'resource_id'
+        }, {
+        	xtype		: 'textfield',
+        	fieldLabel	: _('newsletter.label_newsletter_send_emails'),
+        	description	: MODx.expandHelp ? '' : _('newsletter.label_newsletter_send_emails_desc'),
+        	name		: 'send_emails',
+        	anchor		: '100%'
+        }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_newsletter_send_emails_desc'),
+            cls			: 'desc-under'
+        }, {
+	    	xtype		: 'label',
+			fieldLabel	: _('newsletter.label_newsletter_send_lists')
+	    }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_newsletter_send_lists_desc'),
+            cls			: 'desc-under'
+        }, {
+	       xtype		: 'newsletter-checkbox-lists',
+	       columns		: 3,
+	       value		: config.record.lists
+	    }]
+    });
+    
+    Newsletter.window.SendTestNewsletter.superclass.constructor.call(this, config);
+};
+
+Ext.extend(Newsletter.window.SendTestNewsletter, MODx.Window);
+
+Ext.reg('newsletter-window-newsletter-send-test', Newsletter.window.SendTestNewsletter);
 
 Newsletter.combo.NewsletterType = function(config) {
     config = config || {};
@@ -813,7 +881,6 @@ Newsletter.combo.NewsletterType = function(config) {
             data	: [
 	            [1, _('newsletter.newsletter_type_1')],
 	            [2, _('newsletter.newsletter_type_2')],
-				[3, _('newsletter.newsletter_type_3')]
             ]
         }),
         remoteSort	: ['type', 'asc'],

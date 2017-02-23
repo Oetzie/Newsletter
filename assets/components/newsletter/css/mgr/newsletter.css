@@ -1,17 +1,3 @@
-.modx-config-error {
-	padding: 15px 15px 0 15px;
-}
-
-.modx-config-error p {
-	color: #ffffff;
-	padding: 10px 15px;
-	background: #d83755;
-	border: 1px solid #c1304b;
-	-webkit-border-radius: 3px;
-	   -moz-border-radius: 3px;
-	   		border-radius: 3px;
-}
-
 .x-toolbar-cell .x-form-check-wrap .x-form-cb-label {
 	padding-left: 22px !important;
 	line-height: 12px;
@@ -28,4 +14,20 @@
 .grid-row-inactive .orange,
 .inactive-checkbox {
     color: #999 !important;
+}
+
+.checkboxgroup-fixed {
+	position: relative;
+	height: 75px;
+	overflow: hidden;
+	border: 1px solid #e4e4e4;
+	-webkit-border-radius: 3px;
+	   -moz-border-radius: 3px;
+	   		border-radius: 3px;
+}
+
+.checkboxgroup-fixed .x-form-check-group {
+	padding: 5px;
+	max-height: 75px;
+	overflow-y: scroll;
 }

@@ -30,16 +30,25 @@
 		public function getSendStatus() {
 			if (false !== ($resource = $this->getNewsletterResource())) {
 				if (1 == $this->send_status) {
-					if (strtotime($this->send_date) <= strtotime(date('d-m-Y')) && $this->send_date != '0000-00-00 00:00:00') {
-						$details = $this->getSendDetails();
+					if (-1 == $this->send_repeat || 0 < $this->send_repeat) {
+						$timestamp = strtotime($this->send_date.' '.$this->send_time);
 						
-						if (0 < $this->send_repeat) {
-							if ($this->send_repeat <= 0) {
-								return 'repeat';
+						$start 	= strtotime(date('Y-m-d H:00:00'));
+						$end	= $start + ((60 * 60) - 1);
+						
+						if ($timestamp >= $start && $timestamp <= $end) {
+							$days = array_filter(explode(',', $this->send_days));
+	
+							if (in_array(date('N'), $days) || 0 == count($days)) {
+								return true;
+							} else {
+								return 'date';
 							}
+						} else {
+							return 'date';
 						}
 					} else {
-						return 'date';
+						return 'repeat';
 					}
 				} else {
 					return 'status';
@@ -47,7 +56,7 @@
 			} else {
 				return 'resource';
 			}
-			
+
 			return true;
 		}
 		
@@ -61,7 +70,7 @@
 		public function getNewsletter($modx, $type = 'content', $placeholders = array()) {
 			if (false !== ($resource = $this->getNewsletterResource())) {
 				$output = '';
-				
+
 				if ('content' == $type) {
 					$curl = curl_init();
 										

@@ -56,7 +56,9 @@
 
 			$this->setDefaultProperties(array(
 				'send_status'	=> 0,
-				'send_date'		=> '0000-00-00'
+				'send_date'		=> '0000-00-00',
+				'send_time'		=> '00:00:00',
+				'send_days'		=> ''
 			));
 
 			return parent::initialize();

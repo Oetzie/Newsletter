@@ -41,14 +41,10 @@
 	$_lang['setting_newsletter.admin_groups']						= 'Admin usergroups';
 	$_lang['setting_newsletter.admin_groups_desc']					= 'The usergroups that has access to the admin part of the newsletters, to separate usergroups use a comma.';
 	
-	$_lang['setting_page.newsletter_subscribe']						= 'Page "newsletter subscribe"';
-	$_lang['setting_page.newsletter_subscribe_desc']				= 'The ID of the page that is the "newsletter subscribe" page.';
-	$_lang['setting_page.newsletter_unsubscribe']					= 'Page "newsletter unsubscribe"';
-	$_lang['setting_page.newsletter_unsubscribe_desc']				= 'The ID of the page that is the "newsletter unsubscribe" page.';
-	
-	$_lang['newslettersubscribe_snippet_param_desc']				= 'The URL parameter for the confirmation. Default is "token".';
-	$_lang['newslettersubscribe_snippet_confirm_desc']				= 'If "Yes" there will be sent a confirmation email which must confirm the subscription.';
-	$_lang['newsletterunsubscribe_snippet_param_desc']				= 'The URL parameter for the confirmation. Default is "token".';
+	$_lang['setting_newsletter.page_subscribe']						= 'Page "newsletter subscribe"';
+	$_lang['setting_newsletter.page_subscribe_desc']				= 'The ID of the page that is the "newsletter subscribe" page.';
+	$_lang['setting_newsletter.page_unsubscribe']					= 'Page "newsletter unsubscribe"';
+	$_lang['setting_newsletter.page_unsubscribe_desc']				= 'The ID of the page that is the "newsletter unsubscribe" page.';
 
 	$_lang['newsletter.newsletter']									= 'Newsletter';
 	$_lang['newsletter.newsletters']								= 'Newsletters';
@@ -63,7 +59,8 @@
 	$_lang['newsletter.newsletter_preview']							= 'Nieuwsbrief example';
 	$_lang['newsletter.newsletter_stats']							= 'Nieuwsbrief statistics';
 	$_lang['newsletter.newsletter_stats_desc']						= 'The newsletter is send in total [[+total]] times.';
-	$_lang['newsletter.newsletter_send']							= 'Send newsletter';
+	$_lang['newsletter.newsletter_send_live']						= 'Send newsletter';
+	$_lang['newsletter.newsletter_send_test']						= 'Send test newsletter';
 	$_lang['newsletter.newsletter_cancel']							= 'Cancel newsletter';
 	$_lang['newsletter.newsletter_cancel_confirm']					= 'Are you sure you want to cancel this newsletter?';
 
@@ -108,14 +105,14 @@
 	$_lang['newsletter.label_newsletter_resource_desc']				= 'Select a resource for the newsletter.';
 	$_lang['newsletter.label_newsletter_hidden']					= 'Hidden newsletter';
 	$_lang['newsletter.label_newsletter_hidden_desc']				= 'Hidden newsletter, hide this newsletter for the not \'Admin usergroups\'.';
-	$_lang['newsletter.label_newsletter_type']						= 'Send newsletter at';
-	$_lang['newsletter.label_newsletter_type_desc']					= 'Choose a moment when the newsletter needs to be send.';
-	$_lang['newsletter.label_newsletter_send_date']					= 'Senddate';
-	$_lang['newsletter.label_newsletter_send_date_desc']			= 'Select a date from when the newsletter needs to be send, from this date the newsletter will be send 01:00 automaticly.';
+	$_lang['newsletter.label_newsletter_send_date']					= 'Date';
+	$_lang['newsletter.label_newsletter_send_date_desc']			= 'Select a date from when the newsletter needs to be sent.';
+	$_lang['newsletter.label_newsletter_send_time']					= 'Time';
+	$_lang['newsletter.label_newsletter_send_time_desc']			= 'Select a time when the newsletter needs to be sent.';
 	$_lang['newsletter.label_newsletter_send_repeat']				= 'Repeat';
-	$_lang['newsletter.label_newsletter_send_repeat_desc']			= 'The number of times to send the newsletter, for unlimited use "-1".';
-	$_lang['newsletter.label_newsletter_send_interval']				= 'Interval';
-	$_lang['newsletter.label_newsletter_send_interval_desc']		= 'The number of days between sending the newsletter from the first send date. 7 days is every week, 14 days is every to weeks etc.';
+	$_lang['newsletter.label_newsletter_send_repeat_desc']			= 'The number of times that the newsletter needs to be sent, use "-1" for unlimited.';
+	$_lang['newsletter.label_newsletter_send_days']					= 'Days';
+	$_lang['newsletter.label_newsletter_send_days_desc']			= 'The days when the newsletter needs to be sent.';
 	$_lang['newsletter.label_newsletter_send_lists']				= 'Send to list(s)';
 	$_lang['newsletter.label_newsletter_send_lists_desc']			= 'The list(s) where the newsletter needs to be send to.';
 	$_lang['newsletter.label_newsletter_send_emails']				= 'Send to e-mail address(es)';
@@ -183,9 +180,15 @@
 	$_lang['newsletter.filter_confirm']								= 'Filter at confirmation...';
 	$_lang['newsletter.auto_refresh_grid']							= 'Refresh automatically';
 	$_lang['newsletter.send']										= 'Send';
-	$_lang['newsletter.newsletter_type_1']							= 'Choose a moment';
-	$_lang['newsletter.newsletter_type_2']							= 'This moment';
-	$_lang['newsletter.newsletter_type_3']							= 'This moment (test)';
+	$_lang['newsletter.monday']										= 'Mon';
+	$_lang['newsletter.tuesday']									= 'Tue';
+	$_lang['newsletter.wednesday']									= 'Wed';
+	$_lang['newsletter.thursday']									= 'Thu';
+	$_lang['newsletter.friday']										= 'Fri';
+	$_lang['newsletter.saturday']									= 'Sat';
+	$_lang['newsletter.sunday']										= 'Sun';
+	$_lang['newsletter.newsletter_type_1']							= 'Test newsletter';
+	$_lang['newsletter.newsletter_type_2']							= 'Definitive newsletter';
 	$_lang['newsletter.newsletter_type_confirm']					= 'Are you sure you want to send this newsletter now? This is a pretty tough process, depending on the number of entries this may take awhile.';
 	$_lang['newsletter.newsletter_status_0']						= 'Not send';
 	$_lang['newsletter.newsletter_status_1']						= 'In queue';
@@ -193,6 +196,7 @@
 	$_lang['newsletter.newsletter_send_detail']						= 'Send at <strong>{timestamp}</strong>.';
 	$_lang['newsletter.newsletter_error_resource_id']				= 'The page that serves as a newsletter does not exist or has been removed.';
 	$_lang['newsletter.newsletter_error_resource_template']			= 'The page that serves as a newsletter does not have the correct template.';
+	$_lang['newsletter.newsletter_error_date']						= 'The send date can not be in the past. Choose another date or time.';
 	$_lang['newsletter.newsletter_send_save']						= 'Success!';
 	$_lang['newsletter.newsletter_send_save_desc']					= 'The newsletter is put in the queue to be sent.';
 	$_lang['newsletter.newsletter_send_succes']						= 'Success!';

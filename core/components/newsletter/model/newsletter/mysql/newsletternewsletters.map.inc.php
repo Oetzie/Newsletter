@@ -31,9 +31,10 @@
 			'id'			=> null,
 			'resource_id'	=> null,
 			'send_status'	=> null,
-			'send_repeat'	=> null,
-			'send_interval'	=> null,
 			'send_date'		=> null,
+			'send_time'		=> null,
+			'send_days'		=> null,
+			'send_repeat'	=> null,
 			'send_emails'	=> null,
 			'hidden'		=> null,
 			'editedon' 		=> null
@@ -60,25 +61,30 @@
 				'null' 		=> false,
 				'default'	=> 0
 			),
+			'send_date' => array(
+				'dbtype' 	=> 'date',
+				'phptype' 	=> 'date',
+				'null' 		=> false,
+				'default'	=> '0000-00-00'
+			),
+			'send_time' => array(
+				'dbtype' 	=> 'time',
+				'phptype' 	=> 'time',
+				'null' 		=> false,
+				'default'	=> '00:00:00'
+			),
+			'send_days' => array(
+				'dbtype' 	=> 'varchar',
+				'precision' => '75',
+				'phptype' 	=> 'string',
+				'null' 		=> false
+			),
 			'send_repeat' => array(
 				'dbtype' 	=> 'int',
 				'precision' => '11',
 				'phptype' 	=> 'integer',
 				'null' 		=> false,
 				'default'	=> 1
-			),
-			'send_interval' => array(
-				'dbtype' 	=> 'int',
-				'precision' => '11',
-				'phptype' 	=> 'integer',
-				'null' 		=> false,
-				'default'	=> 7
-			),
-			'send_date' => array(
-				'dbtype' 	=> 'timestamp',
-				'phptype' 	=> 'timestamp',
-				'null' 		=> false,
-				'default'	=> '0000-00-00 00:00:00'
 			),
 			'send_emails' => array(
 				'dbtype' 	=> 'text',

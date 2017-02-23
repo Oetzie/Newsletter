@@ -22,7 +22,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class NewsletterNewslettersSendProcessor extends modObjectUpdateProcessor {
+	class NewsletterNewslettersSendTestProcessor extends modObjectUpdateProcessor {
 		/**
 		 * @acces public.
 		 * @var String.
@@ -54,14 +54,6 @@
 		public function initialize() {
 			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 
-			if (1 == $this->getProperty('newsletter_type')) {
-				$this->setProperty('send_status', 1);
-			} else if (2 == $this->getProperty('newsletter_type')) {
-				$this->setProperty('send_status', 1);
-			} else if (3 == $this->getProperty('newsletter_type')) {
-				$this->setProperty('send_status', 0);
-			}
-			
 			return parent::initialize();
 		}
 		
@@ -72,30 +64,34 @@
 	    public function beforeSave() {
 		    if (1 == $this->modx->getOption('site_status')) {
 			    if (null !== ($resource = $this->object->getNewsletterResource())) {
-				    if (in_array($resource->template, $this->modx->getOption('template', $this->newsletter->config, array()))) {
+				    if (in_array($resource->template, explode(',', $this->modx->getOption('newsletter.template')))) {
 					    $resource->fromArray(array(
-						    'published'		=> 1,
-							'cacheable'		=> 0
+						    'published'	=> 1,
+							'cacheable'	=> 0
 						));
-									
-						$resource->save();
-						
+
 						$this->modx->removeCollection('NewsletterListsNewsletters', array(
 					    	'newsletter_id' => $this->getProperty('id')
 					    ));
 					    
 						if (null !== ($lists = $this->getProperty('lists'))) {
 							foreach ($lists as $id) {
-								if (null !== ($list = $this->modx->newObject('NewsletterListsNewsletters', array('list_id' => $id)))) {
+								$criterea = array(
+									'list_id'=> $id
+								);
+								
+								if (null !== ($list = $this->modx->newObject('NewsletterListsNewsletters', $criterea))) {
 									$this->object->addMany($list);
 								}
 							}
 						}
+						
+						$resource->save();
 					} else {
-						$this->addFieldError('newsletter_type', $this->modx->lexicon('newsletter.newsletter_send_error_template_desc'));
+						$this->addFieldError('name', $this->modx->lexicon('newsletter.newsletter_error_resource_template'));
 					}
 			    } else {
-				    $this->addFieldError('newsletter_type', $this->modx->lexicon('newsletter.newsletter_send_error_resource_desc'));
+				    $this->addFieldError('name', $this->modx->lexicon('newsletter.newsletter_error_resource_id'));
 			    }
 			} else {
 				$this->failure($this->modx->lexicon('newsletter.newsletter_send_error_site_status_desc'));
@@ -105,6 +101,6 @@
 		}
 	}
 	
-	return 'NewsletterNewslettersSendProcessor';
+	return 'NewsletterNewslettersSendTestProcessor';
 	
 ?>
