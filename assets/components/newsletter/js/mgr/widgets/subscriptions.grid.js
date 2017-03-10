@@ -574,6 +574,7 @@ Newsletter.window.CreateSubscription = function(config) {
 			        	name		: 'context',
 			        	anchor		: '100%',
 			        	allowBlank	: false,
+			        	value 		: MODx.request.context || MODx.config.default_context,
 			        	baseParams	: {
 				        	action		: 'context/getlist',
 				        	exclude		: 'mgr'

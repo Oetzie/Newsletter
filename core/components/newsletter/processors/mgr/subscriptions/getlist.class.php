@@ -121,9 +121,11 @@
 			
 			foreach ($object->getLists() as $list) {
 				$array['lists'][] = $list->id;
-				$array['lists_formatted'][] = $this->modx->lexicon($list->name);
+				$array['lists_formatted'][$list->id] = $this->modx->lexicon($list->name);
 			}
 			
+			ksort($array['lists_formatted']);
+
 			$array['lists_formatted'] = implode(',', $array['lists_formatted']);
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {

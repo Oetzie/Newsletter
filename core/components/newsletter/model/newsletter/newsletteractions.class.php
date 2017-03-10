@@ -239,14 +239,23 @@
 							$this->modx->setPlaceholders(array(
 								'subscription'	=> $subscription->toArray(),
 								'token'			=> $values['token'],
-								'last_id'		=> $subscription->id,
-								'subscribe_url'	=> $this->modx->makeUrl($this->modx->getOption('newsletter.page_subscribe'), null, array(
-									'token'			=> $values['token'],
-									'email'			=> $values['email']
-								), 'full')
+								'last_id'		=> $subscription->id
 							), $this->properties['placeholder']);
 							
 							if (isset($this->properties['confirm'])) {
+								if (isset($this->properties['confirm']['url'])) {
+									$subscriptionUrl = $this->properties['confirm']['url'];
+								} else {
+									$subscriptionUrl = $this->modx->getOption('newsletter.page_subscribe');
+								}
+								
+								$this->modx->setPlaceholders(array(
+									'subscribe_url'	=> $this->modx->makeUrl($subscriptionUrl, null, array(
+										'token'			=> $values['token'],
+										'email'			=> $values['email']
+									), 'full')
+								), $this->properties['placeholder']);
+								
 								if (isset($this->properties['confirm']['successTpl'])) {
 									$form->setScriptProperties(array(
 										'tplSuccess' => $this->properties['confirm']['successTpl']
