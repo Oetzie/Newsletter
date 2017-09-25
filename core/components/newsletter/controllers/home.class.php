@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -24,23 +21,23 @@
 
 	class NewsletterHomeManagerController extends NewsletterManagerController {
 		/**
-		 * @acces public.
+		 * @access public.
 		 */
 		public function loadCustomCssJs() {
-			$this->addCss($this->modx->getOption('css_url', $this->newsletter->config).'mgr/newsletter.css');
+			$this->addCss($this->newsletter->config['css_url'].'mgr/newsletter.css');
 			
-			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/home.panel.js');
+			$this->addJavascript($this->newsletter->config['js_url'].'mgr/widgets/home.panel.js');
 
-			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/newsletters.grid.js');
-			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/subscriptions.grid.js');
-			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/subscriptions.extras.grid.js');
-			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/widgets/lists.grid.js');
+			$this->addJavascript($this->newsletter->config['js_url'].'mgr/widgets/newsletters.grid.js');
+			$this->addJavascript($this->newsletter->config['js_url'].'mgr/widgets/subscriptions.grid.js');
+			$this->addJavascript($this->newsletter->config['js_url'].'mgr/widgets/subscriptions.data.grid.js');
+			$this->addJavascript($this->newsletter->config['js_url'].'mgr/widgets/lists.grid.js');
 			
-			$this->addLastJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/sections/home.js');
+			$this->addLastJavascript($this->newsletter->config['js_url'].'mgr/sections/home.js');
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return String.
 		 */
 		public function getPageTitle() {
@@ -48,11 +45,11 @@
 		}
 		
 		/**
-		* @acces public.
+		* @access public.
 		* @return String.
 		*/
 		public function getTemplateFile() {
-			return $this->modx->getOption('templates_path', $this->newsletter->config).'home.tpl';
+			return $this->newsletter->config['templates_path'].'home.tpl';
 		}
 	}
 

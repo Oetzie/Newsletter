@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -24,31 +21,31 @@
 
 	class NewsletterSubscriptionsCreateProcessor extends modObjectCreateProcessor {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $classKey = 'NewsletterSubscriptions';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default');
+		public $languageTopics = array('newsletter:default', 'newsletter:site', 'site:newsletter');
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $objectType = 'newsletter.subscriptions';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Object.
 		 */
 		public $newsletter;
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
@@ -62,16 +59,22 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 		public function beforeSave() {
 			if (null !== ($lists = $this->getProperty('lists'))) {
 				foreach ($lists as $id) {
-					if (null !== ($list = $this->modx->newObject('NewsletterListsSubscriptions', array('list_id' => $id)))) {
+					if (null !== ($list = $this->modx->newObject('NewsletterListsSubscriptions'))) {
+						$list->fromArray(array(
+							'list_id' => $id
+						));
+					
 						$this->object->addMany($list);
 					}
 				}
+				
+				$this->object->edited = uniqid();
 			}
 			
 			return parent::beforeSave();
@@ -79,4 +82,5 @@
 	}
 	
 	return 'NewsletterSubscriptionsCreateProcessor';
+	
 ?>

@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -33,6 +30,7 @@
 			'name'			=> null,
 			'email'			=> null,
 			'token'			=> null,
+			'data'			=> null,
 			'active'		=> null,
 			'edited'		=> null,
 			'editedon' 		=> null
@@ -67,6 +65,11 @@
 			'token' 	=> array(
 				'dbtype' 	=> 'varchar',
 				'precision' => '255',
+				'phptype' 	=> 'string',
+				'null' 		=> false
+			),
+			'data' 		=> array(
+				'dbtype' 	=> 'text',
 				'phptype' 	=> 'string',
 				'null' 		=> false
 			),
@@ -114,13 +117,6 @@
 			'NewsletterListsSubscriptions' => array(
 				'local' 		=> 'id',
 				'class' 		=> 'NewsletterListsSubscriptions',
-				'foreign'		=> 'subscription_id',
-				'owner' 		=> 'local',
-				'cardinality' 	=> 'many'
-			),
-			'NewsletterSubscriptionsExtras' => array(
-				'local' 		=> 'id',
-				'class' 		=> 'NewsletterSubscriptionsExtras',
 				'foreign'		=> 'subscription_id',
 				'owner' 		=> 'local',
 				'cardinality' 	=> 'many'

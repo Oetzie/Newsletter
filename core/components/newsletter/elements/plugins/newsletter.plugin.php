@@ -1,12 +1,9 @@
 <?php
 
-	/**
+    /**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -29,11 +26,15 @@
 
         	    if ($newsletter instanceOf Newsletter) {
 			        if (in_array($modx->resource->template, $modx->getOption('template', $newsletter->config, array()))) {
-			            foreach ($modx->request->getParameters() as $key => $value) {
-			                if (false !== strstr($key, 'subscribe_')) {
-			                    $modx->setPlaceholder(str_replace('_', '.', $key), $value);
-			                } else if (false !== strstr($key, 'newsletter_')) {
-			                    $modx->setPlaceholder(str_replace('_', '.', $key), $value);
+			            $parameters = $modx->request->getParameters();
+			         
+			            if (isset($parameters['newsletter'])) {
+			                foreach (unserialize(str_rot13($parameters['newsletter'])) as $key => $value) {
+			                    if (false !== strstr($key, 'subscribe')) {
+			                    	$modx->setPlaceholder(str_replace('subscribe_', 'subscribe.', $key), $value);
+			                    } else if (false !== strstr($key, 'newsletter')) {
+			                    	$modx->setPlaceholder(str_replace('newsletter_', 'newsletter.', $key), $value);
+			                    }
 			                }
 			            }
 			        }

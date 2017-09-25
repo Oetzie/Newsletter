@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -22,7 +19,8 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))).'/config.core.php';
+	require_once dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/config.core.php';
+	
 	require_once MODX_CORE_PATH.'model/modx/modx.class.php';
 	
 	$modx = new modX();
@@ -39,7 +37,7 @@
 	$options = array();
 	
 	if (XPDO_CLI_MODE) {
-	    $options = getopt('', array('token::', 'id::', 'filter::', 'debug'));
+	    $options = getopt('', array('token::', 'id::', 'debug'));
 	} else {
 	    $options = $_GET;
 	}
@@ -53,10 +51,6 @@
 		
 		if (isset($options['id'])) {
 			$service->setNewsletterID($options['id']);
-		}
-		
-		if (isset($options['filter'])) {
-			$service->setNewsletterFilter(true);
 		}
 		
 		if (isset($options['debug'])) {

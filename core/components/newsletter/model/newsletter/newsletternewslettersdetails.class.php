@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -23,15 +20,19 @@
 	 */
 	 
 	class NewsletterNewslettersDetails extends xPDOSimpleObject {
-		public function getLists($modx) {
+		/**
+		 * @access public.
+		 * @retun Array.
+		 */
+		public function getLists() {
 			$lists = array();
 			
 			foreach (explode(',', $this->lists) as $list) {
-				$criterea = array(
+				$c = array(
 					'id'	=> trim($list)	
 				);
 				
-				if (null !== ($list = $modx->getObject('NewsletterLists', $criterea))) {
+				if (null !== ($list = $this->xpdo->getObject('NewsletterLists', $c))) {
 					$lists[] = $list;
 				}
 			}

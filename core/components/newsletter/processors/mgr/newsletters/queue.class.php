@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -22,59 +19,62 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class NewsletterNewslettersSendLiveProcessor extends modObjectUpdateProcessor {
+	class NewsletterNewslettersQueueProcessor extends modObjectUpdateProcessor {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $classKey = 'NewsletterNewsletters';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default');
+		public $languageTopics = array('newsletter:default', 'newsletter:site', 'site:newsletter');
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $objectType = 'newsletter.newsletters';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Object.
 		 */
 		public $newsletter;
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
 			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 
-			$this->setProperty('send_status', 1);
+			$this->setDefaultProperties(array(
+				'send_status' 	=> 1,
+				'send_date'		=> date('Y-m-d H:i:s', strtotime($this->getProperty('date').' '.$this->getProperty('time')))
+			));
 			
-			if (null !== $this->getProperty('send_days')) {
-				$this->setProperty('send_days', implode(',', $this->getProperty('send_days')));
+			if (null !== ($days = $this->getProperty('send_days'))) {
+				$this->setProperty('send_days', implode(',', $days));
 			}
 			
 			return parent::initialize();
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 	    public function beforeSave() {
 		    if (1 == $this->modx->getOption('site_status')) {
 			    if (null !== ($resource = $this->object->getNewsletterResource())) {
 				    if (in_array($resource->template, explode(',', $this->modx->getOption('newsletter.template')))) {
-					    if (strtotime($this->getProperty('send_date')) < strtotime(date('d-m-Y'))) {
-						    $this->addFieldError('send_date', $this->modx->lexicon('newsletter.newsletter_error_date'));
-					    } else if (strtotime($this->getProperty('send_date').' '.$this->getProperty('send_time')) < strtotime(date('d-m-Y H:i'))) {
-							$this->addFieldError('send_time', $this->modx->lexicon('newsletter.newsletter_error_date'));
+					    if (strtotime($this->getProperty('date')) < strtotime(date('d-m-Y'))) {
+						    $this->addFieldError('date', $this->modx->lexicon('newsletter.newsletter_error_date'));
+					    } else if (strtotime($this->getProperty('date').' '.$this->getProperty('time')) < strtotime(date('d-m-Y H:i'))) {
+							$this->addFieldError('time', $this->modx->lexicon('newsletter.newsletter_error_date'));
 					    } else {
 							$resource->fromArray(array(
 							    'published'	=> 1,
@@ -113,6 +113,6 @@
 		}
 	}
 	
-	return 'NewsletterNewslettersSendLiveProcessor';
+	return 'NewsletterNewslettersQueueProcessor';
 	
 ?>

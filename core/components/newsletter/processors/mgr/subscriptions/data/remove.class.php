@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -21,62 +18,67 @@
 	 * Newsletter; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
-
-	class NewslettersCancelProcessor extends modObjectUpdateProcessor {
+	 
+	class NewsletterSubscriptionsDataRemoveProcessor extends modProcessor {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
-		public $classKey = 'NewsletterNewsletters';
+		public $classKey = 'NewsletterSubscriptions';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default');
+		public $languageTopics = array('newsletter:default', 'newsletter:site', 'site:newsletter');
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
-		public $objectType = 'newsletter.newsletters';
+		public $objectType = 'newsletter.subscriptions';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Object.
 		 */
 		public $newsletter;
-
+		
 		/**
-		 * @acces public.
+		 * @accesss public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
 			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 
-			$this->setDefaultProperties(array(
-				'send_status'	=> 0,
-				'send_date'		=> '0000-00-00',
-				'send_time'		=> '00:00:00',
-				'send_days'		=> ''
-			));
-
 			return parent::initialize();
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
-	    public function beforeSave() {
-		    $this->modx->removeCollection('NewsletterListsNewsletters', array(
-		    	'newsletter_id' => $this->getProperty('id')
-		    ));
-		    
-		    return parent::beforeSave();
+		public function process() {
+			if (null !== ($object = $this->modx->getObject($this->classKey, $this->getProperty('id')))) {
+				$key = $this->getProperty('key');
+				
+				if ($object->isData($key)) {
+					$object->removeData($key);
+				}
+				
+				if ($object->save()) {
+					return $this->success('', $object->toArray());
+				}
+				
+				return $this->failure();
+			
+			} 
+			
+			return $this->failure($this->modx->lexicon('newsletter.subscription_data_error'));
 		}
 	}
 	
-	return 'NewslettersCancelProcessor';
+	
+	return 'NewsletterSubscriptionsDataRemoveProcessor';
 	
 ?>

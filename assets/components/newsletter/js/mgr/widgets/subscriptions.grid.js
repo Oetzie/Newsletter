@@ -2,38 +2,38 @@ Newsletter.grid.Subscriptions = function(config) {
     config = config || {};
     
 	config.tbar = [{
-        text	: _('newsletter.subscription_create'),
-        cls		:'primary-button',
-        handler	: this.createSubscription,
-        scope	: this
+        text		: _('newsletter.subscription_create'),
+        cls			: 'primary-button',
+        handler		: this.createSubscription,
+        scope		: this
 	}, {
-		text	: _('bulk_actions'),
-		menu	: [{
-			text	: _('newsletter.subscriptions_remove_selected'),
-			handler	: this.removeSelectedSubscriptions,
-			scope	: this
+		text		: _('bulk_actions'),
+		menu		: [{
+			text		: _('newsletter.subscriptions_remove_selected'),
+			handler		: this.removeSelectedSubscriptions,
+			scope		: this
 		}, '-', {
-			text	: _('newsletter.subscriptions_confirm_selected'),
-			name	: 'confirm',
-			handler	: this.confirmSelectedSubscriptions,
-			scope	: this
+			text		: _('newsletter.subscriptions_confirm_selected'),
+			type		: true,
+			handler		: this.confirmSelectedSubscriptions,
+			scope		: this
 		}, {
-			text	: _('newsletter.subscriptions_deconfirm_selected'),
-			name	: 'deconfirm',
-			handler	: this.confirmSelectedSubscriptions,
-			scope	: this
+			text		: _('newsletter.subscriptions_deconfirm_selected'),
+			type		: false,
+			handler		: this.confirmSelectedSubscriptions,
+			scope		: this
 		}, '-', {
-			text	: _('newsletter.subscriptions_move_selected'),
-			handler	: this.moveSelectedSubscriptions,
-			scope	: this
+			text		: _('newsletter.subscriptions_move_selected'),
+			handler		: this.moveSelectedSubscriptions,
+			scope		: this
 		}, '-', {
-			text	: _('newsletter.subscriptions_import'),
-			handler	: this.importSubscriptions,
-			scope	: this
+			text		: _('newsletter.subscriptions_import'),
+			handler		: this.importSubscriptions,
+			scope		: this
 		}, {
-			text	: _('newsletter.subscriptions_export'),
-			handler	: this.exportSubscriptions,
-			scope	: this
+			text		: _('newsletter.subscriptions_export'),
+			handler		: this.exportSubscriptions,
+			scope		: this
 		}]
 	}, {
 		xtype		: 'checkbox',
@@ -44,16 +44,16 @@ Newsletter.grid.Subscriptions = function(config) {
 			'check'		: {
 				fn 			: this.autoRefresh,
 				scope 		: this	
-			},
+			}
 		}
 	}, '->', {
-    	xtype		: 'newsletter-combo-confirm',
-    	name		: 'newsletter-filter-confirm-subscriptions',
-        id			: 'newsletter-filter-confirm-subscriptions',
-        emptyText	: _('newsletter.filter_confirm'),
+    	xtype		: 'newsletter-combo-lists',
+    	name		: 'newsletter-filter-lists-subscriptions',
+        id			: 'newsletter-filter-lists-subscriptions',
+        emptyText	: _('newsletter.filter_lists'),
         listeners	: {
         	'select'	: {
-            	fn			: this.filterConfirm,
+            	fn			: this.filterList,
             	scope		: this   
 		    }
 		}
@@ -163,7 +163,7 @@ Newsletter.grid.Subscriptions = function(config) {
         paging		: true,
         pageSize	: MODx.config.default_per_page > 30 ? MODx.config.default_per_page : 30,
         sortBy		: 'email',
-        refreshCmp 	: '',
+        refreshGrid : [],
         gridRefresh	: {
 	        timer 		: null,
 	        duration	: 30,
@@ -176,26 +176,24 @@ Newsletter.grid.Subscriptions = function(config) {
 
 Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
 	autoRefresh: function(tf, nv) {
-		var scope = this;
-		
-		if (nv) {
-			scope.config.gridRefresh.timer = setInterval(function() {
-				tf.setBoxLabel(_('newsletter.auto_refresh_grid') + ' (' + (scope.config.gridRefresh.duration - scope.config.gridRefresh.count) + ')');
+		if (tf.getValue()) {
+			this.config.refresher.timer = setInterval((function() {
+				tf.setBoxLabel(_('newsletter.auto_refresh_grid') + ' (' + (this.config.refresher.duration - this.config.refresher.count) + ')');
 				
-				if (0 == (scope.config.gridRefresh.duration - scope.config.gridRefresh.count)) {
-					scope.config.gridRefresh.count = 0;
+				if (0 == (this.config.refresher.duration - this.config.refresher.count)) {
+					this.config.refresher.count = 0;
 					
-					scope.getBottomToolbar().changePage(1);
+					this.refresh();
 				} else {
-					scope.config.gridRefresh.count++;
+					this.config.refresher.count++;
 				}
-			}, 1000);
+			}).bind(this), 1000);
 		} else {
-			clearInterval(scope.config.gridRefresh.timer);
+			clearInterval(this.config.refresher.timer);
 		}
 	},
-    filterConfirm: function(tf, nv, ov) {
-        this.getStore().baseParams.confirm = tf.getValue();
+    filterList: function(tf, nv, ov) {
+        this.getStore().baseParams.list = tf.getValue();
         
         this.getBottomToolbar().changePage(1);
     },
@@ -205,10 +203,10 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         this.getBottomToolbar().changePage(1);
     },
     clearFilter: function() {
-	    this.getStore().baseParams.confirm = '';
+	    this.getStore().baseParams.list = '';
 	    this.getStore().baseParams.query = '';
 	    
-	    Ext.getCmp('newsletter-filter-confirm-subscriptions').reset();
+	    Ext.getCmp('newsletter-filter-lists-subscriptions').reset();
 	    Ext.getCmp('newsletter-filter-search-subscriptions').reset();
 	    
         this.getBottomToolbar().changePage(1);
@@ -219,17 +217,21 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
 	        handler	: this.updateSubscription,
 	        scope	: this
 	    }, '-', {
+		    text	: _('newsletter.subscription_data'),
+		    handler	: this.subscriptionData,
+		    scope	: this
+	    }, '-', {
 		    text	: _('newsletter.subscription_remove'),
 		    handler	: this.removeSubscription,
 		    scope	: this
 		 }];
     },
-    rRefresh : function() {
-	    if ('string' == typeof this.config.refreshCmp) {
-		    Ext.getCmp(this.config.refreshCmp).refresh();
+    refreshGrids: function() {
+	    if ('string' == typeof this.config.refreshGrid) {
+		    Ext.getCmp(this.config.refreshGrid).refresh();
 	    } else {
-		    for (var i = 0; i < this.config.refreshCmp.length; i++) {
-			    Ext.getCmp(this.config.refreshCmp[i]).refresh();
+		    for (var i = 0; i < this.config.refreshGrid.length; i++) {
+			    Ext.getCmp(this.config.refreshGrid[i]).refresh();
 		    }
 		}
     },
@@ -246,7 +248,7 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             		fn			: function() {
             			this.getSelectionModel().clearSelections(true);
             			
-            			this.rRefresh();
+            			this.refreshGrids();
             			this.refresh();
             		},
 		        	scope		: this
@@ -270,7 +272,7 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             		fn			: function() {
 	            		this.getSelectionModel().clearSelections(true);
             			
-            			this.rRefresh();
+            			this.refreshGrids();
             			this.refresh();
             		},
 		        	scope		: this
@@ -280,6 +282,26 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         
         this.updateSubscriptionWindow.setValues(this.menu.record);
         this.updateSubscriptionWindow.show(e.target);
+    },
+    subscriptionData: function(btn, e) {
+        if (this.subscriptionDataWindow) {
+	        this.subscriptionDataWindow.destroy();
+        }
+        
+        this.subscriptionDataWindow = MODx.load({
+	        xtype		: 'newsletter-window-subscription-data',
+	        record		: this.menu.record,
+			buttons		: [{
+	    		text    	: _('ok'),
+	    		cls			: 'primary-button',
+	    		handler		: function() {
+	    			this.subscriptionDataWindow.close();
+	    		},
+	    		scope		: this
+			}]
+        });
+        
+        this.subscriptionDataWindow.show(e.target);
     },
     removeSubscription: function(btn, e) {
     	MODx.msg.confirm({
@@ -295,7 +317,7 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             		fn			: function() {
 	            		this.getSelectionModel().clearSelections(true);
             			
-						this.rRefresh();
+						this.refreshGrids();
 						this.refresh();
             		},
             		scope		: this
@@ -310,17 +332,15 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         	return false;
         }
         
-        if ('confirm' == btn.name) {
+        if (btn.type) {
 	        var data = {
 		    	title	: _('newsletter.subscriptions_confirm_selected'),
-		    	text	: _('newsletter.subscriptions_confirm_selected_confirm'),
-		    	type	: 1
+		    	text	: _('newsletter.subscriptions_confirm_selected_confirm')
 	        };
 	    } else {
 		    var data = {
 		    	title	: _('newsletter.subscriptions_deconfirm_selected'),
-		    	text	: _('newsletter.subscriptions_deconfirm_selected_confirm'),
-		    	type	: 0
+		    	text	: _('newsletter.subscriptions_deconfirm_selected_confirm')
 	        };
 		}
 		
@@ -330,7 +350,7 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         	url			: Newsletter.config.connector_url,
         	params		: {
             	action		: 'mgr/subscriptions/confirmselected',
-            	type		: data.type,
+            	type		: btn.type ? 1 : 0,
             	ids			: cs
             },
             listeners	: {
@@ -338,7 +358,7 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             		fn			: function() {
 	            		this.getSelectionModel().clearSelections(true);
         			
-						this.rRefresh();
+						this.refreshGrids();
 						this.refresh();
             		},
             		scope		: this
@@ -366,7 +386,7 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             		fn			: function() {
 	            		this.getSelectionModel().clearSelections(true);
         			
-						this.rRefresh();
+						this.refreshGrids();
 						this.refresh();
             		},
             		scope		: this
@@ -390,13 +410,13 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
 	        record		: {
 		    	ids		: cs  
 	        },
-	        closeAction	:'close',
+	        closeAction	: 'close',
 	        listeners	: {
 		        'success'	: {
             		fn			: function() {
 	            		this.getSelectionModel().clearSelections(true);
         			
-						this.rRefresh();
+						this.refreshGrids();
 						this.refresh();
             		},
 		        	scope		: this
@@ -423,7 +443,7 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
             		fn			: function() {
 	            		this.getSelectionModel().clearSelections(true);
 	            		
-	            		this.rRefresh();
+	            		this.refreshGrids();
             			this.refresh();
             		},
 		        	scope		: this
@@ -468,20 +488,18 @@ Ext.extend(Newsletter.grid.Subscriptions, MODx.grid.Grid, {
         this.exportSubscriptionsWindow.show(e.target);
     },
     renderActive: function(d, c, e) {
-	    if (0 == parseInt(d)) {
-			c.css = 'red'; 
-	    } else if (1 == parseInt(d)) {
+	    if (1 == parseInt(d)) {
 		    c.css = 'green';
-	    } else if (2 == parseInt(d)) {
-			c.css = 'orange';   
-		}
-		
-		if (0 == parseInt(d)) {
-			return _('newsletter.subscription_not_confirmed');
-	    } else if (1 == parseInt(d)) {
+		    
 		    return _('newsletter.subscription_confirmed');
 	    } else if (2 == parseInt(d)) {
+			c.css = 'orange'; 
+			
 			return _('newsletter.subscription_unsubscribed');
+		} else {
+			c.css = 'red'; 
+			
+			return _('newsletter.subscription_not_confirmed');
 		}
     },
 	renderDate: function(a) {
@@ -499,102 +517,89 @@ Newsletter.window.CreateSubscription = function(config) {
     config = config || {};
 
     Ext.applyIf(config, {
-    	height		: 500,
-    	width		: 700,
+    	autoHeight	: true,
         title 		: _('newsletter.subscription_create'),
         url			: Newsletter.config.connector_url,
         baseParams	: {
             action		: 'mgr/subscriptions/create'
         },
-        bodyStyle	: 'padding: 0',
         fields		: [{
-			xtype		: 'modx-vtabs',
-            deferredRender : false,
-			items		: [{
-				layout		: 'form',
-				title		: _('newsletter.subscription_general'),
-	            labelSeparator : '',
-				items		: [{
-	            	html		: '<p>' + _('newsletter.subscription_general_desc') + '</p>',
-	                cls			: 'panel-desc'
-	            }, {
-		        	layout		: 'column',
-		        	border		: false,
-		            defaults	: {
-		                layout		: 'form',
-		                labelSeparator : ''
-		            },
-		        	items		: [{
-			        	columnWidth	: .8,
-			        	items		: [{
-					        xtype		: 'textfield',
-				            fieldLabel	: _('newsletter.label_subscription_name'),
-				            description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_name_desc'),
-				            name		: 'name',
-				            anchor		: '100%'
-				        }, {
-				        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-				            html		: _('newsletter.label_subscription_name_desc'),
-				            cls			: 'desc-under'
-				        }]
-			        }, {
-				        columnWidth	: .2,
-				        style		: 'margin-right: 0;',
-				        items		: [{
-					        xtype		: 'checkbox',
-				            fieldLabel	: _('newsletter.label_subscription_confirmed'),
-				            description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_confirmed_desc'),
-				            name		: 'active',
-				            inputValue	: 1
-				        }, {
-				        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-				            html		: _('newsletter.label_subscription_confirmed_desc'),
-				            cls			: 'desc-under'
-				        }]
-			        }]	
-			    }, {
-		        	xtype		: 'textfield',
-		        	fieldLabel	: _('newsletter.label_subscription_email'),
-		        	description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_email_desc'),
-		        	name		: 'email',
-		        	anchor		: '100%',
-		        	allowBlank	: false
+        	layout		: 'column',
+        	border		: false,
+            defaults	: {
+                layout		: 'form',
+                labelSeparator : ''
+            },
+        	items		: [{
+	        	columnWidth	: .5,
+	        	items		: [{
+			        xtype		: 'textfield',
+		            fieldLabel	: _('newsletter.label_subscription_name'),
+		            description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_name_desc'),
+		            name		: 'name',
+		            anchor		: '100%'
 		        }, {
 		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-		            html		: _('newsletter.label_subscription_email_desc'),
+		            html		: _('newsletter.label_subscription_name_desc'),
 		            cls			: 'desc-under'
+		        }]
+	        }, {
+		        columnWidth	: .5,
+		        style		: 'margin-right: 0;',
+		        items		: [{
+			        xtype		: 'newsletter-combo-confirm',
+		            fieldLabel	: _('newsletter.label_subscription_confirmed'),
+		            description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_confirmed_desc'),
+		            name		: 'active',
+		            anchor		: '100%',
+		            allowBlank	: false,
 		        }, {
-			    	layout		: 'form',
-			    	labelSeparator : '',
-			    	hidden		: Newsletter.config.context,
-			    	items		: [{
-			        	xtype		: 'modx-combo-context',
-			        	fieldLabel	: _('newsletter.label_subscription_context'),
-			        	description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_context_desc'),
-			        	name		: 'context',
-			        	anchor		: '100%',
-			        	allowBlank	: false,
-			        	value 		: MODx.request.context || MODx.config.default_context,
-			        	baseParams	: {
-				        	action		: 'context/getlist',
-				        	exclude		: 'mgr'
-			        	}
-			        }, {
-			        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-			        	html		: _('newsletter.label_subscription_context_desc'),
-			        	cls			: 'desc-under'
-			        }]
-			    }, {
-			       	xtype		: 'label',
-			       	fieldLabel	: _('newsletter.label_subscription_lists')
-			    }, {
 		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-		            html		: _('newsletter.label_subscription_lists_desc'),
+		            html		: _('newsletter.label_subscription_confirmed_desc'),
 		            cls			: 'desc-under'
-		        }, {
-					xtype		: 'newsletter-checkbox-lists'
-				}]
-			}]
+		        }]
+	        }]	
+	    }, {
+        	xtype		: 'textfield',
+        	fieldLabel	: _('newsletter.label_subscription_email'),
+        	description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_email_desc'),
+        	name		: 'email',
+        	anchor		: '100%',
+        	allowBlank	: false
+        }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_subscription_email_desc'),
+            cls			: 'desc-under'
+        }, {
+	    	layout		: 'form',
+	    	labelSeparator : '',
+	    	hidden		: Newsletter.config.context,
+	    	items		: [{
+	        	xtype		: 'modx-combo-context',
+	        	fieldLabel	: _('newsletter.label_subscription_context'),
+	        	description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_context_desc'),
+	        	name		: 'context',
+	        	anchor		: '100%',
+	        	allowBlank	: false,
+	        	value 		: MODx.request.context || MODx.config.default_context,
+	        	baseParams	: {
+		        	action		: 'context/getlist',
+		        	exclude		: 'mgr'
+	        	}
+	        }, {
+	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+	        	html		: _('newsletter.label_subscription_context_desc'),
+	        	cls			: 'desc-under'
+	        }]
+	    }, {
+	       xtype		: 'label',
+	       fieldLabel	: _('newsletter.label_subscription_lists')
+	    }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('newsletter.label_subscription_lists_desc'),
+            cls			: 'desc-under'
+        }, {
+			xtype		: 'newsletter-checkbox-lists'
 		}]
     });
     
@@ -609,117 +614,92 @@ Newsletter.window.UpdateSubscription = function(config) {
     config = config || {};
     
     Ext.applyIf(config, {
-    	height		: 500,
-    	width		: 700,
+	    autoHeight	: true,
         title 		: _('newsletter.subscription_update'),
         url			: Newsletter.config.connector_url,
         baseParams	: {
             action		: 'mgr/subscriptions/update'
         },
-        bodyStyle	: 'padding: 0',
         fields		: [{
             xtype		: 'hidden',
             name		: 'id'
         }, {
-			xtype		: 'modx-vtabs',
-            deferredRender : false,
-			items		: [{
-				layout		: 'form',
-				title		: _('newsletter.subscription_general'),
-	            labelSeparator : '',
-				items		: [{
-	            	html		: '<p>' + _('newsletter.subscription_general_desc') + '</p>',
-	                cls			: 'panel-desc'
-	            }, {
-		        	layout		: 'column',
-		        	border		: false,
-		            defaults	: {
-		                layout		: 'form',
-		                labelSeparator : ''
-		            },
-		        	items		: [{
-			        	columnWidth	: .8,
-			        	items		: [{
-					        xtype		: 'textfield',
-				            fieldLabel	: _('newsletter.label_subscription_name'),
-				            description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_name_desc'),
-				            name		: 'name',
-				            anchor		: '100%'
-				        }, {
-				        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-				            html		: _('newsletter.label_subscription_name_desc'),
-				            cls			: 'desc-under'
-				        }]
-			        }, {
-				        columnWidth	: .2,
-				        style		: 'margin-right: 0;',
-				        items		: [{
-					        xtype		: 'checkbox',
-				            fieldLabel	: _('newsletter.label_subscription_confirmed'),
-				            description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_confirmed_desc'),
-				            name		: 'active',
-				            inputValue	: 1
-				        }, {
-				        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-				            html		: _('newsletter.label_subscription_confirmed_desc'),
-				            cls			: 'desc-under'
-				        }]
-			        }]	
-			    }, {
-		        	xtype		: 'textfield',
-		        	fieldLabel	: _('newsletter.label_subscription_email'),
-		        	description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_email_desc'),
-		        	name		: 'email',
-		        	anchor		: '100%',
-		        	allowBlank	: false
+	    	layout		: 'column',
+	    	border		: false,
+	        defaults	: {
+	            layout		: 'form',
+	            labelSeparator : ''
+	        },
+	    	items		: [{
+	        	columnWidth	: .5,
+	        	items		: [{
+			        xtype		: 'textfield',
+		            fieldLabel	: _('newsletter.label_subscription_name'),
+		            description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_name_desc'),
+		            name		: 'name',
+		            anchor		: '100%'
 		        }, {
 		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-		            html		: _('newsletter.label_subscription_email_desc'),
+		            html		: _('newsletter.label_subscription_name_desc'),
 		            cls			: 'desc-under'
+		        }]
+	        }, {
+		        columnWidth	: .5,
+		        style		: 'margin-right: 0;',
+		        items		: [{
+			        xtype		: 'newsletter-combo-confirm',
+		            fieldLabel	: _('newsletter.label_subscription_confirmed'),
+		            description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_confirmed_desc'),
+		            name		: 'active',
+		            anchor		: '100%',
+		            allowBlank	: false,
 		        }, {
-			    	layout		: 'form',
-			    	labelSeparator : '',
-			    	hidden		: Newsletter.config.context,
-			    	items		: [{
-			        	xtype		: 'modx-combo-context',
-			        	fieldLabel	: _('newsletter.label_subscription_context'),
-			        	description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_context_desc'),
-			        	name		: 'context',
-			        	anchor		: '100%',
-			        	allowBlank	: false,
-			        	baseParams	: {
-				        	action		: 'context/getlist',
-				        	exclude		: 'mgr'
-			        	}
-			        }, {
-			        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-			        	html		: _('newsletter.label_subscription_context_desc'),
-			        	cls			: 'desc-under'
-			        }]
-			    }, {
-			       	xtype		: 'label',
-			       	fieldLabel	: _('newsletter.label_subscription_lists')
-			    }, {
 		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-		            html		: _('newsletter.label_subscription_lists_desc'),
+		            html		: _('newsletter.label_subscription_confirmed_desc'),
 		            cls			: 'desc-under'
-		        }, {
-					xtype		: 'newsletter-checkbox-lists',
-					value		: config.record.lists
-				}]
-			}, {
-				layout		: 'form',
-				title		: _('newsletter.subscription_extra'),
-	            labelSeparator : '',
-				items		: [{
-	            	html		: '<p>' + _('newsletter.subscription_extra_desc') + '</p>',
-	                cls			: 'panel-desc'
-	            }, {
-	                xtype			: 'newsletter-grid-subscriptions-extras',
-	                record			: config.record,
-	                preventRender	: true
-	            }]
+		        }]
+	        }]	
+	    }, {
+	    	xtype		: 'textfield',
+	    	fieldLabel	: _('newsletter.label_subscription_email'),
+	    	description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_email_desc'),
+	    	name		: 'email',
+	    	anchor		: '100%',
+	    	allowBlank	: false
+	    }, {
+	    	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+	        html		: _('newsletter.label_subscription_email_desc'),
+	        cls			: 'desc-under'
+	    }, {
+	    	layout		: 'form',
+	    	labelSeparator : '',
+	    	hidden		: Newsletter.config.context,
+	    	items		: [{
+	        	xtype		: 'modx-combo-context',
+	        	fieldLabel	: _('newsletter.label_subscription_context'),
+	        	description	: MODx.expandHelp ? '' : _('newsletter.label_subscription_context_desc'),
+	        	name		: 'context',
+	        	anchor		: '100%',
+	        	allowBlank	: false,
+	        	baseParams	: {
+		        	action		: 'context/getlist',
+		        	exclude		: 'mgr'
+	        	}
+	        }, {
+	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+	        	html		: _('newsletter.label_subscription_context_desc'),
+	        	cls			: 'desc-under'
 	        }]
+	    }, {
+	       xtype		: 'label',
+	       fieldLabel	: _('newsletter.label_subscription_lists')
+	    }, {
+	    	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+	        html		: _('newsletter.label_subscription_lists_desc'),
+	        cls			: 'desc-under'
+	    }, {
+			xtype		: 'newsletter-checkbox-lists',
+			value		: config.record.lists
 		}]
     });
     
@@ -729,6 +709,30 @@ Newsletter.window.UpdateSubscription = function(config) {
 Ext.extend(Newsletter.window.UpdateSubscription, MODx.Window);
 
 Ext.reg('newsletter-window-subscription-update', Newsletter.window.UpdateSubscription);
+
+Newsletter.window.SubscriptionData = function(config) {
+    config = config || {};
+    
+    Ext.applyIf(config, {
+	    width		: 600,
+        autoHeight	: 550,
+        title 		: _('newsletter.subscription_data'),
+        fields		: [{
+        	html		: '<p>' + _('newsletter.subscription_data_desc') + '</p>',
+            cls			: 'panel-desc'
+        }, {
+            xtype			: 'newsletter-grid-subscriptions-data',
+            record			: config.record,
+            preventRender	: true
+        }]
+    });
+    
+    Newsletter.window.SubscriptionData.superclass.constructor.call(this, config);
+};
+
+Ext.extend(Newsletter.window.SubscriptionData, MODx.Window);
+
+Ext.reg('newsletter-window-subscription-data', Newsletter.window.SubscriptionData);
 
 Newsletter.window.MoveSelectedSubscriptions = function(config) {
     config = config || {};
@@ -892,7 +896,7 @@ Newsletter.combo.SubscriptionConfirmTypes = function(config) {
             ]
         }),
         remoteSort	: ['label', 'asc'],
-        hiddenName	: 'type',
+        hiddenName	: 'active',
         valueField	: 'type',
         displayField: 'label',
         mode		: 'local'

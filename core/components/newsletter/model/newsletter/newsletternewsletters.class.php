@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -22,85 +19,141 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 	 
-	class NewsletterNewsletters extends xPDOSimpleObject {	
+	class NewsletterNewsletters extends xPDOSimpleObject {
 		/**
-		 * @acces public.
+		 * @access public.
+		 * @return Object.
+		 */
+		public function getNewsletterResource() {
+			$c = array(
+				'id'		=> $this->resource_id,
+				'deleted'	=> 0
+			);
+			
+			if (null !== ($resource = $this->getOne('modResource', $c))) {
+				return $resource;
+			}
+			
+			return null;
+		}
+		
+		/**
+		 * @access public.
+		 * @return Array.
+		 */
+		public function setSendStatus() {
+			if (null !== ($resource = $this->getNewsletterResource())) {
+				if (1 == $this->send_repeat || 0 == $this->send_repeat) {
+					return array(
+						'send_status'	=> 2,
+						'send_repeat'	=> 0,
+						'send_date'		=> date('Y-m-d H:i:s')
+					);
+				}
+				
+				$names 	= array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
+				$days 	= array_filter(explode(',', $this->send_days));
+				
+				if (0 < count($days)) {
+					if (7 == ($current = date('N'))) {
+						$next = current($days);
+					} else {
+						if ($current == end($days)) {
+							reset($days);
+							
+							$next = current($days);
+						} else {
+							$days = array_slice($days, array_search($current, $days));
+							
+							$next = next($days);
+						}
+					}
+					
+					$next = date('Y-m-d', strtotime('Next '.$names[$next - 1]));
+				} else {
+					$next = date('Y-m-d', strtotime('+1 days'));
+				}
+				
+				if (-1 == $this->send_repeat) {
+					$repeat = -1;
+				} else {
+					$repeat = (int) $this->send_repeat - 1;
+				}
+				
+				return array(
+					'send_status'	=> 1,
+					'send_repeat'	=> $repeat,
+					'send_date'		=> $next.' '.date('H:i:s', strtotime($this->send_date))
+				);
+			}
+		}
+		
+		/**
+		 * @access public.
 		 * @return String|Boolean.
 		 */
 		public function getSendStatus() {
-			if (false !== ($resource = $this->getNewsletterResource())) {
+			if (null !== ($resource = $this->getNewsletterResource())) {
 				if (1 == $this->send_status) {
 					if (-1 == $this->send_repeat || 0 < $this->send_repeat) {
-						$timestamp = strtotime($this->send_date.' '.$this->send_time);
-						
 						$start 	= strtotime(date('Y-m-d H:00:00'));
-						$end	= $start + ((60 * 60) - 1);
-						
-						if ($timestamp >= $start && $timestamp <= $end) {
+						$end	= strtotime(date('Y-m-d H:00:00')) + ((60 * 60) - 1);
+
+						if (strtotime($this->send_date) >= $start && strtotime($this->send_date) <= $end) {
 							$days = array_filter(explode(',', $this->send_days));
 	
 							if (in_array(date('N'), $days) || 0 == count($days)) {
 								return true;
-							} else {
-								return 'date';
 							}
-						} else {
-							return 'date';
 						}
-					} else {
-						return 'repeat';
 					}
-				} else {
-					return 'status';
 				}
-			} else {
-				return 'resource';
 			}
 
-			return true;
+			return false;
 		}
 		
 		/**
-		 * @acces public.
-		 * @param Object $modx.
+		 * @access public.
 		 * @param String $type.
 		 * @param Array $placeholders.
 		 * @return String.
 		 */
-		public function getNewsletter($modx, $type = 'content', $placeholders = array()) {
+		public function getNewsletter($type = 'content', $placeholders = array()) {
 			if (false !== ($resource = $this->getNewsletterResource())) {
 				$output = '';
-
-				if ('content' == $type) {
-					$curl = curl_init();
+				
+				switch ($type) {
+					case 'content':
+						$curl = curl_init();
 										
-					curl_setopt_array($curl, array(
-						CURLOPT_HEADER			=> false,
-						CURLOPT_RETURNTRANSFER	=> true,
-						CURLOPT_URL				=> $modx->makeUrl($resource->id, $resource->context_key, $placeholders, 'full')
-					));
-					
-					$output = curl_exec($curl);
-					
-					curl_close($curl);
-				} else if ('title' == $type) {
-					foreach ($placeholders as $key => $value) {
-						unset($placeholders[$key]);
-						
-						$placeholders[str_replace('_', '.', $key)] = $value;
-					}
-					
-					if (null !== ($title = $modx->newObject('modChunk'))) {
-						$title->fromArray(array(
-						    'name' => sprintf('newsletter-title-%s', uniqid())
+						curl_setopt_array($curl, array(
+							CURLOPT_HEADER			=> false,
+							CURLOPT_RETURNTRANSFER	=> true,
+							CURLOPT_URL				=> html_entity_decode($this->xpdo->makeUrl($resource->id, $resource->context_key, array(
+								'newsletter' => str_rot13(serialize($placeholders))
+							), 'full'))
 						));
 						
-						$title->setCacheable(false);
+						$output = curl_exec($curl);
 						
-						$output = $title->process($placeholders, $resource->pagetitle);
-					}    	
+						curl_close($curl);
+						
+						break;
+					case 'title':
+						if (null !== ($title = $this->xpdo->newObject('modChunk'))) {
+							$title->fromArray(array(
+							    'name' => sprintf('newsletter-title-%s', uniqid())
+							));
+							
+							$title->setCacheable(false);
+							
+							$output = $title->process($placeholders, $resource->pagetitle);
+						}
+						
+						break;
 				}
-				
+
 				return $output;
 			}
 			
@@ -108,13 +161,13 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Array.
 		 */
 		public function getLists() {
 			$output = array();
 			
-			if (false !== ($resource = $this->getNewsletterResource())) {
+			if (null !== ($resource = $this->getNewsletterResource())) {
 				foreach ($this->getMany('NewsletterListsNewsletters') as $list) {
 					if (null !== ($list = $list->getOne('NewsletterLists'))) {
 						$output[] = $list;
@@ -126,25 +179,28 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Array.
 		 */
 		public function getSubscriptions() {
 			$output = array();
 			
-			if (false !== ($resource = $this->getNewsletterResource())) {
+			if (null !== ($resource = $this->getNewsletterResource())) {
 				foreach ($this->getLists() as $list) {
 					$output[$list->name] = $list->getSubscriptions($resource->context_key);
 				}
 				
-				if (!empty($this->send_emails)) {	
+				$emails = array_filter(explode(',', $this->send_emails));
+				
+				if (0 < count($emails)) {
 					$output['emails'] = array();
 								
-					foreach (explode(',', $this->send_emails) as $email) {
+					foreach ($emails as $email) {
 						if (!empty($email)) {
 							$output['emails'][trim($email)] = array(
-								'name'	=> '',
-								'email'	=> trim($email)	
+								'name'		=> '',
+								'email'		=> trim($email),
+								'context'	=> $resource->context_key
 							);
 						}
 					}
@@ -155,36 +211,18 @@
 		}
 		
 		/**
-		 * @acces public.
-		 * @param Boolean $reverse.
-		 * @return Array.
-		 */
-		public function getSendDetails($reverse = false) {
-			$output = array();
-			
-			if (false !== ($resource = $this->getNewsletterResource())) {							
-				foreach ($this->getMany('NewsletterNewslettersDetails') as $detail) {
-					$output[] = $detail;
-				}
-			}
-			
-			return $reverse ? array_reverse($output) : $output;
-		}
-		
-		/**
-		 * @acces public.
-		 * @param Object $modx.
+		 * @access public.
 		 * @param Array $emails.
 		 * @return Boolean.
 		 */
-		public function setSendDetail($modx, $emails = array()) {
+		public function setSendDetails($emails = array()) {
 			$lists = array();
 			
 			foreach ($this->getLists() as $list) {
 				$lists[] = $list->id;
 			}
 			
-			if (null !== ($detail = $modx->newObject('NewsletterNewslettersDetails'))) {
+			if (null !== ($detail = $this->xpdo->newObject('NewsletterNewslettersDetails'))) {
 				$detail->fromArray(array(
 					'lists'			=> implode(', ', $lists),
 					'emails'		=> implode(', ', $emails),
@@ -198,20 +236,21 @@
 		}
 		
 		/**
-		 * @acces public.
-		 * @return Object.
+		 * @access public.
+		 * @param Boolean $reverse.
+		 * @param Integer $limit.
+		 * @return Array.
 		 */
-		public function getNewsletterResource() {
-			$criterea = array(
-				'id'		=> $this->resource_id,
-				'deleted'	=> 0
-			);
+		public function getSendDetails($reverse = true, $limit = 10) {
+			$output = array();
 			
-			if (null !== ($resource = $this->getOne('modResource', $criterea))) {
-				return $resource;
+			if (false !== ($resource = $this->getNewsletterResource())) {							
+				foreach ($this->getMany('NewsletterNewslettersDetails') as $detail) {
+					$output[] = $detail;
+				}
 			}
 			
-			return false;
+			return array_slice($reverse ? array_reverse($output) : $output, 0, $limit);
 		}
 	}
 	

@@ -42,11 +42,4 @@
 	$_lang['newsletter.newsletter_footer'] 						= 'This email was sent to <a href="mailto:[[+subscribe.email]]" target="_blank" title="[[+subscribe.email]]">[[+subscribe.email]]</a> - If you want to unsubscribe you for our emails please click <a href="[[~[[++newsletter.page_unsubscribe]]? &scheme=`full`]]&email=[[+subscribe.email]]" target="_blank" title="here">here</a>.';
 	$_lang['newsletter.view_website']							= 'Visit our website for more information.';
 	
-	/* Custom */
-	
-	$_lang['newsletter.list_test'] 								= 'Test';
-	$_lang['newsletter.list_test_desc'] 						= 'The mailinglist with all the test subscriptions to test the newsletters.';
-	$_lang['newsletter.list_default'] 							= 'Default';
-	$_lang['newsletter.list_default_desc'] 						= 'The mailinglist with all the subscriptions from the website.';
-	
 ?>

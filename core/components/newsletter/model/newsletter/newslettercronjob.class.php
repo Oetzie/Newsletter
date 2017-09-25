@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -24,33 +21,37 @@
 	 
 	require_once dirname( __FILE__ ).'/newsletter.class.php';
 
-	class NewsletterCronjob extends Newsletter {	    
+	class NewsletterCronjob extends Newsletter {
 		/**
-		 * @acces protected.
+		 * @access protected.
+		 * @var Array.
+		 */
+	    protected $timer = array(
+	    	'start'	=> null,
+	    	'end'	=> null,
+	    	'time'	=> null
+	    );
+	        
+		/**
+		 * @access protected.
 		 * @var String.
 		 */
 		protected $token = '';
 		
 		/**
-		 * @acces protected.
+		 * @access protected.
 		 * @var Integer.
 		 */
 	    protected $newsletterID = null;
 	    
 	    /**
-		 * @acces protected.
-		 * @var String.
-		 */
-	    protected $newsletterFilter = null;
-	    
-	    /**
-		 * @acces protected.
+		 * @access protected.
 		 * @var Boolean.
 		 */
 	    protected $debugMode = false;
 	    
 	    /**
-		 * @acces protected.
+		 * @access protected.
 		 * @var Array.
 		 */
 	    protected $logs = array(
@@ -60,7 +61,7 @@
 	    );
 	    
 	    /**
-		 * @acces public.
+		 * @access public.
 		 * @param Object $modx.
 		 * @param Array $config.
 		*/
@@ -69,7 +70,7 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @param String $token.
 		 * @return Boolean.
 		 */
@@ -80,7 +81,7 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return String.
 		 */
 		public function getToken() {
@@ -88,7 +89,7 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @param Integer $newsletterID.
 		 * @return Boolean.
 		 */
@@ -99,7 +100,7 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Integer.
 		 */
 		public function getNewsletterID() {
@@ -107,26 +108,7 @@
 		}
 		
 		/**
-		 * @acces public.
-		 * @param String $newsletterFilter.
-		 * @retun Boolean.
-		 */
-		public function setNewsletterFilter($newsletterFilter) {
-			$this->newsletterFilter = $newsletterFilter;
-			
-			return true;
-		}
-		
-		/**
-		 * @acces public.
-		 * @return String.
-		 */
-		public function getNewsletterFilter() {
-			return $this->newsletterFilter;
-		}
-		
-		/**
-	     * @acces public.
+	     * @access public.
 	     * @param Boolean $debugMode.
 	     * @return Boolean.
 	     */
@@ -141,15 +123,37 @@
 	    }
 	
 	    /**
-	     * @acces public.
+	     * @access public.
 	     * @return Boolean.
 	     */
 	    public function getDebugMode() {
 	        return $this->debugMode;
 	    }
 	    
+	    /**
+	     * @access protected.
+	     * @return Boolean.
+	     */
+	    protected function setTimer($type) {
+		    $this->timer[$type] = microtime(true);
+		    
+		    switch ($type) {
+				case 'start':
+					$this->log('Start send process at '.date('d-m-Y H:i:s').'.');
+					
+					break;
+				case 'end':
+					$this->timer['time'] = $this->timer['end'] - $this->timer['start'];
+					 
+					$this->log('End send process at '.date('d-m-Y H:i:s').'.');
+					$this->log('Total execution time in seconds: '.number_format($this->timer['time'], 2).'.');
+				
+					break;
+		    }
+	    }
+	    
 		/**
-	     * @acces protected.
+	     * @access protected.
 	     * @param String $message.
 	     * @param String $level.
 	     * @return Boolean.
@@ -197,7 +201,7 @@
 	    }
 	    
 	    /**
-	     * @acces protected.
+	     * @access protected.
 	     * @param String $string.
 	     * @param String $color.
 	     * @return String.
@@ -228,130 +232,274 @@
 	    }
 	    
 	    /**
-		 * @acces public.
+		 * @access public.
 		 * @return Boolean.
 		 */
 		public function run() {
+			$this->setState('start');
+			$this->setTimer('start');
+			
+			$this->send();
+			
+			$this->setTimer('end');
+			$this->setState('end');
+
+			return true;
+		}
+		
+		/**
+		 * @access protected.
+		 * @param String $type.
+		 * @return Boolean.
+		 */
+		protected function setState($type) {
+			switch ($type) {
+				case 'start':
+					
+					break;
+				case 'end':
+					if ($log = $this->setLogFile()) {
+						if (1 == $this->modx->getOption('newsletter.log_send') && !$this->getDebugMode()) {
+							$this->sendLogFile($log);
+						}
+					}
+					
+					$this->cleanFiles();
+					
+					break;
+			}
+		
+			return true;
+		}
+		
+		/**
+	     * @access protected.
+	     * @return String|Boolean.
+	     */
+	    protected function setLogFile() {
+	        $path 		= dirname(dirname(dirname(__FILE__))).'/logs/';
+	        $filename 	= $path.date('Ymd_His').'.log';
+	
+	        if ($this->getDebugMode()) {
+	            $filename = $path.'_DEBUG_'.date('Ymd_His').'.log';
+	        }
+
+	        if (is_dir($path) && is_writable($path)) {
+		        if ($handle = fopen($filename, 'w')) {
+			        if (isset($this->logs['clean']) || 0 == count($this->logs['clean'])) {
+						fwrite($handle, implode(PHP_EOL, $this->logs['clean']));
+						fclose($handle);
+						
+						$this->log('Log file created `'.$filename.'`.', 'success');  
+						
+						return $filename;
+				    } else {
+						$this->log('No messages to log', 'notice'); 
+				    }
+		        } else {
+			        $this->log('Could not create log file.', 'notice');
+		        }
+	        } else {
+				$this->log('Log directory `'.$path.'` does not exists or is not readable.', 'notice');
+			}
+
+	        return false;
+	    }
+	    
+	    /**
+	     * @access protected.
+	     * @param String $log.
+	     * @return Boolean.
+	     */
+	    protected function sendLogFile($log) {
+	        if (null !== ($mail = $this->modx->getService('mail', 'mail.modPHPMailer'))) {
+	        	$mail->set(modMail::MAIL_FROM, $this->modx->getOption('emailsender'));
+				$mail->set(modMail::MAIL_FROM_NAME, $this->modx->getOption('site_name'));
+				$mail->set(modMail::MAIL_SUBJECT, $this->modx->getOption('site_name').' | Newsletter sync');
+	       
+				$mail->set(modMail::MAIL_BODY, $this->modx->getOption('newsletter.log_body', null, 'Log file is attached to this email.'));
+				
+				$mail->mailer->AddAttachment($log);
+	
+				$emails = $this->modx->getOption('newsletter.log_email', null, $this->modx->getOption('emailsender'));
+				
+				if (is_string($emails)) {
+					$emails = array($emails);
+				}
+				
+	            foreach ($emails as $email) {
+	                $mail->address('to', $email);
+	            }
+	
+		        if ($mail->send()) {
+			        $this->log('Log file send to `'.implode(', ', $emails).'`.', 'success');
+			    } else {
+		            $this->log('Log file send failed.', 'error');
+		        }
+	
+				$mail->reset();
+			}
+			
+			return true;
+	    }
+	    
+	    /**
+	     * @access protected.
+	     * @return Boolean.
+	     */
+	    protected function cleanFiles() {
+		    $this->log('Start clean up process.');
+		    
+		    $lifetime = $this->modx->getOption('newsletter.log_lifetime', null, 7);
+		    
+            $this->log('Log file lifetime is `'.$lifetime.'` days.');
+			
+	        $files = array(
+	        	'logs'	=> 0
+	        );
+	        
+	        $path = dirname(dirname(dirname(__FILE__))).'/logs/';
+	        
+	        foreach (glob($path.'*.log') as $file) {
+	            if (filemtime($file) < (time() - (86400 * $lifetime))) {
+	                unlink($file);
+	
+	                $files['logs']++;
+	            }
+	        }
+
+			$this->log($files['logs'].' log file(s) cleaned due lifetime.');
+			
+			$this->log('End clean up process.');
+			
+			return true;
+		}
+
+		/**
+		 * @access public.
+		 * @return Boolean.
+		 */
+		protected function send() {
 			if (null !== ($mail = $this->modx->getService('mail', 'mail.modPHPMailer'))) {
-				if ($this->getToken() == $this->modx->getOption('token', $this->config, null)) {
+				if ($this->getToken() == $this->modx->getOption('newsletter.token')) {
 					$newsletters = array();
 					
 					if (null !== ($id = $this->getNewsletterID())) {
-						if (null !== ($newsletter = $this->modx->getObject('NewsletterNewsletters', array('id' => $id)))) {
-							$newsletters[] = $newsletter;
+						$c = array(
+							'id' => $id
+						);
+						
+						if (null !== ($newsletter = $this->modx->getObject('NewsletterNewsletters', $c))) {
+							if ($newsletter->getSendStatus()) {
+								$newsletters[] = $newsletter;
+							}
 						}
 					} else {
 						foreach ($this->modx->getCollection('NewsletterNewsletters') as $newsletter) {
-							if (true === $newsletter->getSendStatus()) {
+							if ($newsletter->getSendStatus()) {
 								$newsletters[] = $newsletter;
 							}
 						}
 					}
+					
+					$total = count($newsletters);
 
-					if (1 == count($newsletters)) {
-						$this->log('1 newsletter in queue ready to send.', 'info');
+					if (1 == $total) {
+						$this->log('1 newsletter in queue to send.', 'info');
 					} else {
-						$this->log(count($newsletters).' newsletters in queue ready to send.', 'info');
+						$this->log($total.' newsletters in queue to send.', 'info');
 					}
 		
 					foreach ($newsletters as $key => $newsletter) {
-						$resource = $newsletter->getNewsletterResource();
-						
-						$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" ready to send.', 'info');
-						
-						$emails = array();
-
-						foreach ($newsletter->getSubscriptions() as $list => $subscriptions) {
-							if (null !== ($filter = $this->getNewsletterFilter())) {
-								$subscriptions = $modx->runSnippet($filter, array(
-									'subscriptions' => $subscriptions
-								));
-							}
-									
-							if ('emails' == $list) {
-								$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" send to individual '.count($subscriptions).' email addresses.', 'info');
-							} else {
-								$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" send to list "'.$this->modx->lexicon($list).'" width '.count($subscriptions).' subscriptions.', 'info');
-							}
+						if (null !== ($resource = $newsletter->getNewsletterResource())) {
+							$current 	= $key + 1;
+							$emails 	= array();
+							$lists 		= $newsletter->getSubscriptions();
 							
-							$count = 0;
+							$this->log($current.' of '.$total.': Newsletter "'.$resource->pagetitle.'" ready to send.', 'info');
 							
-							foreach ($subscriptions as $subscription) {
-								if (!in_array($subscription['email'], $emails)) {
-									$placeholdes = array();
-											
-									foreach ($subscription as $key => $value) {
-										$placeholders['subscribe.'.$key] = $value;	
-									}
-									
-									$placeholders = array_merge(array(
-										'newsletter.url' => $this->modx->makeUrl($resource->id, $resource->context_key, $placeholders, 'full')
-									), $placeholders);
-									
-									$mail->setHTML(true);
-									
-						    		$mail->set(modMail::MAIL_FROM, 		$this->modx->getOption('sender_email', $this->config));
-									$mail->set(modMail::MAIL_FROM_NAME, $this->modx->getOption('sender_name', $this->config));
-									$mail->set(modMail::MAIL_BODY, 		$newsletter->getNewsletter($this->modx, 'content', $placeholders));
-									$mail->set(modMail::MAIL_SUBJECT, 	$newsletter->getNewsletter($this->modx, 'title', $placeholders));
-									
-									$mail->address('to', $subscription['email']);
-									
-									if (!$this->getDebugMode()) {
-										if (!$mail->send()) {
-											$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" not sent to '.$subscription['email'].' because an email error.', 'error');
-										} else {
-											$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" sent to '.$subscription['email'].'.', 'info');
-										}
-									} else {
-										$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" sent to '.$subscription['email'].'.', 'info');
-									}
-							
-									$mail->reset();
-	
-									$emails[] = $subscription['email'];	
+							foreach ($lists as $list => $subscriptions) {
+								if ('' !== $newsletter->filter) {
+									$subscriptions = $this->modx->runSnippet($newsletter->filter, array(
+										'newsletter'	=> $newsletter,
+										'subscriptions' => $subscriptions
+									));
+								}
+										
+								if ('emails' == $list) {
+									$this->log($current.' of '.$total.': Newsletter "'.$resource->pagetitle.'" send to individual '.count($subscriptions).' email addresses.', 'info');
 								} else {
-									$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" not sent to '.$subscription['email'].' because an email duplicate.', 'notice');
+									$this->log($current.' of '.$total.': Newsletter "'.$resource->pagetitle.'" send to list "'.$this->modx->lexicon($list).'" with '.count($subscriptions).' subscriptions.', 'info');
 								}
 								
-								$count++;
+								$count = 0;
+								
+								foreach ($subscriptions as $subscription) {
+									if (!in_array($subscription['email'], $emails)) {
+										$placeholders = array();
+												
+										foreach ($subscription as $key => $value) {
+											$placeholders['subscribe.'.$key] = $value;	
+										}
+										
+										$placeholders = array_merge(array(
+											'newsletter.url' => $this->modx->makeUrl($resource->id, $resource->context_key, array(
+												'newsletter' => str_rot13(serialize($placeholders))
+											), 'full')
+										), $placeholders);
+
+										$mail->setHTML(true);
+										
+							    		$mail->set(modMail::MAIL_FROM, 		$this->modx->getOption('sender_email', $this->config));
+										$mail->set(modMail::MAIL_FROM_NAME, $this->modx->getOption('sender_name', $this->config));
+										$mail->set(modMail::MAIL_BODY, 		$newsletter->getNewsletter('content', $placeholders));
+										$mail->set(modMail::MAIL_SUBJECT, 	$newsletter->getNewsletter('title', $placeholders));
+										
+										$mail->address('to', $subscription['email']);
+										
+										if (!$this->getDebugMode()) {
+											if (!$mail->send()) {
+												$this->log($current.' of '.$total.': Newsletter "'.$resource->pagetitle.'" not sent to '.$subscription['email'].' because an email error.', 'error');
+											} else {
+												$this->log($current.' of '.$total.': Newsletter "'.$resource->pagetitle.'" sent to '.$subscription['email'].'.', 'info');
+											}
+										} else {
+											$this->log($current.' of '.$total.': Newsletter "'.$resource->pagetitle.'" sent to '.$subscription['email'].'.', 'info');
+										}
+								
+										$mail->reset();
+		
+										$emails[] = $subscription['email'];	
+									} else {
+										$this->log($current.' of '.$total.': Newsletter "'.$resource->pagetitle.'" not sent to '.$subscription['email'].' because an email duplicate.', 'notice');
+									}
+									
+									$count++;
+								}
 							}
-						}
-						
-						$this->log(($key + 1).' of '.count($newsletters).': Newsletter "'.$resource->pagetitle.'" sent to '.count($emails).' emails.', 'info');
-						
-						if (-1 == $newsletter->send_repeat) {
-							$newsletter->fromArray(array(
-								'send_status'	=> 1,
-								'send_date'		=> date('Y-m-d', strtotime('+1 days'))
-							));
-						} else if (0 == $newsletter->send_repeat) {
-							$newsletter->fromArray(array(
-								'send_status'	=> 2,
-								'send_date'		=> date('Y-m-d')
-							));
-						} else {
-							$newsletter->fromArray(array(
-								'send_status'	=> 1,
-								'send_repeat'	=> (int) $newsletter->send_repeat - 1,
-								'send_date'		=> date('Y-m-d', strtotime('+1 days'))
-							));
-						}
-											
-						if (!$this->getDebugMode()) {
-							$newsletter->setSendDetail($this->modx, $emails);
 							
-							$newsletter->save();
+							if (1 == count($emails)) {
+								$this->log($current.' of '.$total.': Newsletter "'.$resource->pagetitle.'" sent to 1 email.', 'info');
+							} else {
+								$this->log($current.' of '.$total.': Newsletter "'.$resource->pagetitle.'" sent to '.count($emails).' emails.', 'info');
+							}
+												
+							if (!$this->getDebugMode()) {
+								$newsletter->setSendDetails($emails);
+								
+								$newsletter->fromArray($newsletter->setSendStatus());
+								$newsletter->save();
+							}
 						}
 					}
 					
-					if (1 == count($newsletters)) {
+					if (1 == $total) {
 						$this->log('1 newsletter sent.', 'info');
 					} else {
-						$this->log(count($newsletters).' newsletters sent.', 'info');
+						$this->log($total.' newsletters sent.', 'info');
 					}
 				} else {
-					$this->log('No valid newsletter token', 'error');
+					$this->log('No valid newsletter token specified.', 'error');
 				}
 			} else {
 				$this->log('Cannot initialize service mail service.');

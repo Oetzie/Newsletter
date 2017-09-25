@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -24,37 +21,37 @@
 
 	class NewsletterListsGetListProcessor extends modObjectGetListProcessor {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $classKey = 'NewsletterLists';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default', 'newsletter:site');
+		public $languageTopics = array('newsletter:default', 'newsletter:site', 'site:newsletter');
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $defaultSortField = 'id';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $defaultSortDirection = 'ASC';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $objectType = 'newsletter.lists';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Object.
 		 */
 		public $newsletter;
@@ -67,9 +64,10 @@
 			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 
 			$this->setDefaultProperties(array(
-				'dateFormat' => $this->modx->getOption('manager_date_format') .', '. $this->modx->getOption('manager_time_format'),
-				'hidden'	 => false
+				'dateFormat' 	=> $this->modx->getOption('manager_date_format') .', '. $this->modx->getOption('manager_time_format'),
+				'hidden'	 	=> false
 			));
+
 			
 			return parent::initialize();
 		}
@@ -93,15 +91,27 @@
 		
 		/**
 		 * @acces public.
-		 * @param Object $query.
+		 * @param Object $object.
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
 			$array = array_merge($object->toArray(), array(
-				'subscriptions'			=> $object->getSubscriptionsCount(),
-				'name_formatted'		=> $this->modx->lexicon($object->name),
-				'description_formatted'	=> $this->modx->lexicon($object->description)
+				'name_formatted'		=> $object->name,
+				'description_formatted'	=> $object->description,
+				'subscriptions'			=> $object->getSubscriptionsCount()
 			));
+			
+			$translationKey = 'newsletter.list_'.$object->name;
+			
+			if ($translationKey !== ($translation = $this->modx->lexicon($translationKey))) {
+				$array['name_formatted'] = $translation;
+			}
+			
+			$translationKey = 'newsletter.list_'.$object->name.'_desc';
+			
+			if ($translationKey !== ($translation = $this->modx->lexicon($translationKey))) {
+				$array['description_formatted'] = $translation;
+			}
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
 				$array['editedon'] = '';

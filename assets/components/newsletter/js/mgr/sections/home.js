@@ -5,7 +5,17 @@ Ext.onReady(function() {
 Newsletter.page.Home = function(config) {
 	config = config || {};
 	
-	config.buttons = [{
+	config.buttons = [];
+	
+	if (Newsletter.config.branding_url) {
+		config.buttons.push({
+			text 		: 'Newsletter ' + Newsletter.config.version,
+			cls			: 'x-btn-branding',
+			handler		: this.loadBranding
+		});
+	}
+	
+	config.buttons.push({
     	xtype		: 'modx-combo-context',
     	hidden		: Newsletter.config.context,
         value 		: MODx.request.context || MODx.config.default_context,
@@ -21,11 +31,15 @@ Newsletter.page.Home = function(config) {
 			action		: 'context/getlist',
 			exclude		: 'mgr'
 		}
-    }, {
-		text		: _('help_ex'),
-		handler		: MODx.loadHelpPane,
-		scope		: this
-	}];
+    });
+    
+    if (Newsletter.config.branding_url_help) {
+        config.buttons.push({
+            text   : _('help_ex'),
+            handler: MODx.loadHelpPane,
+            scope  : this
+        });
+    }
 	
 	Ext.applyIf(config, {
 		components	: [{
@@ -38,6 +52,9 @@ Newsletter.page.Home = function(config) {
 };
 
 Ext.extend(Newsletter.page.Home, MODx.Component, {
+	loadBranding: function(btn) {
+		window.open(Newsletter.config.branding_url);
+	},
 	filterContext: function(tf) {
 		var request = MODx.request || {};
 		

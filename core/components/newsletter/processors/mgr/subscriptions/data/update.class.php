@@ -19,7 +19,7 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class NewsletterSubscriptionsUpdateProcessor extends modObjectUpdateProcessor {
+	class NewsletterSubscriptionsDataUpdateProcessor extends modProcessor {
 		/**
 		 * @access public.
 		 * @var String.
@@ -51,10 +51,10 @@
 		public function initialize() {
 			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 
-			if (null === $this->getProperty('active')) {
-				$this->setProperty('active', 0);
+			if (null !== ($key = $this->getProperty('key'))) {
+				$this->setProperty('key', strtolower(str_replace(array(' ', '-'), '_', $key)));	
 			}
-
+			
 			return parent::initialize();
 		}
 		
@@ -62,29 +62,29 @@
 		 * @access public.
 		 * @return Mixed.
 		 */
-		public function beforeSave() {
-			$this->modx->removeCollection('NewsletterListsSubscriptions', array(
-				'subscription_id' => $this->getProperty('id')
-			));
-			
-			if (null !== ($lists = $this->getProperty('lists'))) {
-				foreach ($lists as $id) {
-					if (null !== ($list = $this->modx->newObject('NewsletterListsSubscriptions'))) {
-						$list->fromArray(array(
-							'list_id' => $id
-						));
+		public function process() {
+			if (null !== ($object = $this->modx->getObject($this->classKey, $this->getProperty('id')))) {
+				$key = $this->getProperty('key');
+
+				if (!preg_match('/^([a-zA-Z0-9\_]+)$/si', $key)) {
+					$this->addFieldError('key', $this->modx->lexicon('newsletter.subscription_data_error_character'));
+				} else if (!$object->isData($key)) {
+					$this->addFieldError('key', $this->modx->lexicon('newsletter.subscription_data_error_exists'));
+				} else {
+					$object->setData($key, $this->getProperty('content'));
 					
-						$this->object->addMany($list);
+					if ($object->save()) {
+						return $this->success('', $object->toArray());
 					}
 				}
 				
-				$this->object->edited = uniqid();
-			}
+				return $this->failure();
+			} 
 			
-			return parent::beforeSave();
+			return $this->failure($this->modx->lexicon('newsletter.subscription_data_error'));
 		}
 	}
 	
-	return 'NewsletterSubscriptionsUpdateProcessor';
+	return 'NewsletterSubscriptionsDataUpdateProcessor';
 	
 ?>

@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -32,10 +29,10 @@
 			'resource_id'	=> null,
 			'send_status'	=> null,
 			'send_date'		=> null,
-			'send_time'		=> null,
 			'send_days'		=> null,
 			'send_repeat'	=> null,
 			'send_emails'	=> null,
+			'filter'		=> null,
 			'hidden'		=> null,
 			'editedon' 		=> null
 		),
@@ -62,16 +59,10 @@
 				'default'	=> 0
 			),
 			'send_date' => array(
-				'dbtype' 	=> 'date',
-				'phptype' 	=> 'date',
+				'dbtype' 	=> 'timestamp',
+				'phptype' 	=> 'timestamp',
 				'null' 		=> false,
-				'default'	=> '0000-00-00'
-			),
-			'send_time' => array(
-				'dbtype' 	=> 'time',
-				'phptype' 	=> 'time',
-				'null' 		=> false,
-				'default'	=> '00:00:00'
+				'default'	=> '0000-00-00 00:00:00'
 			),
 			'send_days' => array(
 				'dbtype' 	=> 'varchar',
@@ -89,6 +80,12 @@
 			'send_emails' => array(
 				'dbtype' 	=> 'text',
 				'precision' => '2048',
+				'phptype' 	=> 'string',
+				'null' 		=> false
+			),
+			'filter' 	=> array(
+				'dbtype' 	=> 'varchar',
+				'precision' => '75',
 				'phptype' 	=> 'string',
 				'null' 		=> false
 			),

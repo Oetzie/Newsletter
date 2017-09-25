@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <info@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -24,43 +21,43 @@
 
 	class NewslettersNewslettersGetListProcessor extends modObjectGetListProcessor {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $classKey = 'NewsletterNewsletters';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default', 'newsletter:lists');
+		public $languageTopics = array('newsletter:default', 'newsletter:site', 'site:newsletter');
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $defaultSortField = 'id';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $defaultSortDirection = 'DESC';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $objectType = 'newsletter.newsletters';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Object.
 		 */
 		public $newsletter;
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
@@ -75,7 +72,7 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @param Object $c.
 		 * @return Object.
 		 */
@@ -102,62 +99,66 @@
 		}
 		
 		/**
-		 * @acces public.
-		 * @param Object $query.
+		 * @access public.
+		 * @param Object $object.
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
-			$resource = $object->getNewsletterResource();
-
-			$array = array_merge($object->toArray(), array(
-				'resource_url'		=> $this->modx->makeUrl($resource->id, null, array(
-					'subscribe.name' 	=> $this->modx->getOption('sender_name', $this->newsletter->config, 'test'),
-					'subscribe.email'	=> $this->modx->getOption('sender_email', $this->newsletter->config, 'test@test.com')
-				), 'full'),
-				'name' 				=> $resource->pagetitle.($this->modx->hasPermission('tree_show_resource_ids') ? ' ('.$resource->id.')' : ''),
-				'published'			=> $resource->published,
-				'lists'				=> array(),
-				'send_details'		=> array()
-			));
-			
-			foreach ($object->getLists() as $list) {
-				$array['lists'][] = $list->id;
-			}
-			
-			foreach ($object->getSendDetails(true) as $detail) {
-				$lists = array();
+			if ($resource = $object->getNewsletterResource()) {
+				$array = array_merge($object->toArray(), array(
+					'name' 			=> $resource->pagetitle.($this->modx->hasPermission('tree_show_resource_ids') ? ' ('.$resource->id.')' : ''),
+					'published'		=> $resource->published,
+					'url'			=> $this->modx->makeUrl($resource->id, null, array(
+						'subscribe.name' 	=> $this->modx->getOption('sender_name', $this->newsletter->config, 'test'),
+						'subscribe.email'	=> $this->modx->getOption('sender_email', $this->newsletter->config, 'test@test.com')
+					), 'full'),
+					'send_days'		=> array_filter(explode(',', $object->send_days)),
+					'date'			=> date('Y-m-d', time() + (60 * 60 * 24)),
+					'time'			=> '00:00',
+					'lists'			=> array(),
+					'send_details'	=> array()
+				));
 				
-				foreach ($detail->getLists($this->modx) as $list) {
-					$lists[$list->id] = $this->modx->lexicon($list->name);	
+				foreach ($object->getLists() as $list) {
+					$array['lists'][] = $list->id;
 				}
 				
-				$array['send_details'][] = array_merge($detail->toArray(), array(
-					'lists'				=> array_keys($lists),
-					'lists_formatted'	=> implode(', ', $lists),
-					'emails'			=> explode(',', $detail->emails),
-					'timestamp' 		=> date($this->modx->getOption('manager_date_format', 'Y-m-d').', '.$this->modx->getOption('manager_time_format', 'H:i'), strtotime($detail->timestamp))
-				));
-			}
-			
-			if (in_array($array['send_date'], array('-001-11-30 00:00:00', '0000-00-00 00:00:00', '0000-00-00', null))) {
-				$array['send_date'] = '';
-			} else {
-				$array['send_date'] = date('Y-m-d', strtotime($array['send_date']));
+				foreach ($object->getSendDetails() as $detail) {
+					$lists = array();
+					
+					foreach ($detail->getLists() as $list) {
+						$lists[$list->id] = $this->modx->lexicon($list->name);	
+					}
+					
+					$array['send_details'][] = array_merge($detail->toArray(), array(
+						'lists'				=> array_keys($lists),
+						'lists_formatted'	=> implode(', ', $lists),
+						'emails_count'		=> explode(',', $detail->emails),
+						'timestamp' 		=> date($this->modx->getOption('manager_date_format', 'Y-m-d').', '.$this->modx->getOption('manager_time_format', 'H:i'), strtotime($detail->timestamp))
+					));
+				}
 				
-				$array['send_date_format'] = date($this->modx->getOption('manager_date_format'), strtotime($array['send_date']));
-				$array['send_time_format'] = date($this->modx->getOption('manager_time_format'), strtotime($array['send_time']));
-			}
+				if (in_array($array['send_date'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
+					$array['send_date'] = '';
+				} else {
+					$array['send_date'] = date('Y-m-d H:i:s', strtotime($array['send_date']));
+					
+					$array['date'] = date('Y-m-d', strtotime($array['send_date']));
+					$array['time'] = date('H:i', strtotime($array['send_date']));
+					
+					$array['date_format'] = date($this->modx->getOption('manager_date_format'), strtotime($array['send_date']));
+					$array['time_format'] = date($this->modx->getOption('manager_time_format'), strtotime($array['send_date']));
+				}
 			
-			$array['send_days'] = explode(',', $array['send_days']);
-			
-			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
-				$array['editedon'] = '';
-			} else {
-				$array['editedon'] = date($this->getProperty('dateFormat'), strtotime($array['editedon']));
-			}
-			
-			if ($this->newsletter->hasPermission() || 0 == $array['hidden'] || (bool) $this->getProperty('hidden')) {
-				return $array;
+				if (in_array($array['editedon'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
+					$array['editedon'] = '';
+				} else {
+					$array['editedon'] = date($this->getProperty('dateFormat'), strtotime($array['editedon']));
+				}
+				
+				if ($this->newsletter->hasPermission() || 0 == $array['hidden'] || (bool) $this->getProperty('hidden')) {
+					return $array;
+				}
 			}
 		}
 	}

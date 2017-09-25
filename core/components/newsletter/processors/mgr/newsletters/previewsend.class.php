@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -22,33 +19,33 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
-	class NewsletterNewslettersSendTestProcessor extends modObjectUpdateProcessor {
+	class NewsletterNewslettersPreviewSendProcessor extends modObjectUpdateProcessor {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $classKey = 'NewsletterNewsletters';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default');
+		public $languageTopics = array('newsletter:default', 'newsletter:site', 'site:newsletter');
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $objectType = 'newsletter.newsletters';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Object.
 		 */
 		public $newsletter;
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
@@ -58,7 +55,7 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 	    public function beforeSave() {
@@ -76,11 +73,11 @@
 					    
 						if (null !== ($lists = $this->getProperty('lists'))) {
 							foreach ($lists as $id) {
-								$criterea = array(
-									'list_id'=> $id
+								$c = array(
+									'list_id' => $id
 								);
 								
-								if (null !== ($list = $this->modx->newObject('NewsletterListsNewsletters', $criterea))) {
+								if (null !== ($list = $this->modx->newObject('NewsletterListsNewsletters', $c))) {
 									$this->object->addMany($list);
 								}
 							}
@@ -101,6 +98,6 @@
 		}
 	}
 	
-	return 'NewsletterNewslettersSendTestProcessor';
+	return 'NewsletterNewslettersPreviewSendProcessor';
 	
 ?>

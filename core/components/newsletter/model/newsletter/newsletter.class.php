@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -24,23 +21,23 @@
 
 	class Newsletter {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Object.
 		 */
 		public $modx;
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Array.
 		 */
 		public $config = array();
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @param Object $modx.
 		 * @param Array $config.
-		*/
-		function __construct(modX &$modx, array $config = array()) {
+		 */
+		public function __construct(modX &$modx, array $config = array()) {
 			$this->modx =& $modx;
 
 			$corePath 		= $this->modx->getOption('newsletter.core_path', $config, $this->modx->getOption('core_path').'components/newsletter/');
@@ -50,7 +47,7 @@
 			$this->config = array_merge(array(
 				'namespace'				=> $this->modx->getOption('namespace', $config, 'newsletter'),
 				'helpurl'				=> $this->modx->getOption('namespace', $config, 'newsletter'),
-				'lexicons'				=> array('newsletter:default', 'newsletter:site'),
+				'lexicons'				=> array('newsletter:default', 'newsletter:site', 'site:newsletter'),
 				'base_path'				=> $corePath,
 				'core_path' 			=> $corePath,
 				'model_path' 			=> $corePath.'model/',
@@ -66,6 +63,10 @@
 				'css_url' 				=> $assetsUrl.'css/',
 				'assets_url' 			=> $assetsUrl,
 				'connector_url'			=> $assetsUrl.'connector.php',
+				'version'				=> '1.6.0',
+				'branding_url'			=> $this->modx->getOption('newsletter.branding_url', null, ''),
+				'branding_help_url'		=> $this->modx->getOption('newsletter.branding_url_help', null, ''),
+				'has_permission'		=> $this->hasPermission(),
 				'template'				=> explode(',', $this->modx->getOption('newsletter.template', null, '')),
 				'sender_name'			=> $this->modx->getOption('newsletter.name', null, $this->modx->getOption('site_name')),
 				'sender_email'			=> $this->modx->getOption('newsletter.email', null, $this->modx->getOption('emailsender')),
@@ -85,15 +86,39 @@
 		}
 		
 		/**
-		 * @acces public.
-		 * @return String.
+		 * @access public.
+		 * @return String|Boolean.
 		 */
 		public function getHelpUrl() {
-			return $this->config['helpurl'];
+		    if (!empty($this->config['branding_help_url'])) {
+                return $this->config['branding_help_url'].'?v=' . $this->config['version'];
+            }
+
+            return false;
+		}
+
+        /**
+         * @access public.
+         * @return String|Boolean.
+         */
+        public function getBrandingUrl() {
+            if (!empty($this->config['branding_url'])) {
+                return $this->config['branding_url'];
+            }
+
+            return false;
+        }
+        
+        /**
+		 * @access public.
+		 * @return Boolean.
+		 */
+		public function hasPermission() {
+			return $this->modx->hasPermission('newsletter_settings');
 		}
 		
 		/**
-		 * @acces private.
+		 * @access private.
 		 * @return Boolean.
 		 */
 		private function getContexts() {
@@ -103,27 +128,7 @@
 		}
 		
 		/**
-		 * @acces public.
-		 * @return Boolean.
-		 */
-		public function hasPermission() {
-			$usergroups = $this->modx->getOption('newsletter.admin_groups', null, 'Administrator');
-			
-			$isMember = $this->modx->user->isMember(explode(',', $usergroups), false);
-			
-			if (!$isMember) {
-				$version = $this->modx->getVersionData();
-				
-				if (version_compare($version['full_version'], '2.2.1-pl') == 1) {
-					$isMember = (bool) $this->modx->user->get('sudo');
-				}
-			}
-			
-			return $isMember;
-		}
-		
-		/**
-		 * @acces public.
+		 * @access public.
 		 * @param String $tpl.
 		 * @param Array $properties.
 		 * @param String $type.
@@ -156,7 +161,7 @@
 		}
 				
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @param String $lists.
 		 * @return Integer.
 		 */
@@ -177,6 +182,21 @@
 				
 			return $count;
 		}
+		
+		/**
+		 * @access public.
+		 * @param String|Array $input.
+		 * @param String $type.
+		 * @return String|Array.
+		 */
+		public function hashValues($input = array(), $type = 'encrypt') {
+		    if ('decode' == $type) {
+			    return unserialize(str_rot13($input));
+		    } else {
+			    return str_rot13(serialize($input));
+		    }
+		}
+
 	}
 	
 ?>

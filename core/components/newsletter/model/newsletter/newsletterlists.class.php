@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -24,30 +21,25 @@
 	 
 	class NewsletterLists extends xPDOSimpleObject {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Array.
 		 */
 		public function getSubscriptions($context) {
 			$output = array();
 			
 			foreach ($this->getMany('NewsletterListsSubscriptions') as $list) {
-				$criterea = array(
+				$c = array(
 					'id' 		=> $list->subscription_id,
 					'context' 	=> $context,
 					'active'	=> 1
 				);
 				
-				if (null !== ($subscription = $list->getOne('NewsletterSubscriptions', $criterea))) {
-					$key = trim($subscription->email);
-					
-					$output[$key] = array(
-						'name'	=> trim($subscription->name),
-						'email'	=> trim($subscription->email)
-					);
-					
-					foreach ($subscription->getMany('NewsletterSubscriptionsExtras') as $value) {
-						$output[$key][$value->key] = $value->content;
-					}
+				if (null !== ($subscription = $list->getOne('NewsletterSubscriptions', $c))) {
+					$output[trim($subscription->email)] = array_merge(array(
+						'context'	=> $context,
+						'name'		=> trim($subscription->name),
+						'email'		=> trim($subscription->email)
+					), $subscription->getData());
 				}
 			}
 			
@@ -55,7 +47,7 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @param String $context.
 		 * @return Integer.
 		 */
@@ -68,12 +60,12 @@
 						$output++;	
 					}
 				} else {
-					$criterea = array(
+					$c = array(
 						'id'		=> $list->subscription_id,
 						'context' 	=> $context
 					);
 
-					if (null !== ($subscription = $list->getOne('NewsletterSubscriptions', $criterea))) {
+					if (null !== ($subscription = $list->getOne('NewsletterSubscriptions', $c))) {
 						$output++;	
 					}
 				}

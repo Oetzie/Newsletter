@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -26,13 +23,13 @@
 
 	class NewsletterActions extends Newsletter {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Array.
 		 */
 		public $properties = array();
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @param Array $scriptProperties.
 		 * @return Boolean.
 		 */
@@ -48,17 +45,21 @@
 		}
 		
 		/**
-		 * @acces protected.
+		 * @access protected.
 		 * @return Boolean.
 		 */
 		protected function setDefaultProperties() {
 			$this->properties['placeholder'] = rtrim($this->properties['placeholder'], '.').'.';
 			
+			if (!is_array($this->properties['lists'])) {
+				$this->properties['lists'] = explode(',', $this->properties['lists']);
+			}
+			
             return true;
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Null|Object.
 		 */
 		public function getForm() {
@@ -70,7 +71,7 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @param Array $properties.
 		 * @return Boolean.
 		 */
@@ -92,7 +93,7 @@
 		}
 
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Boolean.
 		 */
 		public function getActionSubscribe() {
@@ -106,12 +107,12 @@
 							'email'		=> '',
 						), $form->getValues());
 						
-						$criterea = array(
+						$c = array(
 							'token'		=> $values['token'],
 							'email'		=> $values['email']
 						);
 						
-						if (null !== ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
+						if (null !== ($subscription = $this->modx->getObject('NewsletterSubscriptions', $c))) {
 							$subscription->fromArray(array(
 								'active' => 1
 							));
@@ -119,7 +120,7 @@
 							if ($subscription->save()) {
 								$this->modx->setPlaceholders(array(
 									'subscription' => $subscription->toArray()
-								), $this->properties['placeholder']);
+								), rtrim($this->properties['placeholder'], '.'));
 								
 								if (isset($this->properties['successTpl'])) {
 									$form->setScriptProperties(array(
@@ -127,25 +128,12 @@
 									));
 								}
 								
-								if (isset($this->properties['emailTpl'])) {
-									$email = array(
-										'to'			=> array($subscription->email => $subscription->name),
-										'from'			=> array($this->modx->getOption('emailsender') => $this->modx->getOption('site_name')),
-										'subject'		=> $this->modx->lexicon('newsletter.email_subscribe_confirmed_title'),
-										'tpl'			=> $this->properties['emailTpl']
-									);
-									
-									if (isset($this->properties['emailFrom'])) {
-										$email['from'] = $this->properties['emailFrom'];
-									}
-									
-									if (isset($this->properties['emailSubject'])) {
-										$email['subject'] = $this->properties['emailSubject'];
-									}
-									
-									if (isset($this->properties['emailTplWrapper'])) {
-										$email['tplWrapper'] = $this->properties['emailTplWrapper'];
-									}
+								if (isset($this->properties['email'])) {
+									$email = array_merge(array(
+										'to'		=> array($subscription->email => $subscription->name),
+										'from'		=> array($this->config['sender_email'] => $this->config['sender_name']),
+										'subject'	=> $this->modx->lexicon('newsletter.email_subscribe_confirmed_title')
+									), $this->properties['email']);
 
 									if (!$form->extensions->invokeExtension('onSuccessPost', 'email', $email)) {
 										return false;
@@ -159,29 +147,25 @@
 						$values = array_merge(array(
 							'name'		=> '',
 							'email'		=> '',
+							'context'	=> $this->modx->context->key,
 							'token'		=> md5(time()),
 							'lists'		=> ''
 						), $form->getValues());
 						
-						$criterea = array(
-							'context' 	=> $this->modx->context->key,
+						$c = array(
+							'context' 	=> $values['context'],
 							'email' 	=> $values['email']
 						);
 								
-						if (null === ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
-							$subscription = $this->modx->newObject('NewsletterSubscriptions');
+						if (null === ($subscription = $this->modx->getObject('NewsletterSubscriptions', $c))) {
+							$subscription = $this->modx->newObject('NewsletterSubscriptions', $c);
 						}
 	
 						$subscription->fromArray(array_merge($values, array(
-							'context'	=> $this->modx->context->key,
-							'active'	=> isset($this->properties['confirm']) ? 0 : 1
+							'active' => isset($this->properties['confirm']) ? 0 : 1
 						)));
-						
-						if (is_array($this->properties['lists'])) {
-							$lists = $this->properties['lists'];
-						} else {
-							$lists = explode(',', $this->properties['lists']);
-						}
+		
+						$lists = $this->properties['lists'];
 
 						if (isset($values['lists'])) {
 							if (!is_array($values['lists'])) {
@@ -191,98 +175,79 @@
 							}
 						}
 						
-						foreach ($this->modx->getCollection('NewsletterLists', array('primary' => 1)) as $list) {
+						$c = array(
+							'primary' => 1
+						);
+						
+						foreach ($this->modx->getCollection('NewsletterLists', $c) as $list) {
 							$lists[] = $list->id;
 						}
 						
+						
 						foreach (array_filter(array_unique($lists)) as $list) {
-							$criterea = array(
+							$c = array(
 								'list_id'			=> $list,
 								'subscription_id' 	=> $subscription->id
 							);
 
-							if (null === $subscription->getOne('NewsletterListsSubscriptions', $criterea)) {
-								if (null !== ($list = $this->modx->newObject('NewsletterListsSubscriptions', array('list_id' => $list)))) {
+							if (null === $subscription->getOne('NewsletterListsSubscriptions', $c)) {
+								if (null !== ($list = $this->modx->newObject('NewsletterListsSubscriptions', $c))) {
 									$subscription->addMany($list);
 								}
 							}
 						}
 						
-						if (isset($this->properties['extras'])) {
-							foreach ($this->properties['extras'] as $key => $type) {
-								if (is_numeric($key)) {
-									$key = $type;
-								}
-								
+						if (isset($this->properties['data'])) {
+							foreach ($this->properties['data'] as $key) {
 								if (isset($values[$key])) {
-									$criterea = array(
-										'subscription_id' 	=> $subscription->id,
-										'key' 				=> strtolower(str_replace(array(' ', '-'), '_', $type))
-									);
-	
-									if (null === ($extra = $this->modx->getObject('NewsletterSubscriptionsExtras', $criterea))) {
-										$extra = $this->modx->newObject('NewsletterSubscriptionsExtras');
+									if (is_array($values[$key])) {
+										$subscription->setData($key, implode(',', $values[$key]));
+									} else {
+										$subscription->setData($key, $values[$key]);
 									}
-	
-									$extra->fromArray(array(
-										'subscription_id'	=> $subscription->id,
-										'key'				=> strtolower(str_replace(array(' ', '-'), '_', $type)),
-										'content' 			=> is_string($values[$key]) ? $values[$key] : implode(',', $values[$key])
-									));
-										
-									$subscription->addMany($extra);
+								} else {
+									$subscription->setData($key, '');
 								}
 							}
 						}
 						
 						if ($subscription->save()) {
-							$this->modx->setPlaceholders(array(
+							$this->modx->toPlaceholders(array(
 								'subscription'	=> $subscription->toArray(),
 								'token'			=> $values['token'],
 								'last_id'		=> $subscription->id
-							), $this->properties['placeholder']);
+							), rtrim($this->properties['placeholder'], '.'));
 							
 							if (isset($this->properties['confirm'])) {
 								if (isset($this->properties['confirm']['url'])) {
-									$subscriptionUrl = $this->properties['confirm']['url'];
+									$url = $this->properties['confirm']['url'];
 								} else {
-									$subscriptionUrl = $this->modx->getOption('newsletter.page_subscribe');
+									$url = $this->modx->getOption('newsletter.page_subscribe');
 								}
 								
-								$this->modx->setPlaceholders(array(
-									'subscribe_url'	=> $this->modx->makeUrl($subscriptionUrl, null, array(
+								$this->modx->toPlaceholders(array(
+									'subscribe_url'	=> $this->modx->makeUrl($url, null, array(
 										'token'			=> $values['token'],
 										'email'			=> $values['email']
 									), 'full')
-								), $this->properties['placeholder']);
+								), rtrim($this->properties['placeholder'], '.'));
 								
 								if (isset($this->properties['confirm']['successTpl'])) {
 									$form->setScriptProperties(array(
-										'tplSuccess' => $this->properties['confirm']['successTpl']
+										'tpl' => $this->properties['confirm']['successTpl']
 									));
 								}
 								
-								if (isset($this->properties['confirm']['emailTpl'])) {
-									$email = array(
-										'to'			=> array($subscription->email => $subscription->name),
-										'from'			=> array($this->modx->getOption('emailsender') => $this->modx->getOption('site_name')),
-										'subject'		=> $this->modx->lexicon('newsletter.email_subscribe_confirm_title'),
-										'tpl'			=> $this->properties['confirm']['emailTpl']
-									);
-									
-									if (isset($this->properties['confirm']['emailFrom'])) {
-										$email['from'] = $this->properties['confirm']['emailFrom'];
-									}
-									
-									if (isset($this->properties['confirm']['emailSubject'])) {
-										$email['subject'] = $this->properties['confirm']['emailSubject'];
-									}
-									
-									if (isset($this->properties['confirm']['emailTplWrapper'])) {
-										$email['tplWrapper'] = $this->properties['confirm']['emailTplWrapper'];
-									}
+								if (isset($this->properties['confirm']['email'])) {
+									$email = array_merge(array(
+										'to'		=> array($subscription->email => $subscription->name),
+										'from'		=> array($this->config['sender_email'] => $this->config['sender_name']),
+										'subject'	=> $this->modx->lexicon('newsletter.email_subscribe_confirmed_title')
+									), $this->properties['confirm']['email']);
 
-									return $form->extensions->invokeExtension($this->properties['event'], 'email', $email);
+									if (!$form->extensions->invokeExtension('onSuccessPost', 'email', $email)) {
+										return false;
+									}
 								}
 							} else {
 								if (isset($this->properties['successTpl'])) {
@@ -291,25 +256,12 @@
 									));
 								}
 								
-								if (isset($this->properties['emailTpl'])) {
-									$email = array(
-										'to'			=> array($subscription->email => $subscription->name),
-										'from'			=> array($this->modx->getOption('emailsender') => $this->modx->getOption('site_name')),
-										'subject'		=> $this->modx->lexicon('newsletter.email_subscribe_confirmed_title'),
-										'tpl'			=> $this->properties['emailTpl']
-									);
-									
-									if (isset($this->properties['emailFrom'])) {
-										$email['from'] = $this->properties['emailFrom'];
-									}
-									
-									if (isset($this->properties['emailSubject'])) {
-										$email['subject'] = $this->properties['emailSubject'];
-									}
-									
-									if (isset($this->properties['emailTplWrapper'])) {
-										$email['tplWrapper'] = $this->properties['emailTplWrapper'];
-									}
+								if (isset($this->properties['email'])) {
+									$email = array_merge(array(
+										'to'		=> array($subscription->email => $subscription->name),
+										'from'		=> array($this->config['sender_email'] => $this->config['sender_name']),
+										'subject'	=> $this->modx->lexicon('newsletter.email_subscribe_confirmed_title')
+									), $this->properties['email']);
 
 									if (!$form->extensions->invokeExtension('onSuccessPost', 'email', $email)) {
 										return false;
@@ -328,7 +280,7 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Boolean.
 		 */
 		public function getActionUnSubscribe() {
@@ -339,95 +291,39 @@
 						
 						$values = array_merge(array(
 							'email'		=> '',
+							'context'	=> $this->modx->context->key,
 							'active'	=> 2,
-							'lists'		=> ''
 						), $form->getValues());
 						
-						$criterea = array(
-							'context' 	=> $this->modx->context->key,
+						$c = array(
+							'context' 	=> $values['context'],
 							'email' 	=> $values['email']
 						);
 								
-						if (null !== ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
-							if (is_array($this->properties['lists'])) {
-								$lists = $this->properties['lists'];
-							} else {
-								$lists = explode(',', $this->properties['lists']);
-							}
-	
-							if (isset($values['lists'])) {
-								if (!is_array($values['lists'])) {
-									$lists = $lists + explode(',', $values['lists']);
-								} else {
-									$lists = $lists + $values['lists'];
-								}
-							}
-							
-							foreach ($this->modx->getCollection('NewsletterLists', array('primary' => 1)) as $list) {
-								$lists[] = $list->id;
-							}
-							
-							foreach ($subscription->getMany('NewsletterListsSubscriptions') as $list) {
-								if (in_array($list->list_id, $lists)) {
-									$list->remove();
-								} else {
-									$values['active'] = $subscription->active;
-								}
-							}
-							
-							$subscription->fromArray(array(
-								'active' => $values['active']
-							));
+						if (null !== ($subscription = $this->modx->getObject('NewsletterSubscriptions', $c))) {							
+							$subscription->fromArray($values);
 							
 							
 							if ($subscription->save()) {
 								return true;
 							}
 						}
-
+						
 						break;
 					case 'onSuccessPost':
 						$values = array_merge(array(
 							'email'		=> '',
-							'active'	=> 2,
-							'lists'		=> ''
+							'context'	=> $this->modx->context->key,
+							'active'	=> 2
 						), $form->getValues());
 						
-						$criterea = array(
-							'context' 	=> $this->modx->context->key,
+						$c = array(
+							'context' 	=> $values['context'],
 							'email' 	=> $values['email']
 						);
 								
-						if (null !== ($subscription = $this->modx->getObject('NewsletterSubscriptions', $criterea))) {
-							if (is_array($this->properties['lists'])) {
-								$lists = $this->properties['lists'];
-							} else {
-								$lists = explode(',', $this->properties['lists']);
-							}
-	
-							if (isset($values['lists'])) {
-								if (!is_array($values['lists'])) {
-									$lists = $lists + explode(',', $values['lists']);
-								} else {
-									$lists = $lists + $values['lists'];
-								}
-							}
-							
-							foreach ($this->modx->getCollection('NewsletterLists', array('primary' => 1)) as $list) {
-								$lists[] = $list->id;
-							}
-							
-							foreach ($subscription->getMany('NewsletterListsSubscriptions') as $list) {
-								if (in_array($list->list_id, $lists)) {
-									$list->remove();
-								} else {
-									$values['active'] = $subscription->active;
-								}
-							}
-							
-							$subscription->fromArray(array(
-								'active' => $values['active']
-							));
+						if (null !== ($subscription = $this->modx->getObject('NewsletterSubscriptions', $c))) {							
+							$subscription->fromArray($values);
 							
 							
 							if ($subscription->save()) {

@@ -2,24 +2,24 @@ Newsletter.grid.Lists = function(config) {
     config = config || {};
 
 	config.tbar = [{
-        text	: _('newsletter.list_create'),
-        cls		:'primary-button',
-        handler	: this.createList,
-        scope	: this
+        text		: _('newsletter.list_create'),
+        cls			: 'primary-button',
+        handler		: this.createList,
+        scope		: this
 	}, {
-		text	: _('bulk_actions'),
-		menu	: [{
-			text	: _('newsletter.lists_remove_selected'),
-			handler	: this.removeSelectedLists,
-			scope	: this
+		text		: _('bulk_actions'),
+		menu		: [{
+			text		: _('newsletter.lists_remove_selected'),
+			handler		: this.removeSelectedLists,
+			scope		: this
 		}, '-', {
-		    text 	: _('newsletter.list_import'),
-		    handler	: this.importList,
-		    scope	: this
+		    text 		: _('newsletter.list_import'),
+		    handler		: this.importList,
+		    scope		: this
 	    }, {
-		    text 	: _('newsletter.list_export'),
-		    handler	: this.exportList,
-		    scope	: this
+		    text 		: _('newsletter.list_export'),
+		    handler		: this.exportList,
+		    scope		: this
 	    }]
 	}, '->', {
         xtype		: 'textfield',
@@ -130,14 +130,14 @@ Newsletter.grid.Lists = function(config) {
         },
         autosave	: true,
         save_action	: 'mgr/lists/updatefromgrid',
-        fields		: ['id', 'name', 'name_formatted', 'description', 'description_formatted', 'subscriptions', 'primary', 'hidden', 'active', 'editedon'],
+        fields		: ['id', 'name', 'description', 'primary', 'hidden', 'active', 'editedon', 'name_formatted', 'description_formatted', 'subscriptions'],
         paging		: true,
         pageSize	: MODx.config.default_per_page > 30 ? MODx.config.default_per_page : 30,
         sortBy		: 'id',
         plugins		: expander,
         singleText	: _('newsletter.list'),
         pluralText	: _('newsletter.lists'),
-        refreshCmp 	: ''
+        refreshGrid : []
     });
     
     Newsletter.grid.Lists.superclass.constructor.call(this, config);
@@ -146,11 +146,14 @@ Newsletter.grid.Lists = function(config) {
 Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
     filterSearch: function(tf, nv, ov) {
         this.getStore().baseParams.query = tf.getValue();
+        
         this.getBottomToolbar().changePage(1);
     },
-    clearFilter: function() {
+    clearFilter: function() { 
 	    this.getStore().baseParams.query = '';
+	    
 	    Ext.getCmp('newsletter-filter-search-lists').reset();
+	    
         this.getBottomToolbar().changePage(1);
     },
     getMenu: function() {
@@ -178,12 +181,12 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
 		
 		return menu;
     },
-    rRefresh : function() {
-	    if ('string' == typeof this.config.refreshCmp) {
-		    Ext.getCmp(this.config.refreshCmp).refresh();
+    refreshGrids: function() {
+	    if ('string' == typeof this.config.refreshGrid) {
+		    Ext.getCmp(this.config.refreshGrid).refresh();
 	    } else {
-		    for (var i = 0; i < this.config.refreshCmp.length; i++) {
-			    Ext.getCmp(this.config.refreshCmp[i]).refresh();
+		    for (var i = 0; i < this.config.refreshGrid.length; i++) {
+			    Ext.getCmp(this.config.refreshGrid[i]).refresh();
 		    }
 		}
     },
@@ -200,7 +203,7 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
 		        	fn			: function() {
             			this.getSelectionModel().clearSelections(true);
             			
-            			this.rRefresh();
+            			this.refreshGrids();
             			this.refresh();
             		},
 		        	scope			: this
@@ -224,7 +227,7 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
 		        	fn			: function() {
             			this.getSelectionModel().clearSelections(true);
             			
-            			this.rRefresh();
+            			this.refreshGrids();
             			this.refresh();
             		},
 		        	scope		: this
@@ -249,7 +252,7 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
             		fn			: function() {
             			this.getSelectionModel().clearSelections(true);
             			
-            			this.rRefresh();
+            			this.refreshGrids();
             			this.refresh();
             		},
             		scope		: this
@@ -277,7 +280,7 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
             		fn			: function() {
             			this.getSelectionModel().clearSelections(true);
             			
-            			this.rRefresh();
+            			this.refreshGrids();
             			this.refresh();
             		},
             		scope		: this
@@ -299,7 +302,7 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
             		fn			: function() {
 	            		this.getSelectionModel().clearSelections(true);
 	            		
-	            		this.rRefresh();
+	            		this.refreshGrids();
             			this.refresh();
             		},
 		        	scope		: this
@@ -344,8 +347,12 @@ Ext.extend(Newsletter.grid.Lists, MODx.grid.Grid, {
         this.exportListWindow.show(e.target);
     },
     renderName: function(d, c, e) {
-	    c.css = 1 == parseInt(e.json.hidden) ? 'grid-row-inactive' : '';
+	    c.css = 1 == parseInt(e.data.hidden) ? 'grid-row-inactive' : '';
 	    
+	    if (1 == parseInt(e.data.primary)) {
+		    return String.format('{0} <i class="icon icon-star-o"></i>', d);
+	    }
+	        
 	    return d;
 	},
     renderBoolean: function(d, c) {
@@ -382,7 +389,7 @@ Newsletter.window.CreateList = function(config) {
                 labelSeparator : ''
             },
         	items		: [{
-	        	columnWidth	: .9,
+	        	columnWidth	: .85,
 	        	items		: [{
 			        xtype		: 'textfield',
 		            fieldLabel	: _('newsletter.label_list_name'),
@@ -396,7 +403,7 @@ Newsletter.window.CreateList = function(config) {
 		            cls			: 'desc-under'
 		        }]
 	        }, {
-		        columnWidth	: .1,
+		        columnWidth	: .15,
 		        style		: 'margin-right: 0;',
 		        items		: [{
 			        xtype		: 'checkbox',
@@ -423,6 +430,7 @@ Newsletter.window.CreateList = function(config) {
             cls			: 'desc-under'
         }, {
 	        xtype 		: 'checkboxgroup',
+	        hideLabel	: true,
 	        columns		: 1,
 	        items 		: [{
 	        	xtype		: 'checkbox',
@@ -431,7 +439,7 @@ Newsletter.window.CreateList = function(config) {
 	        	name		: 'primary',
 	        	inputValue	: 1,
 	        	checked		: false,
-	        	disabled	: Newsletter.config.admin ? false : true
+	        	disabled	: Newsletter.config.has_permission ? false : true
 	        }, {
 	        	xtype		: 'checkbox',
 	        	boxLabel	: _('newsletter.label_list_hidden'),
@@ -439,8 +447,7 @@ Newsletter.window.CreateList = function(config) {
 	        	name		: 'hidden',
 	        	inputValue	: 1,
 	        	checked		: false,
-	        	disabled	: Newsletter.config.admin ? false : true,
-	        	hidden		: Newsletter.config.admin ? false : true
+	        	hidden		: Newsletter.config.has_permission ? false : true
 	        }]
 	    }]
     });
@@ -473,7 +480,7 @@ Newsletter.window.UpdateList = function(config) {
                 labelSeparator : ''
             },
         	items		: [{
-	        	columnWidth	: .9,
+	        	columnWidth	: .85,
 	        	items		: [{
 			        xtype		: 'textfield',
 		            fieldLabel	: _('newsletter.label_list_name'),
@@ -487,7 +494,7 @@ Newsletter.window.UpdateList = function(config) {
 		            cls			: 'desc-under'
 		        }]
 	        }, {
-		        columnWidth	: .1,
+		        columnWidth	: .15,
 		        style		: 'margin-right: 0;',
 		        items		: [{
 			        xtype		: 'checkbox',
@@ -514,24 +521,26 @@ Newsletter.window.UpdateList = function(config) {
             cls			: 'desc-under'
         }, {
 	        xtype 		: 'checkboxgroup',
+	        hideLabel	: true,
 	        columns 	: 1,
 	        items 		: [{
 	        	xtype		: 'checkbox',
 	        	boxLabel	: _('newsletter.label_list_primary_desc'),
+	        	hideLabel	: true,
 	        	anchor		: '100%',
 	        	name		: 'primary',
 	        	inputValue	: 1,
 	        	checked 	: 1 == config.record.primary ? true : false,
-	        	disabled	: Newsletter.config.admin ? false : true
+	        	disabled	: Newsletter.config.has_permission ? false : true
 	        }, {
 	        	xtype		: 'checkbox',
 	        	boxLabel	: _('newsletter.label_list_hidden'),
+	        	hideLabel	: true,
 	        	anchor		: '100%',
 	        	name		: 'hidden',
 	        	inputValue	: 1,
 	        	checked 	: 1 == config.record.hidden ? true : false,
-	        	disabled	: Newsletter.config.admin ? false : true,
-	        	hidden		: Newsletter.config.admin ? false : true
+	        	hidden		: Newsletter.config.has_permission ? false : true
 	        }]
 	    }]
     });
@@ -683,11 +692,11 @@ Newsletter.combo.NewsletterLists = function(config) {
             action		: 'mgr/lists/getlist',
             combo		: true
         },
-        fields		: ['id', 'name'],
+        fields		: ['id', 'name', 'name_formatted'],
         hiddenName	: 'id',
         pageSize	: 15,
         valueField	: 'id',
-        displayField: 'name'
+        displayField: 'name_formatted'
     });
     
     Newsletter.combo.NewsletterLists.superclass.constructor.call(this,config);
@@ -703,8 +712,8 @@ Newsletter.combo.NewsletterListsCheckbox = function(config) {
     Ext.applyIf(config, {
 		value		: '',
 		columns		: 2,
-		id			: 'checkboxgroup-fixed',
-		cls			: 'checkboxgroup-fixed',
+		id			: 'newsletter-checkboxgroup-fixed',
+		cls			: 'newsletter-checkboxgroup-fixed x-form-item',
 		store		: new Ext.data.JsonStore({
             url				: Newsletter.config.connector_url,
             baseParams	: {

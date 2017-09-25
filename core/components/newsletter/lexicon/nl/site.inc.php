@@ -39,14 +39,7 @@
 	
 	$_lang['newsletter.newsletter_online_version']				= 'Als u dit bericht niet kunt lezen, klikt u dan alstublieft <a href="[[+newsletter.url]]" target="_blank" title="hier">hier</a>.';
 	$_lang['newsletter.newsletter_anti_spam']					= 'Voeg <a href="mailto:[[++newsletter.email]]" target="_blank" title="[[++newsletter.email]]">[[++newsletter.email]]</a> toe aan uw contacten.';
-	$_lang['newsletter.newsletter_footer'] 						= 'Deze email werd verzonden naar <a href="mailto:[[+subscribe.email]]" target="_blank" title="[[+subscribe.email]]">[[+subscribe.email]]</a> - Als u zich wilt uitschrijven voor onze promotionele e-mails klik dan alstublieft <a href="[[~[[++newsletter.page_unsubscribe]]? &scheme=`full`]]&email=[[+subscribe.email]]" target="_blank" title="hier">hier</a>.';
+	$_lang['newsletter.newsletter_footer'] 						= 'Deze email werd verzonden naar <a href="mailto:[[+subscribe.email]]" target="_blank" title="[[+subscribe.email]]">[[+subscribe.email]]</a> - Als u zich wilt uitschrijven voor onze promotionele e-mails klik dan alstublieft <a href="[[~[[++newsletter.page_unsubscribe]]? &scheme=`full`&email=[[+subscribe.email]]]]" target="_blank" title="hier">hier</a>.';
 	$_lang['newsletter.view_website']							= 'Bezoek onze website voor meer informatie';
-	
-	/* Custom */
-	
-	$_lang['newsletter.list_test'] 								= 'Test';
-	$_lang['newsletter.list_test_desc'] 						= 'De mailinglijst waar alle test inschrijvingen in staan om nieuwsbrieven te testen.';
-	$_lang['newsletter.list_default'] 							= 'Standaard';
-	$_lang['newsletter.list_default_desc'] 						= 'De mailinglijst waar standaard alle inschrijvingen in geplaatst worden tijdens het inschrijven op bijvoorbeeld de website.';
 	
 ?>

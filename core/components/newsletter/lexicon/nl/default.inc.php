@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -26,10 +23,13 @@
 	$_lang['newsletter.desc'] 										= 'Wijzig of maak nieuwsbrieven.';
 	
 	$_lang['area_newsletter']										= 'Nieuwsbrief';
-	$_lang['area_default']											= 'Standaard';
 	
+	$_lang['setting_newsletter.branding_url']              			= 'Branding';
+	$_lang['setting_newsletter.branding_url_desc']         			= 'De URL waar de branding knop heen verwijst, indien leeg wordt de branding knop niet getoond.';
+    $_lang['setting_newsletter.branding_url_help']         			= 'Branding (help)';
+    $_lang['setting_newsletter.branding_url_help_desc']    			= 'De URL waar de branding help knop heen verwijst, indien leeg wordt de branding help knop niet getoond.';
 	$_lang['setting_newsletter.cronjob']							= 'Cronjob herinnering';
-	$_lang['setting_newsletter.cronjob_desc']						= 'Zet deze instelling op "Ja" als je een cronjob hebt ingesteld voor de nieuwsbrief, door deze instelling op "Ja" te zetten word de cronjob waarschuwing niet meer getoond in de nieuwsbrieven component.';
+	$_lang['setting_newsletter.cronjob_desc']						= 'Zet deze instelling op "Ja" als er een cronjob is ingesteld voor de nieuwsbrieven, door deze instelling op "Ja" te zetten word er geen cronjob waarschuwing meer getoond.';
 	$_lang['setting_newsletter.token']								= 'Cronjob token';
 	$_lang['setting_newsletter.token_desc']							= 'Deze token dient met de cronjob mee gestuurd te worden zodat de nieuwsbrief niet zomaar verstuurd kan worden door willekeurige personen. Zonder deze token werkt het automatisch versturen van de nieuwsbrieven niet.';
 	$_lang['setting_newsletter.email']								= 'Nieuwsbrief afzender';
@@ -38,9 +38,12 @@
 	$_lang['setting_newsletter.name_desc']							= 'De naam waarmee de nieuwsbrief verstuurd wordt.';
 	$_lang['setting_newsletter.template']							= 'Nieuwsbrief template';
 	$_lang['setting_newsletter.template_desc']						= 'De ID van de template die als nieuwsbrief word gebruikt. Meerdere templates scheiden met een komma.';
-	$_lang['setting_newsletter.admin_groups']						= 'Admin gebruikersgroepen';
-	$_lang['setting_newsletter.admin_groups_desc']					= 'De gebruikersgroepen die toegang hebben tot de admin gedeelte van de nieuwsbrieven. Meerdere gebruikersgroepen scheiden met een komma.';
-	
+	$_lang['setting_newsletter.log_send']							= 'Log versturen';
+	$_lang['setting_newsletter.log_send_desc']						= 'Indien ja, het aangemaakte log bestand die automatisch word aangemaakt versturen via e-mail.';
+	$_lang['setting_newsletter.log_email']							= 'Log e-mailadres(sen)';
+	$_lang['setting_newsletter.log_email_desc']						= 'De e-mailadres(sen) waar het log bestand heen gestuurd dient te worden. Meerdere e-mailadressen scheiden met een komma.';	
+	$_lang['setting_newsletter.log_lifetime']						= 'Log levensduur';
+	$_lang['setting_newsletter.log_lifetime_desc']					= 'Het aantal dagen dat een log bestand bewaard moet blijven, hierna word het log bestand automatisch verwijderd.';
 	$_lang['setting_newsletter.page_subscribe']						= 'Pagina "nieuwsbrief inschrijven"';
 	$_lang['setting_newsletter.page_subscribe_desc']				= 'De ID van de pagina die als "nieuwsbrief inschrijven" pagina dient.';
 	$_lang['setting_newsletter.page_unsubscribe']					= 'Pagina "nieuwsbrief uitschrijven"';
@@ -48,27 +51,28 @@
 
 	$_lang['newsletter.newsletter']									= 'Nieuwsbrief';
 	$_lang['newsletter.newsletters']								= 'Nieuwsbrieven';
-	$_lang['newsletter.newsletters_desc']							= 'Hier kun je alle nieuwsbrief beheren, een nieuwsbrief een pagina die verstuurd word via de e-mail naar alle ingeschreven personen. Nieuwsbrieven kunnen elk willekeurig uur automatisch verstuurd worden, maar in verband met het zware proces voor de server van het versturen van meerdere e-mails word het aangeraden om nieuwsbrieven \'s nachts te versturen.<br /><br /><strong>Let op:</strong> Controleer de nieuwsbrief goed voordat je hem verstuurd, na het versturen kun je hem niet meer wijzigen en verschijnt hij bij alle ingeschreven personen in de e-mail inbox met eventuele fouten.';
-	$_lang['newsletter.newsletter_cronjob_notice_desc']				= '<strong>Melding:</strong> Om nieuwsbrieven automatisch te kunnen versturen dien je gebruik maken van een cronjob, indien je een cronjob voor de nieuwsbrieven hebt ingesteld kun je deze melding uitzetten via systeeminstellingen.';
-	$_lang['newsletter.newsletter_site_status_notice_desc']			= '<strong>Melding:</strong> De website status staat op "offline", je kunt hierdoor geen nieuwsbrieven versturen. Je kunt de website status op "online" zetten via systeeminstellingen.';
+	$_lang['newsletter.newsletters_desc']							= 'Hier kun je alle nieuwsbrief beheren, een nieuwsbrief een pagina die verstuurd word via de e-mail naar alle ingeschreven personen. Nieuwsbrieven kunnen elk willekeurig uur automatisch verstuurd worden, maar in verband met het zware proces voor de server van het versturen van meerdere e-mails word het aangeraden om nieuwsbrieven \'s nachts te versturen.';
+	$_lang['newsletter.newsletter_cronjob_notice_desc']				= '<strong>Herinnering:</strong> voor nieuwsbrieven moet er een cronjob ingesteld zijn die elk uur alle nieuwsbrieven synchroniseert. Deze herinnering kan uit gezet worden via de systeem instellingen.';
+	$_lang['newsletter.newsletter_site_status_notice_desc']			= '<strong>Melding:</strong> De website status staat op "offline", hierdoor kunnen er geen nieuwsbrieven verstuurd worden. De website status kan op "online" gezet worden via de systeem instellingen.';
 	$_lang['newsletter.newsletter_create']							= 'Nieuwe nieuwsbrief';
 	$_lang['newsletter.newsletter_create_desc']						= 'Om een nieuwe nieuwsbrief te maken, maak je eerst een normale pagina aan die je hier vervolgens selecteert om als nieuwsbrief te dienen. Zorg er wel voor dat je een goede nieuwsbrief template selecteert.';
 	$_lang['newsletter.newsletter_update']							= 'Nieuwsbrief wijzigen';
 	$_lang['newsletter.newsletter_remove']							= 'Nieuwsbrief verwijderen';
 	$_lang['newsletter.newsletter_remove_confirm']					= 'Weet je zeker dat je deze nieuwsbrief wilt verwijderen?';
 	$_lang['newsletter.newsletter_preview']							= 'Nieuwsbrief voorbeeld';
+	$_lang['newsletter.newsletter_preview_send']					= 'Nieuwsbrief versturen (voorbeeld)';
 	$_lang['newsletter.newsletter_stats']							= 'Nieuwsbrief statistieken';
 	$_lang['newsletter.newsletter_stats_desc']						= 'De nieuwsbrief is in totaal [[+total]] keer verstuurd.';
-	$_lang['newsletter.newsletter_send_live']						= 'Nieuwsbrief versturen';
-	$_lang['newsletter.newsletter_send_test']						= 'Nieuwsbrief test versturen';
-	$_lang['newsletter.newsletter_cancel']							= 'Nieuwsbrief annuleren';
-	$_lang['newsletter.newsletter_cancel_confirm']					= 'Weet je zeker dat je deze nieuwsbrief wilt annuleren?';
+	$_lang['newsletter.newsletter_queue']							= 'Nieuwsbrief versturen';
+	$_lang['newsletter.newsletter_queue_cancel']					= 'Nieuwsbrief versturen annuleren';
+	$_lang['newsletter.newsletter_queue_cancel_confirm']			= 'Weet je zeker dat je deze nieuwsbrief versturen wilt annuleren?';
 	
 	$_lang['newsletter.subscription']								= 'Inschrijving';
 	$_lang['newsletter.subscriptions']								= 'Inschrijvingen';
 	$_lang['newsletter.subscriptions_desc']							= 'Hier kun je alle inschrijvingen beheren voor de nieuwsbrieven, deze inschrijvingen schrijven zich over het algemeen in via de website maar kunnen ook geïmporteerd of geëxporteerd worden vanuit andere systemen.';
 	$_lang['newsletter.subscription_create']						= 'Nieuwe inschrijving';
 	$_lang['newsletter.subscription_update']						= 'Inschrijving wijzigen';
+	$_lang['newsletter.subscription_data']							= 'Inschrijvingsvelden';
 	$_lang['newsletter.subscription_remove']						= 'Inschrijving verwijderen';
 	$_lang['newsletter.subscription_remove_confirm']				= 'Weet je zeker dat je deze inschrijving wilt verwijderen?';
 	$_lang['newsletter.subscriptions_remove_selected']				= 'Geselecteerde inschrijvingen verwijderen';
@@ -83,10 +87,10 @@
 	$_lang['newsletter.subscriptions_import_desc']					= 'Selecteer een CSV bestand om inschrijvingen te importeren. Het moet een geldig CSV formaat zijn.';
 	$_lang['newsletter.subscriptions_export']						= 'Inschrijvingen exporteren';
 	
-	$_lang['newsletter.subscription_extra_create']					= 'Nieuw extra veld';
-	$_lang['newsletter.subscription_extra_update']					= 'Extra veld wijzigen';
-	$_lang['newsletter.subscription_extra_remove']					= 'Extra veld verwijderen';
-	$_lang['newsletter.subscription_extra_remove_confirm']			= 'Weet je zeker dat je dit extra veld wilt verwijderen?';
+	$_lang['newsletter.subscription_data_create']					= 'Nieuw veld';
+	$_lang['newsletter.subscription_data_update']					= 'Veld wijzigen';
+	$_lang['newsletter.subscription_data_remove']					= 'Veld verwijderen';
+	$_lang['newsletter.subscription_data_remove_confirm']			= 'Weet je zeker dat je dit veld wilt verwijderen?';
 	
 	$_lang['newsletter.list']										= 'Mailinglijst';
 	$_lang['newsletter.lists']										= 'Mailinglijsten';
@@ -117,11 +121,13 @@
 	$_lang['newsletter.label_newsletter_send_lists_desc']			= 'De mailinglijst(en) waar de nieuwsbrief naar gestuurd moet worden.';
 	$_lang['newsletter.label_newsletter_send_emails']				= 'Versturen naar de e-mailadres(sen)';
 	$_lang['newsletter.label_newsletter_send_emails_desc']			= 'De e-mailadres(sen) waar de nieuwsbrief naar gestuurd moet worden, e-mailadressen scheiden met een komma.';	
+	$_lang['newsletter.label_newsletter_filter']					= 'Mailinglijst filter';
+	$_lang['newsletter.label_newsletter_filter_desc']				= 'De aangepaste filter om de inschrijvingen van de mailinglijst(en) te filteren op bijzonderheden, dit moet de naam van een snippet zijn.';
 	$_lang['newsletter.label_newsletter_published']					= 'Gepubliceerd';
 	$_lang['newsletter.label_newsletter_published_desc']			= '';
 	$_lang['newsletter.label_newsletter_send_status']				= 'Status';
 	$_lang['newsletter.label_newsletter_send_status_desc']			= '';
-	$_lang['newsletter.label_newsletter_stats_newsletter']			= 'Nieuwsbrief [[+current]]';
+	$_lang['newsletter.label_newsletter_stats_newsletter']			= 'Verstuurd: [[+timestamp]]';
 	$_lang['newsletter.label_newsletter_stats_newsletter_desc']		= '';
 	$_lang['newsletter.label_newsletter_stats_date']				= 'Datum';
 	$_lang['newsletter.label_newsletter_stats_date_desc']			= '';
@@ -136,8 +142,8 @@
 	$_lang['newsletter.label_subscription_name_desc']				= 'De naam van de inschrijving.';
 	$_lang['newsletter.label_subscription_context']					= 'Context';
 	$_lang['newsletter.label_subscription_context_desc']			= 'De context van de inschrijving.';
-	$_lang['newsletter.label_subscription_confirmed']				= 'Bevestigd';
-	$_lang['newsletter.label_subscription_confirmed_desc']			= '';
+	$_lang['newsletter.label_subscription_confirmed']				= 'Status';
+	$_lang['newsletter.label_subscription_confirmed_desc']			= 'De status van de inschrijving.';
 	$_lang['newsletter.label_subscription_lists']					= 'Mailinglijst(en)';
 	$_lang['newsletter.label_subscription_lists_desc']				= 'De mailinglijst(en) van de inschrijving.';
 	$_lang['newsletter.label_subscriptions_lists']					= 'Mailinglijst(en)';
@@ -145,15 +151,15 @@
 	$_lang['newsletter.label_subscription_move']					= 'Verplaatsingstype';
 	$_lang['newsletter.label_subscription_move_desc']				= 'De type van de verplaatsing, dit kan "toevoegen" of "verwijderen" zijn.';
 
-	$_lang['newsletter.label_extra_key']							= 'Sleutel';
-	$_lang['newsletter.label_extra_key_desc']						= 'De sleutel van het extra veld. Het extra veld zal beschikbaar zijn via de [[+subscription.sleutel]] tags.';
-	$_lang['newsletter.label_extra_content']						= 'Waarde';
-	$_lang['newsletter.label_extra_content_desc']					= 'De waarde van het extra veld.';
+	$_lang['newsletter.label_data_key']								= 'Naam';
+	$_lang['newsletter.label_data_key_desc']						= 'De naam van het veld. Het veld zal beschikbaar zijn via de [[+subscription.naam]] tags.';
+	$_lang['newsletter.label_data_content']							= 'Waarde';
+	$_lang['newsletter.label_data_content_desc']					= 'De waarde van het veld.';
 	
 	$_lang['newsletter.label_list_name']							= 'Naam';
-	$_lang['newsletter.label_list_name_desc']						= 'De naam van de mailinglijst, dit kan een lexicon sleutel zijn.';
-	$_lang['newsletter.label_list_description']						= 'Beschrijving';
-	$_lang['newsletter.label_list_description_desc']				= 'Een korte beschrijving van de mailinglijst, dit kan een lexicon sleutel zijn.';
+	$_lang['newsletter.label_list_name_desc']						= 'De naam van de mailinglijst.';
+	$_lang['newsletter.label_list_description']						= 'Omschrijving';
+	$_lang['newsletter.label_list_description_desc']				= 'Een korte omschrijving van de mailinglijst.';
 	$_lang['newsletter.label_list_primary']							= 'Primaire mailinglijst';
 	$_lang['newsletter.label_list_primary_desc']					= 'Primaire mailinglijst, in deze mailinglijst worden standaard alle inschrijvingen in geplaatst.';
 	$_lang['newsletter.label_list_hidden']							= 'Verborgen mailinglijst';
@@ -178,8 +184,9 @@
 
 	$_lang['newsletter.filter_context']								= 'Filter op context...';
 	$_lang['newsletter.filter_confirm']								= 'Filter op bevestiging...';
+	$_lang['newsletter.filter_lists']								= 'Filter op mailinglijst...';
 	$_lang['newsletter.auto_refresh_grid']							= 'Automatisch vernieuwen';
-	$_lang['newsletter.send']										= 'Versturen';
+	$_lang['newsletter.queue']										= 'Versturen';
 	$_lang['newsletter.monday']										= 'Maa';
 	$_lang['newsletter.tuesday']									= 'Din';
 	$_lang['newsletter.wednesday']									= 'Woe';
@@ -197,8 +204,8 @@
 	$_lang['newsletter.newsletter_error_resource_id']				= 'De pagina die als nieuwsbrief dient bestaat niet of is verwijderd.';
 	$_lang['newsletter.newsletter_error_resource_template']			= 'De pagina die als nieuwsbrief dient heeft niet de juiste template.';
 	$_lang['newsletter.newsletter_error_date']						= 'De verstuur datum kan niet in het verleden zijn. Kies een andere datum of tijdstip.';
-	$_lang['newsletter.newsletter_send_save']						= 'Succes!';
-	$_lang['newsletter.newsletter_send_save_desc']					= 'De nieuwsbrief is in de wachtrij gezet om verstuurd te worden.';
+	$_lang['newsletter.newsletter_queue_save']						= 'Succes!';
+	$_lang['newsletter.newsletter_queue_save_desc']					= 'De nieuwsbrief is in de wachtrij gezet om verstuurd te worden.';
 	$_lang['newsletter.newsletter_send_succes']						= 'Succes!';
 	$_lang['newsletter.newsletter_send_succes_desc']				= 'De nieuwsbrief is succesvol verstuurd.';
 	$_lang['newsletter.newsletter_send_email_success']				= '[[+current]] van [[+total]]: [[+email]], verstuurd.';
@@ -216,15 +223,16 @@
 	$_lang['newsletter.newsletter_send_feedback']					= 'Nieuwsbrief "[[+pagetitle]]" verstuurd naar [[+total]] e-mailadressen.';
 	$_lang['newsletter.subscription_general']						= 'Algemeen';
 	$_lang['newsletter.subscription_general_desc']					= 'Hier kun je de algemene gegevens van de inschrijving in zien.';
-	$_lang['newsletter.subscription_extra']							= 'Extra velden';
-	$_lang['newsletter.subscription_extra_desc']					= 'Hier kun je de extra velden van de inschrijving in zien.';
+	$_lang['newsletter.subscription_data']							= 'Inschrijving velden';
+	$_lang['newsletter.subscription_data_desc']						= 'Hier kun je de velden van de inschrijving in zien.';
 	$_lang['newsletter.subscription_confirmed']						= 'Bevestigd';
 	$_lang['newsletter.subscription_not_confirmed']					= 'Niet bevestigd';
 	$_lang['newsletter.subscription_unsubscribed']					= 'Uitgeschreven';
 	$_lang['newsletter.subscription_add_list']						= 'Toevoegen aan de mailinglijst(en)';
 	$_lang['newsletter.subscription_remove_list']					= 'Verwijderen uit de mailinglijst(en)';
-	$_lang['newsletter.subscription_extra_key_error_character']		= 'De sleutel bevat niet toegestane tekens. Definieer een andere sleutelnaam.';
-	$_lang['newsletter.subscription_extra_key_error_exists']		= 'Een extra veld met deze sleutel bestaat reeds. Definieer een andere sleutelnaam.';
+	$_lang['newsletter.subscription_data_error']					= 'De inschrijving is niet gevonden.';
+	$_lang['newsletter.subscription_data_error_character']			= 'De naam bevat niet toegestane tekens. Definieer een andere naam.';
+	$_lang['newsletter.subscription_data_error_exists']				= 'Een veld met deze naam bestaat reeds. Definieer een andere naam.';
 	$_lang['newsletter.lists_remove_primary_list']					= 'Dit is de primaire mailinglijst en kan niet verwijderd worden';
 	$_lang['newsletter.import_dir_failed']							= 'Er is een fout opgetreden tijdens het importeren van de inschrijvingen, de import folder kon niet aangemaakt worden.';
 	$_lang['newsletter.import_valid_failed']						= 'Selecteer een geldig CSV bestand.';
@@ -232,5 +240,5 @@
 	$_lang['newsletter.import_read_failed']							= 'Er is een fout opgetreden tijdens het importeren van de inschrijvingen, het CSV bestand kon niet gelezen worden.';
 	$_lang['newsletter.export_failed']								= 'Het exporteren van de inschrijvingen is mislukt, probeer het nog eens.';
 	$_lang['newsletter.export_dir_failed']							= 'Er is een fout opgetreden tijdens het exporteren van de inschrijvingen, de export folder kon niet aangemaakt worden.';
-	
+
 ?>

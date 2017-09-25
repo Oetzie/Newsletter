@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -24,31 +21,31 @@
 
 	class NewsletterListsImportProcessor extends modObjectProcessor {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $classKey = 'NewsletterSubscriptions';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Array.
 		 */
 		public $languageTopics = array('newsletter:default');
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $objectType = 'newsletter.newsletters';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Object.
 		 */
 		public $newsletter;
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
@@ -72,7 +69,7 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 		public function process() {
@@ -91,6 +88,7 @@
 					if (move_uploaded_file($_FILES['file']['tmp_name'], $this->getProperty('directory').$newFilename)) {
 						if (false !== ($fopen = fopen($this->getProperty('directory').$newFilename, 'r'))) {
 							$reset = $this->getProperty('reset');
+							$headers = $this->getProperty('headers');
 							
 							if (!empty($reset)) {
 								$this->modx->removeCollection('NewsletterListsSubscriptions', array(
@@ -99,11 +97,9 @@
 							}
 							
 							$current = 0;
-							$columns = array('email', 'name', 'active', 'context', 'token');
+							$columns = array('email', 'name', 'active', 'data', 'context', 'token');
 							
 							while (($row = fgetcsv($fopen, 1000, $this->getProperty('delimiter')))) {
-								$headers = $this->getProperty('headers');
-								
 								if (0 == $current && !empty($headers)) {
 									$columns = $row;
 								} else {
@@ -113,10 +109,10 @@
 										'active'	=> 1,
 										'token'		=> md5(time())
 									);
-									
+
 									foreach ($columns as $key => $value) {
 										if (isset($row[$key])) {
-											$data[$value] = $row[$key];
+											$data[$value] = trim($row[$key]);
 										}
 									}
 

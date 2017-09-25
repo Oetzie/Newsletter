@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -24,26 +21,28 @@
 
 	abstract class NewsletterManagerController extends modExtraManagerController {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Object.
 		 */
 		public $newsletter;
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
 			$this->newsletter = $this->modx->getService('newsletter', 'Newsletter', $this->modx->getOption('newsletter.core_path', null, $this->modx->getOption('core_path').'components/newsletter/').'model/newsletter/');
 			
-			$this->addJavascript($this->modx->getOption('js_url', $this->newsletter->config).'mgr/newsletter.js');
+			$this->addJavascript($this->newsletter->config['js_url'].'mgr/newsletter.js');
+			
 			$this->addHtml('<script type="text/javascript">
 				Ext.onReady(function() {
-					MODx.config.help_url = "http://rtfm.modx.com/extras/revo/'.$this->newsletter->getHelpUrl().'";
-			
-					Newsletter.config = '.$this->modx->toJSON(array_merge(array(
-						'admin' => $this->newsletter->hasPermission()
-					), $this->newsletter->config)).';
+					MODx.config.help_url = "'.$this->newsletter->getHelpUrl().'";
+					
+					Newsletter.config = '.$this->modx->toJSON(array_merge($this->newsletter->config, array(
+                        'branding_url'          => $this->newsletter->getBrandingUrl(),
+                        'branding_url_help'     => $this->newsletter->getHelpUrl()
+                    ))).';
 				});
 			</script>');
 			
@@ -51,25 +50,25 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Array.
 		 */
 		public function getLanguageTopics() {
-			return array('newsletter:default');
+			return $this->newsletter->config['lexicons'];
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @returns Boolean.
 		 */	    
 		public function checkPermissions() {
-			return true;
+			return $this->modx->hasPermission('newsletter');
 		}
 	}
 		
 	class IndexManagerController extends NewsletterManagerController {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return String.
 		 */
 		public static function getDefaultController() {

@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -37,6 +34,81 @@
 			}
 
 			return $output;
+		}
+		
+		/**
+		 * @access public.
+		 * @param String $key.
+		 * @return Mixed.
+		 */
+		public function getData($key = null) {
+			if (null !== ($data = $this->xpdo->fromJSON($this->data))) {
+				if (is_array($data)) {
+					if (null !== $key) {
+						if (isset($data[$key])) {
+							return $data[$key];
+						}
+						
+						return false;
+					}
+					
+					return $data;
+				}
+			}
+			
+			return array();
+		}
+		
+		/**
+		 * @access public.
+		 * @param String $key.
+		 * @param Mixed $value.
+		 * @return Boolean.
+		 */
+		public function setData($key, $value = null) {
+			if (null === $value) {
+				$this->fromArray(array(
+					'data' =>  $this->xpdo->toJSON($key)
+				));
+			} else {
+				$this->fromArray(array(
+					'data' =>  $this->xpdo->toJSON(array_merge($this->getData(), array(
+						$key => $value
+					)))
+				));
+			}
+
+			return true;
+		}
+		
+		/**
+		 * @access public.
+		 * @param String $key.
+		 * @return Boolean.
+		 */
+		public function removeData($key) {
+			$data = $this->getData();
+			
+			if (isset($data[$key])) {
+				unset($data[$key]);
+			}
+			
+			return $this->setData($data);
+		}
+		
+		/**
+		 * @access public.
+		 * @param String key.
+		 * @return Boolean.
+		 */
+		public function isData($key) {
+			$data = $this->getData();
+			
+			if (isset($data[$key])) {
+				return true;
+			}
+			
+			return false;
 		}
 	}
 	

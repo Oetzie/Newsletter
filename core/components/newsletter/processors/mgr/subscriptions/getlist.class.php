@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -24,43 +21,43 @@
 
 	class NewsletterSubscriptionsGetListProcessor extends modObjectGetListProcessor {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $classKey = 'NewsletterSubscriptions';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default', 'newsletter:lists');
+		public $languageTopics = array('newsletter:default', 'newsletter:site', 'site:newsletter');
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $defaultSortField = 'email';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $defaultSortDirection = 'ASC';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $objectType = 'newsletter.subscriptions';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Object.
 		 */
 		public $newsletter;
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
@@ -74,20 +71,24 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @param Object $c.
 		 * @return Object.
 		 */
 		public function prepareQueryBeforeCount(xPDOQuery $c) {
 			$c->where(array(
-				'context' => $this->getProperty('context')
+				'NewsletterSubscriptions.context' => $this->getProperty('context')
 			));
 			
-			$confirm = $this->getProperty('confirm');
+			$list = $this->getProperty('list');
 			
-			if ('' != $confirm) {
+			if (!empty($list)) {
+				$c->innerJoin('NewsletterListsSubscriptions', 'NewsletterListsSubscriptions', array(
+					'NewsletterListsSubscriptions.subscription_id = NewsletterSubscriptions.id'
+				));
+				
 				$c->where(array(
-					'NewsletterSubscriptions.active' => $confirm
+					'NewsletterListsSubscriptions.list_id' => $list
 				));
 			}
 			
@@ -99,13 +100,13 @@
 					'OR:NewsletterSubscriptions.email:LIKE' => '%'.$query.'%'
 				));
 			}
-			
+
 			return $c;
 		}
 		
 		/**
-		 * @acces public.
-		 * @param Object $query.
+		 * @access public.
+		 * @param Object $object.
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
@@ -121,7 +122,14 @@
 			
 			foreach ($object->getLists() as $list) {
 				$array['lists'][] = $list->id;
-				$array['lists_formatted'][$list->id] = $this->modx->lexicon($list->name);
+				
+				$translationKey = 'newsletter.list_'.$list->name;
+			
+				if ($translationKey !== ($translation = $this->modx->lexicon($translationKey))) {
+					$array['lists_formatted'][$list->id] = $translation;
+				} else {
+					$array['lists_formatted'][$list->id] = $list->name;
+				}
 			}
 			
 			ksort($array['lists_formatted']);

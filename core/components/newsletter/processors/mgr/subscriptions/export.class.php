@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -24,43 +21,43 @@
 
 	class NewsletterSubscriptionsExportProcessor extends modObjectGetListProcessor {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $classKey = 'NewsletterSubscriptions';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default');
+		public $languageTopics = array('newsletter:default', 'newsletter:site', 'site:newsletter');
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $defaultSortField = 'email';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $defaultSortDirection = 'ASC';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $objectType = 'newsletter.subscriptions';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Object.
 		 */
 		public $newsletter;
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
@@ -84,7 +81,7 @@
 		}
 
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return mixed.
 		 */
 		public function process() {
@@ -104,12 +101,12 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return mixed.
 		 */
 		public function setFile() {
 			if (false !== ($fopen = fopen($this->getProperty('directory').$this->getProperty('filename'), 'w'))) {
-				$columns = array('email', 'name', 'active','context');
+				$columns = array('email', 'name', 'active', 'data', 'context');
 				
 				$headers = $this->getProperty('headers');
 				
@@ -147,19 +144,19 @@
 		}
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return mixed.
 		 */
 		public function getFile() {
-		 	$file = $this->getProperty('directory').$this->getProperty('filename');
-
-		 	if (is_file($file)) {
-		 		$fileContents = file_get_contents($file);
-		 		
-		 		header('Content-Type: application/force-download');
-		 		header('Content-Disposition: attachment; filename="'.$this->getProperty('filename').'"');
-		 		
-		 		return $fileContents;
+			$file = $this->getProperty('directory').$this->getProperty('filename');
+			
+			if (is_file($file)) {
+				$fileContents = file_get_contents($file);
+				
+				header('Content-Type: application/force-download');
+				header('Content-Disposition: attachment; filename="'.$this->getProperty('filename').'"');
+				
+				return $fileContents;
 			}
 			
 			return $this->failure($this->modx->lexicon('newsletter.export_failed'));

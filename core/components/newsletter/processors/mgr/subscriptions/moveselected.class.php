@@ -3,10 +3,7 @@
 	/**
 	 * Newsletter
 	 *
-	 * Copyright 2016 by Oene Tjeerd de Bruin <info@oetzie.nl>
-	 *
-	 * This file is part of Newsletter, a real estate property listings component
-	 * for MODX Revolution.
+	 * Copyright 2017 by Oene Tjeerd de Bruin <modx@oetzie.nl>
 	 *
 	 * Newsletter is free software; you can redistribute it and/or modify it under
 	 * the terms of the GNU General Public License as published by the Free Software
@@ -24,31 +21,31 @@
 
 	class NewsletterSubscriptionsMoveSelectedProcessor extends modProcessor {
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $classKey = 'NewsletterSubscriptions';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Array.
 		 */
-		public $languageTopics = array('newsletter:default');
+		public $languageTopics = array('newsletter:default', 'newsletter:site', 'site:newsletter');
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var String.
 		 */
 		public $objectType = 'newsletter.subscriptions';
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @var Object.
 		 */
 		public $newsletter;
 		
 		/**
-		 * @acces public.
+		 * @access public.
 		 * @return Mixed.
 		 */
 		public function initialize() {
@@ -63,35 +60,27 @@
 		 */
 		public function process() {
 			foreach (explode(',', $this->getProperty('ids')) as $key => $value) {
-				$criteria = array('id' => $value);
-				
-				if (false !== ($object = $this->modx->getObject($this->classKey, $criteria))) {
+				if (false !== ($object = $this->modx->getObject($this->classKey, $value))) {
 					if (null !== ($lists = $this->getProperty('lists'))) {
-						if ('remove' == $this->getProperty('type')) {
-							foreach ($lists as $id) {
-								$this->modx->removeCollection('NewsletterListsSubscriptions', array(
-									'subscription_id' 	=> $object->id,
-									'list_id'			=> $id
-								));
-							}
-						} else {
-							$existingLists = array();
+						foreach ($lists as $id) {
+							$c = array(
+								'subscription_id' 	=> $object->id,
+								'list_id'			=> $id
+							);
 							
-							foreach ($object->getMany('NewsletterListsSubscriptions') as $existingList) {
-								$existingLists[$existingList->list_id] = $existingList->list_id;
-							}
-							
-							foreach ($lists as $id) {
-								if (!isset($existingLists[$id])) {
-									if (null !== ($list = $this->modx->newObject('NewsletterListsSubscriptions', array('list_id' => $id)))) {
+							if ('remove' == $this->getProperty('type')) {
+								$this->modx->removeCollection('NewsletterListsSubscriptions', $c);
+							} else {
+								if (null === ($list = $this->modx->getObject('NewsletterListsSubscriptions', $c))) {
+									if (null !== ($list = $this->modx->newObject('NewsletterListsSubscriptions', $c))) {
 										$object->addMany($list);
 									}
-								}	
+								}
 							}
-							
-							$object->save();
 						}
 					}
+					
+					$object->save();
 				}
 			}
 			
