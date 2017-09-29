@@ -84,7 +84,7 @@
 					if (move_uploaded_file($_FILES['file']['tmp_name'], $this->getProperty('directory').$newFilename)) {
 						if (false !== ($fopen = fopen($this->getProperty('directory').$newFilename, 'r'))) {
 							$current = 0;
-							$columns = array('email', 'name', 'active', 'data', 'context', 'token');
+							$columns = array('email', 'name', 'active', 'data',  'lists', 'context', 'token', 'edited', 'editedon');
 							
 							while (($row = fgetcsv($fopen, 1000, $this->getProperty('delimiter')))) {
 								$headers = $this->getProperty('headers');
@@ -116,8 +116,24 @@
 										}
 										
 										$subscription->fromArray($data);
-											
+
+										if (isset($data['lists'])) {
+											foreach (array_filter(array_unique(explode(',', $data['lists']))) as $list) {
+												$c = array(
+													'list_id'			=> $list,
+													'subscription_id' 	=> $subscription->id
+												);
+					
+												if (null === $subscription->getOne('NewsletterListsSubscriptions', $c)) {
+													if (null !== ($list = $this->modx->newObject('NewsletterListsSubscriptions', $c))) {
+														$subscription->addMany($list);
+													}
+												}
+											}
+										}
+										
 										$subscription->save();
+										
 									}
 								}
 								

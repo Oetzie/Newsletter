@@ -97,7 +97,7 @@
 							}
 							
 							$current = 0;
-							$columns = array('email', 'name', 'active', 'data', 'context', 'token');
+							$columns = array('email', 'name', 'active', 'data', 'context', 'token', 'edited', 'editedon');
 							
 							while (($row = fgetcsv($fopen, 1000, $this->getProperty('delimiter')))) {
 								if (0 == $current && !empty($headers)) {

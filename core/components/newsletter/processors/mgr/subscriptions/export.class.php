@@ -79,6 +79,33 @@
 			
 			return parent::initialize();
 		}
+		
+		/**
+		 * @access public.
+		 * @param Array $columns.
+		 * @return mixed.
+		 */
+		public function getData($columns = array()) {
+			$data = array();
+			
+			foreach ($this->modx->getCollection($this->classKey) as $object) {
+				$data[$object->{$this->defaultSortField}] = array_merge($object->toArray(), array(
+					'lists' => $object->getLists(true)
+				));
+			}
+			
+			if ('ASC' == $this->defaultSortDirection) {
+				ksort($data);
+			} else {
+				krsort($data);
+			}
+			
+			if (!empty($this->getProperty('headers'))) {
+				array_unshift($data, $columns);
+			}
+
+			return $data;
+		}
 
 		/**
 		 * @access public.
@@ -106,34 +133,37 @@
 		 */
 		public function setFile() {
 			if (false !== ($fopen = fopen($this->getProperty('directory').$this->getProperty('filename'), 'w'))) {
-				$columns = array('email', 'name', 'active', 'data', 'context');
-				
-				$headers = $this->getProperty('headers');
-				
-				if (!empty($headers)) {
-					$rows = array($columns);
-				} else {
-					$rows = array();
-				}
-				
-				foreach ($this->modx->getCollection($this->classKey) as $subscription) {
-					$rows[$subscription->id] = $subscription->toArray();
-				}
+				$columns = array('email', 'name', 'active', 'data',  'lists', 'context', 'token', 'edited', 'editedon');
 
-				foreach ($rows as $key => $value) {
-					if (0 == $key) {
+				foreach ($this->getData($columns) as $key => $value) {
+					if (0 === $key) {
 						fputcsv($fopen, $value, $this->getProperty('delimiter'));
 					} else {
 						$data = array();
 						
-						foreach ($columns as $column) {
-							$data[] = $value[$column];
+						foreach ($columns as $key => $column) {
+							if ('editedon' == $column) {
+								if (isset($value[$column])) {
+									if (in_array($value[$column], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', null))) {
+										$data[$key] = '0000-00-00 00:00:00';
+									} else {
+										$data[$key] = $value[$column];
+									}
+								} else {
+									$data[$key] = '0000-00-00 00:00:00';
+								}
+							} else {
+								if (isset($value[$column])) {
+									$data[$key] = $value[$column];
+								} else {
+									$data[$key] = '';
+								}
+							}
 						}
 						
 						fputcsv($fopen, $data, $this->getProperty('delimiter'));
 					}
 				}
-
 				
 				fclose($fopen);
 			
