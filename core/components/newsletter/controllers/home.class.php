@@ -19,6 +19,8 @@
 	 * Suite 330, Boston, MA 02111-1307 USA
 	 */
 
+    require_once dirname(dirname(__FILE__)).'/index.class.php';
+
 	class NewsletterHomeManagerController extends NewsletterManagerController {
 		/**
 		 * @access public.

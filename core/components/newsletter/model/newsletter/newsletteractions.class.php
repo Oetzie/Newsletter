@@ -242,7 +242,7 @@
 									$email = array_merge(array(
 										'to'		=> array($subscription->email => $subscription->name),
 										'from'		=> array($this->config['sender_email'] => $this->config['sender_name']),
-										'subject'	=> $this->modx->lexicon('newsletter.email_subscribe_confirmed_title')
+										'subject'	=> $this->modx->lexicon('newsletter.email_subscribe_confirm_title')
 									), $this->properties['confirm']['email']);
 
 									if (!$form->extensions->invokeExtension('onSuccessPost', 'email', $email)) {

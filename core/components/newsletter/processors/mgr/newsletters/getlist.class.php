@@ -133,7 +133,7 @@
 					$array['send_details'][] = array_merge($detail->toArray(), array(
 						'lists'				=> array_keys($lists),
 						'lists_formatted'	=> implode(', ', $lists),
-						'emails_count'		=> explode(',', $detail->emails),
+						'emails_count'		=> count(explode(',', $detail->emails)),
 						'timestamp' 		=> date($this->modx->getOption('manager_date_format', 'Y-m-d').', '.$this->modx->getOption('manager_time_format', 'H:i'), strtotime($detail->timestamp))
 					));
 				}

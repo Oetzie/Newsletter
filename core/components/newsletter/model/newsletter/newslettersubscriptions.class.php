@@ -22,15 +22,24 @@
 	class NewsletterSubscriptions extends xPDOSimpleObject {
 		/**
 		 * @acces public.
+		 * @param String $key.
 		 * @return Array.
 		 */
-		public function getLists() {
+		public function getLists($key = false) {
 			$output = array();
 		
 			foreach ($this->getMany('NewsletterListsSubscriptions') as $list) {
 				if (null !== ($list = $list->getOne('NewsletterLists'))) {
-					$output[] = $list;
+					if ($key) {
+						$output[] = $list->id;
+					} else {
+						$output[] = $list;
+					}
 				}
+			}
+			
+			if ($key) {
+				return implode(',', $output);
 			}
 
 			return $output;

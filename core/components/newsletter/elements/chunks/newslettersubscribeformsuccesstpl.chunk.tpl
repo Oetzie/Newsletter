@@ -1,1 +1,1 @@
-<p>[[%newsletter.subscribe_confirmed_desc? &topic=`site`&namespace=`newsletter`]]</p>
+<p>[[%newsletter.subscribe_confirmed_content? &topic=`site`&namespace=`newsletter`]]</p>

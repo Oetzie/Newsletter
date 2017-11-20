@@ -46,7 +46,6 @@
 		
 			$this->config = array_merge(array(
 				'namespace'				=> $this->modx->getOption('namespace', $config, 'newsletter'),
-				'helpurl'				=> $this->modx->getOption('namespace', $config, 'newsletter'),
 				'lexicons'				=> array('newsletter:default', 'newsletter:site', 'site:newsletter'),
 				'base_path'				=> $corePath,
 				'core_path' 			=> $corePath,
@@ -196,7 +195,6 @@
 			    return str_rot13(serialize($input));
 		    }
 		}
-
-	}
+    }
 	
 ?>
