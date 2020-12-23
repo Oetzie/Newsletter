@@ -1,17 +1,25 @@
+/* Should be moved to default theme. */
+.x-menu-item-icon {
+    left: 7px !important;
+    font-size: 14px !important;
+    line-height: 16px !important;
+    text-align: center !important;
+}
+
+/* Should be moved to default theme. */
+.x-btn-text .icon {
+    margin-right: 8px;
+}
+
 #modx-action-buttons .x-btn-branding {
-	background: none !important;
-	box-shadow: none !important;
-	border: none !important;
-	color: #555555 !important;
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    color: #555555 !important;
 }
 
-.x-toolbar-cell .x-form-check-wrap .x-form-cb-label {
-	padding-left: 22px !important;
-	line-height: 12px;
-}
-
-.x-toolbar-cell .x-form-check-wrap .x-form-cb-label:before {
-	top: -3px;
+.x-grid3 .icon {
+    margin-right: 7px;
 }
 
 .grid-row-inactive,
@@ -24,18 +32,19 @@
 }
 
 .newsletter-checkboxgroup-fixed {
-	position: relative;
-	height: 68px;
-	overflow: hidden;
-	background: #fbfbfb;
-	border: 1px solid #e4e4e4;
-	-webkit-border-radius: 3px;
-	   -moz-border-radius: 3px;
-	   		border-radius: 3px;
+    position: relative;
+    max-height: 148px;
+    overflow: hidden;
+    background: #fbfbfb;
+    margin: 10px 0 0;
+    border: 1px solid #e4e4e4;
+    -webkit-border-radius: 3px;
+       -moz-border-radius: 3px;
+            border-radius: 3px;
 }
 
 .newsletter-checkboxgroup-fixed .x-form-check-group {
-	padding: 8px;
-	max-height: 52px;
-	overflow-y: scroll;
+    padding: 0 8px 8px 8px;
+    max-height: 140px;
+    overflow-y: scroll;
 }

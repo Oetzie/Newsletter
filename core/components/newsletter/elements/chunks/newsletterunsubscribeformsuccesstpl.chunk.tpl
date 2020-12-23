@@ -1,1 +1,0 @@
-<p>[[%newsletter.unsubscribe_confirmed_content? &topic=`site`&namespace=`newsletter`]]</p>

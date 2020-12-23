@@ -1,0 +1,90 @@
+{
+    "name": "Newsletter",
+    "lowCaseName": "newsletter",
+    "description": "A newsletter solution for MODX Revolution.",
+    "author": "Oetzie.nl",
+    "version": "2.0.0-pl",
+    "package":{
+        "menus": [{
+            "text": "newsletter",
+            "description": "newsletter.desc",
+            "parent": "components",
+            "action": "home",
+            "permissions": "newsletter"
+        }],
+        "elements": {
+            "snippets": [{
+                "name": "newsletterForm",
+                "file": "newsletterform.snippet.php"
+            }],
+            "plugins": [{
+                "name": "Newsletter",
+                "file": "newsletter.plugin.php",
+                "events": [
+                    "OnLoadWebDocument"
+                ]
+            }]
+        },
+        "systemSettings": [{
+            "key": "branding_url",
+            "value": "//www.oetzie.nl",
+            "area": "newsletter"
+        },{
+            "key": "branding_url_help",
+            "value": "//www.oetzie.nl",
+            "area": "newsletter"
+        },{
+            "type": "combo-boolean",
+            "key": "cronjob",
+            "value": "0",
+            "area": "newsletter"
+        },{
+            "key": "cronjob_hash",
+            "area": "newsletter"
+        },{
+            "key": "data_filter",
+            "area": "newsletter"
+        },{
+            "key": "email",
+            "area": "newsletter"
+        },{
+            "key": "email",
+            "area": "newsletter"
+        },{
+            "key": "exclude_contexts",
+            "area": "newsletter"
+        },{
+            "key": "list_filters",
+            "area": "newsletter"
+        },{
+            "key": "log_email",
+            "area": "newsletter"
+        },{
+            "key": "log_lifetime",
+            "value": "7",
+            "area": "newsletter"
+        },{
+            "type": "combo-boolean",
+            "key": "log_send",
+            "value": "0",
+            "area": "newsletter"
+        },{
+            "key": "name",
+            "area": "newsletter"
+        },{
+            "key": "templates",
+            "area": "newsletter"
+        }]
+    },
+    "build":{
+        "readme": "docs/readme.txt",
+        "license": "docs/license.txt",
+        "changelog": "docs/changelog.txt",
+        "resolver": {
+            "after": [
+                "tables.resolver.php",
+                "permissions.resolver.php"
+            ]
+        }
+    }
+}
